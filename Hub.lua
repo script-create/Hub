@@ -1,4 +1,4 @@
-local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
+local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302, v303, v304
 
 do
     local u9, u10, u99, u105, u110, u116, u157
@@ -2956,14 +2956,130 @@ do
         Title = 'ESP',
         Icon = 'eye',
     })
-    local v303 = v300:Tab({
+
+    v303 = v300:Tab({
         Title = 'Bind',
         Icon = 'keyboard',
     })
-    local v304 = v300:Tab({
+    v304 = v300:Tab({
         Title = 'Troll',
         Icon = 'swords',
     })
+
+    -- Bind system: no default keys. Click a button, then press the key to assign it.
+    local bindKeys = {}
+    local waitingForBind = nil
+
+    local bindActions = {
+        ['Shoot / Throw'] = function() pcall(u98) end,
+        ['Flick'] = function() pcall(u104) end,
+        ['Speed Glitch'] = function() u116 = not u116 end,
+        ['Stretch'] = function() u120 = not u120; pcall(u127, u120) end,
+        ['Grab Gun'] = function() pcall(u275) end,
+        ['Wall Hop'] = function() pcall(u110) end,
+        ['Fling Murderer'] = function() pcall(u286) end,
+        ['Fling Sheriff'] = function() pcall(u292) end,
+    }
+
+    v303:Paragraph({
+        Title = 'Keybinds',
+        Content = 'All binds start as NONE. Click a bind and press a keyboard key to assign it.',
+    })
+
+    local bindButtons = {}
+    for title, action in pairs(bindActions) do
+        local button = v303:Button({
+            Title = title .. '  [NONE]',
+            Description = 'Click to set a key',
+            Callback = function()
+                waitingForBind = title
+            end,
+        })
+        bindButtons[title] = button
+    end
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed or input.UserInputType ~= Enum.UserInputType.Keyboard then
+            return
+        end
+
+        if waitingForBind then
+            local key = input.KeyCode
+            if key == Enum.KeyCode.Escape then
+                waitingForBind = nil
+                return
+            end
+            if key == Enum.KeyCode.Backspace then
+                bindKeys[waitingForBind] = nil
+                waitingForBind = nil
+                return
+            end
+            if key ~= Enum.KeyCode.Unknown then
+                bindKeys[waitingForBind] = key
+                waitingForBind = nil
+            end
+            return
+        end
+
+        for title, key in pairs(bindKeys) do
+            if input.KeyCode == key then
+                local action = bindActions[title]
+                if action then
+                    task.spawn(action)
+                end
+                break
+            end
+        end
+    end)
+
+    v304:Paragraph({
+        Title = 'Troll',
+        Content = 'Players currently highlighted by CandyZone ESP.',
+    })
+
+    local trollValues = {}
+    local trollDropdown = v304:Dropdown({
+        Title = 'ESP Players',
+        Values = {'No ESP players'},
+        Value = 'No ESP players',
+        AllowNone = true,
+        Callback = function(name)
+            if not name or name == 'No ESP players' then
+                return
+            end
+            local target = Players:FindFirstChild(name)
+            if not target or not target.Character then
+                return
+            end
+            if not target.Character:FindFirstChild('CandyZone_ESP') then
+                return
+            end
+            pcall(u169, target)
+        end,
+    })
+
+    local function refreshTrollList()
+        local values = {}
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
+                table.insert(values, player.Name)
+            end
+        end
+        table.sort(values)
+        if #values == 0 then
+            values = {'No ESP players'}
+        end
+        trollValues = values
+        pcall(function()
+            trollDropdown:SetValues(values)
+        end)
+    end
+
+    task.spawn(function()
+        while task.wait(0.75) do
+            pcall(refreshTrollList)
+        end
+    end)
 
     v301:Paragraph({
         Title = 'Auto-Loaded Buttons',
@@ -3106,46 +3222,6 @@ v301:Toggle({
         u281(p67)
     end,
 })
-
-v303:Paragraph({
-    Title = 'Keybinds',
-    Content = 'All binds start unassigned. Click a bind and press the key you want to use.',
-})
-v303:Divider()
-
-local function bindAction(title, desc, callback)
-    v303:Keybind({
-        Title = title,
-        Desc = desc,
-        Callback = function(key)
-            if key == nil or tostring(key):upper() == 'NONE' then
-                return
-            end
-            callback()
-        end,
-    })
-end
-
-bindAction('Shoot / Throw', 'Bind the shoot/throw action.', u98)
-bindAction('Flick', 'Bind the flick action.', u104)
-bindAction('Speed Glitch', 'Toggle speed glitch.', function()
-    u116 = not u116
-end)
-bindAction('Stretch', 'Toggle stretch.', function()
-    u120 = not u120
-    u127(u120)
-end)
-bindAction('Grab Gun', 'Teleport to the dropped gun.', u275)
-bindAction('Wall Hop', 'Run Wall Hop.', u110)
-bindAction('Fling Murderer', 'Fling the current murderer.', u286)
-bindAction('Fling Sheriff', 'Fling the current sheriff.', u292)
-
-v303:Divider()
-v303:Paragraph({
-    Title = 'No default keys',
-    Content = 'Every bind is NONE until you assign it yourself.',
-})
-
 v301:Divider()
 v301:Paragraph({
     Title = 'Skybox',
@@ -4244,32 +4320,4 @@ v18:Notify({
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
-
--- Troll: show only players currently marked by the ESP Highlight.
-v304:Paragraph({
-    Title = 'ESP Players',
-    Content = 'Players currently highlighted by ESP are listed here.',
-})
-
-local function addTrollESPButton(player)
-    if player == LocalPlayer then return end
-    local character = player.Character
-    if not character or not character:FindFirstChild('CandyZone_ESP') then return end
-
-    v304:Button({
-        Title = player.Name,
-        Description = player.DisplayName ~= player.Name and ('@' .. player.Name .. '  |  ' .. player.DisplayName) or ('@' .. player.Name),
-        Callback = function()
-            if player.Parent and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
-                task.spawn(u169, player)
-            else
-                v18:Notify({Title='CandyZone', Content='This player is not currently shown by ESP.', Duration=2, Icon='bell'})
-            end
-        end,
-    })
-end
-
-for _, player in ipairs(Players:GetPlayers()) do
-    addTrollESPButton(player)
-end
-
+print('[CandyZone] Bind/Troll loaded.')
