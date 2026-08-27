@@ -1,4 +1,4 @@
- local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
+local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
 
 do
     local u9, u10, u99, u105, u110, u116, u157
@@ -2956,11 +2956,11 @@ do
         Title = 'ESP',
         Icon = 'eye',
     })
-    v303 = v300:Tab({
+    local v303 = v300:Tab({
         Title = 'Bind',
         Icon = 'keyboard',
     })
-    v304 = v300:Tab({
+    local v304 = v300:Tab({
         Title = 'Troll',
         Icon = 'swords',
     })
@@ -3148,39 +3148,14 @@ v303:Paragraph({
 })
 
 v304:Paragraph({
-    Title = 'Players',
-    Content = 'Click a player name to run the same fling routine used by Fling Sheriff.',
+    Title = 'ESP Players',
+    Content = 'Only players currently highlighted by ESP are shown below. Click a name to use the same fling routine as Fling Sheriff.',
 })
 
 local trollButtons = {}
-local function clearTrollButtons()
-    for _, element in ipairs(trollButtons) do
-        pcall(function() element:Destroy() end)
-    end
-    table.clear(trollButtons)
-end
 
-local function refreshTrollPlayers()
-    clearTrollButtons()
-    local list = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            table.insert(list, player)
-        end
-    end
-    table.sort(list, function(a, b)
-        return a.Name:lower() < b.Name:lower()
-    end)
-
-    if #list == 0 then
-        table.insert(trollButtons, v304:Paragraph({
-            Title = 'No players',
-            Content = 'There are no other players in the server.',
-        }))
-        return
-    end
-
-    for _, player in ipairs(list) do
+for _, player in ipairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
         local target = player
         local element = v304:Button({
             Title = target.Name,
@@ -3188,6 +3163,10 @@ local function refreshTrollPlayers()
             Callback = function()
                 if not target.Parent or not target.Character then
                     v18:Notify({Title = 'CandyZone', Content = 'Player is no longer in the server.', Duration = 2, Icon = 'bell'})
+                    return
+                end
+                if not target.Character:FindFirstChild('CandyZone_ESP') then
+                    v18:Notify({Title = 'CandyZone', Content = 'This player is not currently shown by ESP.', Duration = 2, Icon = 'bell'})
                     return
                 end
                 local humanoid = target.Character:FindFirstChildOfClass('Humanoid')
@@ -3207,13 +3186,13 @@ local function refreshTrollPlayers()
     end
 end
 
-refreshTrollPlayers()
-Players.PlayerAdded:Connect(function()
-    task.defer(refreshTrollPlayers)
-end)
-Players.PlayerRemoving:Connect(function()
-    task.defer(refreshTrollPlayers)
-end)
+if #trollButtons == 0 then
+    v304:Paragraph({
+        Title = 'No ESP players',
+        Content = 'Enable ESP for a player first.',
+    })
+end
+
 v301:Divider()
 v301:Paragraph({
     Title = 'Skybox',
@@ -4312,4 +4291,3 @@ v18:Notify({
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
-```
