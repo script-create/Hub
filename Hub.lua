@@ -1,4 +1,4 @@
-
+```
 local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
 
 do
@@ -2957,83 +2957,13 @@ do
         Title = 'ESP',
         Icon = 'eye',
     })
-
-    -- Bind tab: every action below can be assigned to a keyboard key.
     local v303 = v300:Tab({
         Title = 'Bind',
         Icon = 'keyboard',
     })
-
-    v303:Paragraph({
-        Title = 'Keyboard Binds',
-        Content = 'Choose a key for an action. The action will run when the key is pressed.',
-    })
-
-    local function bindToggleESP()
-        local state = not u61
-        u61 = state
-        if not state then
-            if u62 then
-                u62:Disconnect()
-                u62 = nil
-            end
-            task.delay(0.1, v68)
-        else
-            v78()
-        end
-        v18:Notify({
-            Title = 'CandyZone',
-            Content = state and 'ESP ON' or 'ESP OFF',
-            Duration = 2,
-            Icon = 'keyboard',
-        })
-    end
-
-    local function bindSpeed()
-        u116 = not u116
-        v18:Notify({
-            Title = 'CandyZone',
-            Content = u116 and 'Speed Glitch ON' or 'Speed Glitch OFF',
-            Duration = 2,
-            Icon = 'keyboard',
-        })
-    end
-
-    local function bindStretch()
-        u120 = not u120
-        v125(u120)
-        v18:Notify({
-            Title = 'CandyZone',
-            Content = u120 and 'Stretch ON' or 'Stretch OFF',
-            Duration = 2,
-            Icon = 'keyboard',
-        })
-    end
-
-    local function makeBind(title, desc, defaultKey, callback, flag)
-        return v303:Keybind({
-            Flag = flag,
-            Title = title,
-            Desc = desc,
-            Value = defaultKey,
-            Callback = function()
-                task.spawn(callback)
-            end,
-        })
-    end
-
-    makeBind('Shoot / Throw', 'Run the current Shoot or Throw action.', 'Z', u98, 'BindShootThrow')
-    makeBind('Flick', 'Perform Flick.', 'X', u104, 'BindFlick')
-    makeBind('Wall Hop', 'Perform Wall Hop.', 'C', u110, 'BindWallHop')
-    makeBind('Grab Gun', 'Grab the gun from the map.', 'V', u275, 'BindGrabGun')
-    makeBind('Fling Sheriff', 'Fling the nearest sheriff.', 'B', u292, 'BindFlingSheriff')
-    makeBind('ESP', 'Toggle ESP on or off.', 'N', bindToggleESP, 'BindESP')
-    makeBind('Speed Glitch', 'Toggle Speed Glitch on or off.', 'M', bindSpeed, 'BindSpeed')
-    makeBind('Stretch', 'Toggle Stretch on or off.', 'Comma', bindStretch, 'BindStretch')
-
-    v303:Paragraph({
-        Title = 'Tip',
-        Content = 'Click a keybind field and press another keyboard key to rebind it.',
+    local v304 = v300:Tab({
+        Title = 'Troll',
+        Icon = 'swords',
     })
 
     v301:Paragraph({
@@ -3177,6 +3107,114 @@ v301:Toggle({
         u281(p67)
     end,
 })
+
+v303:Paragraph({
+    Title = 'Keybinds',
+    Content = 'All binds start unassigned. Click a bind and press the key you want to use.',
+})
+v303:Divider()
+
+local function bindAction(title, desc, callback)
+    v303:Keybind({
+        Title = title,
+        Desc = desc,
+        Value = 'NONE',
+        Callback = function(key)
+            if key == nil or tostring(key):upper() == 'NONE' then
+                return
+            end
+            callback()
+        end,
+    })
+end
+
+bindAction('Shoot / Throw', 'Bind the shoot/throw action.', u98)
+bindAction('Flick', 'Bind the flick action.', u104)
+bindAction('Speed Glitch', 'Toggle speed glitch.', function()
+    u116 = not u116
+end)
+bindAction('Stretch', 'Toggle stretch.', function()
+    u120 = not u120
+    u127(u120)
+end)
+bindAction('Grab Gun', 'Teleport to the dropped gun.', u275)
+bindAction('Wall Hop', 'Run Wall Hop.', u110)
+bindAction('Fling Murderer', 'Fling the current murderer.', u286)
+bindAction('Fling Sheriff', 'Fling the current sheriff.', u292)
+
+v303:Divider()
+v303:Paragraph({
+    Title = 'No default keys',
+    Content = 'Every bind is NONE until you assign it yourself.',
+})
+
+v304:Paragraph({
+    Title = 'Players',
+    Content = 'Click a player name to run the same fling routine used by Fling Sheriff.',
+})
+
+local trollButtons = {}
+local function clearTrollButtons()
+    for _, element in ipairs(trollButtons) do
+        pcall(function() element:Destroy() end)
+    end
+    table.clear(trollButtons)
+end
+
+local function refreshTrollPlayers()
+    clearTrollButtons()
+    local list = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(list, player)
+        end
+    end
+    table.sort(list, function(a, b)
+        return a.Name:lower() < b.Name:lower()
+    end)
+
+    if #list == 0 then
+        table.insert(trollButtons, v304:Paragraph({
+            Title = 'No players',
+            Content = 'There are no other players in the server.',
+        }))
+        return
+    end
+
+    for _, player in ipairs(list) do
+        local target = player
+        local element = v304:Button({
+            Title = target.Name,
+            Description = target.DisplayName ~= target.Name and ('@' .. target.Name .. '  |  ' .. target.DisplayName) or '@' .. target.Name,
+            Callback = function()
+                if not target.Parent or not target.Character then
+                    v18:Notify({Title = 'CandyZone', Content = 'Player is no longer in the server.', Duration = 2, Icon = 'bell'})
+                    return
+                end
+                local humanoid = target.Character:FindFirstChildOfClass('Humanoid')
+                if not humanoid or humanoid.Health <= 0 then
+                    v18:Notify({Title = 'CandyZone', Content = target.Name .. ' is not alive.', Duration = 2, Icon = 'bell'})
+                    return
+                end
+                if u157 then
+                    v18:Notify({Title = 'CandyZone', Content = 'Fling in progress...', Duration = 2, Icon = 'bell'})
+                    return
+                end
+                v18:Notify({Title = 'CandyZone', Content = 'Flinging: ' .. target.Name, Duration = 3, Icon = 'bell'})
+                task.spawn(u169, target)
+            end,
+        })
+        table.insert(trollButtons, element)
+    end
+end
+
+refreshTrollPlayers()
+Players.PlayerAdded:Connect(function()
+    task.defer(refreshTrollPlayers)
+end)
+Players.PlayerRemoving:Connect(function()
+    task.defer(refreshTrollPlayers)
+end)
 v301:Divider()
 v301:Paragraph({
     Title = 'Skybox',
@@ -4275,3 +4313,4 @@ v18:Notify({
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
+```
