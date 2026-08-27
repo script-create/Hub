@@ -2966,9 +2966,12 @@ do
         Icon = 'swords',
     })
 
-    -- Bind system: no default keys. Click a button, then press the key to assign it.
+    -- ============================================================
+    -- FIXED BIND SYSTEM
+    -- ============================================================
     local bindKeys = {}
     local waitingForBind = nil
+    local bindButtons = {}
 
     local bindActions = {
         ['Shoot / Throw'] = function() pcall(u98) end,
@@ -2981,42 +2984,72 @@ do
         ['Fling Sheriff'] = function() pcall(u292) end,
     }
 
+    local function updateBindButton(title)
+        local btn = bindButtons[title]
+        if not btn then return end
+        local key = bindKeys[title]
+        local display = key and tostring(key):gsub("Enum.KeyCode.", "") or "NONE"
+        btn:SetTitle(title .. "  [" .. display .. "]")
+    end
+
     v303:Paragraph({
         Title = 'Keybinds',
-        Content = 'All binds start as NONE. Click a bind and press a keyboard key to assign it.',
+        Content = 'Кликни на кнопку, затем нажми клавишу для привязки. Backspace — сброс, ESC — отмена.',
     })
 
-    local bindButtons = {}
     for title, action in pairs(bindActions) do
-        local button = v303:Button({
-            Title = title .. '  [NONE]',
-            Description = 'Click to set a key',
+        local btn = v303:Button({
+            Title = title .. "  [NONE]",
+            Description = "Нажми для привязки клавиши",
             Callback = function()
                 waitingForBind = title
+                v18:Notify({
+                    Title = "CandyZone",
+                    Content = "Нажми клавишу для " .. title .. " (ESC — отмена)",
+                    Duration = 2,
+                    Icon = "keyboard",
+                })
             end,
         })
-        bindButtons[title] = button
+        bindButtons[title] = btn
     end
 
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed or input.UserInputType ~= Enum.UserInputType.Keyboard then
-            return
-        end
+        if gameProcessed then return end
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
 
         if waitingForBind then
+            local title = waitingForBind
             local key = input.KeyCode
+
             if key == Enum.KeyCode.Escape then
                 waitingForBind = nil
                 return
             end
+
             if key == Enum.KeyCode.Backspace then
-                bindKeys[waitingForBind] = nil
+                bindKeys[title] = nil
                 waitingForBind = nil
+                updateBindButton(title)
+                v18:Notify({
+                    Title = "CandyZone",
+                    Content = "Сброшена привязка для " .. title,
+                    Duration = 2,
+                    Icon = "trash",
+                })
                 return
             end
+
             if key ~= Enum.KeyCode.Unknown then
-                bindKeys[waitingForBind] = key
+                bindKeys[title] = key
                 waitingForBind = nil
+                updateBindButton(title)
+                v18:Notify({
+                    Title = "CandyZone",
+                    Content = title .. " → " .. tostring(key):gsub("Enum.KeyCode.", ""),
+                    Duration = 2,
+                    Icon = "check",
+                })
             end
             return
         end
@@ -3032,55 +3065,77 @@ do
         end
     end)
 
+    -- ============================================================
+    -- FIXED TROLL DROPDOWN — ВСЕ ИГРОКИ
+    -- ============================================================
     v304:Paragraph({
         Title = 'Troll',
-        Content = 'Players currently highlighted by CandyZone ESP.',
+        Content = 'Выбери игрока для флинга. Отображаются все игроки на сервере.',
     })
 
-    local trollValues = {}
     local trollDropdown = v304:Dropdown({
-        Title = 'ESP Players',
-        Values = {'No ESP players'},
-        Value = 'No ESP players',
+        Title = 'Выбери игрока',
+        Values = {'Нет игроков'},
+        Value = 'Нет игроков',
         AllowNone = true,
         Callback = function(name)
-            if not name or name == 'No ESP players' then
+            if not name or name == 'Нет игроков' then
                 return
             end
             local target = Players:FindFirstChild(name)
             if not target or not target.Character then
+                v18:Notify({
+                    Title = "CandyZone",
+                    Content = "Игрок не найден",
+                    Duration = 2,
+                    Icon = "alert",
+                })
                 return
             end
-            if not target.Character:FindFirstChild('CandyZone_ESP') then
-                return
-            end
-            pcall(u169, target)
+            pcall(function()
+                if u169 then
+                    u169(target)
+                end
+            end)
         end,
     })
 
     local function refreshTrollList()
         local values = {}
         for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
+            if player ~= LocalPlayer then
                 table.insert(values, player.Name)
             end
         end
         table.sort(values)
         if #values == 0 then
-            values = {'No ESP players'}
+            values = {'Нет игроков'}
         end
-        trollValues = values
         pcall(function()
             trollDropdown:SetValues(values)
+            local current = trollDropdown.Value
+            if current and current ~= 'Нет игроков' then
+                local found = false
+                for _, v in ipairs(values) do
+                    if v == current then found = true; break end
+                end
+                if not found then
+                    trollDropdown:SetValue('Нет игроков')
+                end
+            end
         end)
     end
 
     task.spawn(function()
-        while task.wait(0.75) do
+        refreshTrollList()
+        while task.wait(2) do
             pcall(refreshTrollList)
         end
     end)
 
+    -- ============================================================
+    -- MAIN TAB CONTENT (без изменений)
+    -- ============================================================
     v301:Paragraph({
         Title = 'Auto-Loaded Buttons',
         Content = 'Gold Bomb, Normal Bomb and Shoot/Throw are enabled by default.',
@@ -4315,9 +4370,9 @@ v239(true)
 v244(true)
 v18:Notify({
     Title = 'CandyZone',
-    Content = tostring('CandyZone Ready!'),
-    Duration = 3,
+    Content = tostring('CandyZone Ready! \nБинды работают, тролл показывает всех игроков.'),
+    Duration = 4,
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
-print('[CandyZone] Bind/Troll loaded.')
+print('[CandyZone] Bind/Troll fixed.')
