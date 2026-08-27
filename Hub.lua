@@ -3117,7 +3117,6 @@ local function bindAction(title, desc, callback)
     v303:Keybind({
         Title = title,
         Desc = desc,
-        Value = 'NONE',
         Callback = function(key)
             if key == nil or tostring(key):upper() == 'NONE' then
                 return
@@ -3146,52 +3145,6 @@ v303:Paragraph({
     Title = 'No default keys',
     Content = 'Every bind is NONE until you assign it yourself.',
 })
-
-v304:Paragraph({
-    Title = 'ESP Players',
-    Content = 'Only players currently highlighted by ESP are shown below. Click a name to use the same fling routine as Fling Sheriff.',
-})
-
-local trollButtons = {}
-
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
-        local target = player
-        local element = v304:Button({
-            Title = target.Name,
-            Description = target.DisplayName ~= target.Name and ('@' .. target.Name .. '  |  ' .. target.DisplayName) or '@' .. target.Name,
-            Callback = function()
-                if not target.Parent or not target.Character then
-                    v18:Notify({Title = 'CandyZone', Content = 'Player is no longer in the server.', Duration = 2, Icon = 'bell'})
-                    return
-                end
-                if not target.Character:FindFirstChild('CandyZone_ESP') then
-                    v18:Notify({Title = 'CandyZone', Content = 'This player is not currently shown by ESP.', Duration = 2, Icon = 'bell'})
-                    return
-                end
-                local humanoid = target.Character:FindFirstChildOfClass('Humanoid')
-                if not humanoid or humanoid.Health <= 0 then
-                    v18:Notify({Title = 'CandyZone', Content = target.Name .. ' is not alive.', Duration = 2, Icon = 'bell'})
-                    return
-                end
-                if u157 then
-                    v18:Notify({Title = 'CandyZone', Content = 'Fling in progress...', Duration = 2, Icon = 'bell'})
-                    return
-                end
-                v18:Notify({Title = 'CandyZone', Content = 'Flinging: ' .. target.Name, Duration = 3, Icon = 'bell'})
-                task.spawn(u169, target)
-            end,
-        })
-        table.insert(trollButtons, element)
-    end
-end
-
-if #trollButtons == 0 then
-    v304:Paragraph({
-        Title = 'No ESP players',
-        Content = 'Enable ESP for a player first.',
-    })
-end
 
 v301:Divider()
 v301:Paragraph({
@@ -4291,3 +4244,32 @@ v18:Notify({
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
+
+-- Troll: show only players currently marked by the ESP Highlight.
+v304:Paragraph({
+    Title = 'ESP Players',
+    Content = 'Players currently highlighted by ESP are listed here.',
+})
+
+local function addTrollESPButton(player)
+    if player == LocalPlayer then return end
+    local character = player.Character
+    if not character or not character:FindFirstChild('CandyZone_ESP') then return end
+
+    v304:Button({
+        Title = player.Name,
+        Description = player.DisplayName ~= player.Name and ('@' .. player.Name .. '  |  ' .. player.DisplayName) or ('@' .. player.Name),
+        Callback = function()
+            if player.Parent and player.Character and player.Character:FindFirstChild('CandyZone_ESP') then
+                task.spawn(u169, player)
+            else
+                v18:Notify({Title='CandyZone', Content='This player is not currently shown by ESP.', Duration=2, Icon='bell'})
+            end
+        end,
+    })
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    addTrollESPButton(player)
+end
+
