@@ -3784,6 +3784,11 @@ do
     end
 
     do
+        v303:Paragraph({
+            Title = 'Keybinds',
+            Content = 'Кликни на кнопку, затем нажми клавишу. Backspace — сброс, ESC — отмена.',
+        })
+
         local bindKeys = {}
         local waitingForBind = nil
         local bindButtons = {}
@@ -3849,11 +3854,6 @@ do
                 btn:SetTitle(title .. "  [" .. display .. "]")
             end)
         end
-
-        v303:Paragraph({
-            Title = 'Keybinds (8 функций)',
-            Content = 'Кликни на кнопку, затем нажми клавишу. Backspace — сброс, ESC — отмена.',
-        })
 
         for title, action in pairs(bindActions) do
             local btn = v303:Button({
