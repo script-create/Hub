@@ -3841,7 +3841,7 @@ do
         end
 
         v303:Paragraph({
-            Title = 'Keybinds',
+            Title = 'Keybinds (6 функций)',
             Content = 'Кликни на кнопку, затем нажми клавишу. Backspace — сброс, ESC — отмена.',
         })
 
