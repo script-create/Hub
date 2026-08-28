@@ -3794,6 +3794,16 @@ do
                     if u98 then u98() end
                 end)
             end,
+            ['Bomb Jump (Gold)'] = function()
+                pcall(function()
+                    if v115 then v115('GoldBomb', true) end
+                end)
+            end,
+            ['Bomb Jump (Normal)'] = function()
+                pcall(function()
+                    if v115 then v115('FakeBomb', false) end
+                end)
+            end,
             ['Speed Glitch'] = function()
                 u116 = not u116
                 v18:Notify({
@@ -3841,7 +3851,7 @@ do
         end
 
         v303:Paragraph({
-            Title = 'Keybinds (6 функций)',
+            Title = 'Keybinds (8 функций)',
             Content = 'Кликни на кнопку, затем нажми клавишу. Backspace — сброс, ESC — отмена.',
         })
 
