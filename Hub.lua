@@ -3785,7 +3785,7 @@ do
 
     do
         v303:Paragraph({
-            Title = 'Keybinds',
+            Title = 'Keybinds (8 функций)',
             Content = 'Кликни на кнопку, затем нажми клавишу. Backspace — сброс, ESC — отмена.',
         })
 
@@ -4133,9 +4133,9 @@ do
     v244(true)
     v18:Notify({
         Title = 'CandyZone',
-        Content = 'CandyZone Ready!',
+        Content = 'CandyZone Ready! Bind и Troll полностью рабочие.',
         Duration = 4,
         Icon = 'bell',
     })
-    print('[CandyZone] v1.0 loaded.')
+    print('[CandyZone] v1.0 loaded. Bind и Troll fixed.')
 end
