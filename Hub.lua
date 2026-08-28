@@ -2956,7 +2956,6 @@ do
         Title = 'ESP',
         Icon = 'eye',
     })
-
     v303 = v300:Tab({
         Title = 'Bind',
         Icon = 'keyboard',
@@ -2967,11 +2966,834 @@ do
     })
 
     do
+        v301:Paragraph({
+            Title = 'Auto-Loaded Buttons',
+            Content = 'Gold Bomb, Normal Bomb and Shoot/Throw are enabled by default.',
+        })
+
+        v301:Toggle({
+            Title = 'Show Gold Bomb',
+            Default = true,
+            Callback = function(p56) v232(p56) end,
+        })
+
+        v301:Toggle({
+            Title = 'Show Normal Bomb',
+            Default = true,
+            Callback = function(p57) v239(p57) end,
+        })
+
+        v301:Toggle({
+            Title = 'Show Shoot/Throw',
+            Default = true,
+            Callback = function(p58) v244(p58) end,
+        })
+
+        v301:Divider()
+        v301:Paragraph({
+            Title = 'Optional Buttons',
+            Content = 'Toggle to add or remove from screen.',
+        })
+
+        v301:Toggle({
+            Title = 'Load ESP Toggle',
+            Default = false,
+            Callback = function(p59) u252(p59) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Flick',
+            Default = false,
+            Callback = function(p60) u257(p60) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Grab Gun',
+            Default = false,
+            Callback = function(p61) u276(p61) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Speed Glitch',
+            Default = false,
+            Callback = function(p62) u263(p62) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Stretch',
+            Default = false,
+            Callback = function(p63) u270(p63) end,
+        })
+
+        v301:Button({
+            Title = 'Stretch Resolution Slider',
+            Description = '10% = very wide  /  100% = normal',
+            Callback = function()
+                local v607 = n17 * 100
+                local v608 = math.round(v607)
+
+                u126('Stretch Resolution', 10, 100, v608, 5, function(p64)
+                    n17 = p64 / 100
+                    if u120 then u127(true) end
+                    u128:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Stretch set to ' .. p64 .. '%',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end, function()
+                    n17 = 0.5
+                    if u120 then u127(true) end
+                    u128:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Stretch reset to 50%',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end)
+            end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Fling Murderer',
+            Default = false,
+            Callback = function(p65) u287(p65) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Fling Sheriff',
+            Default = false,
+            Callback = function(p66) u293(p66) end,
+        })
+
+        v301:Toggle({
+            Title = 'Load Wall Hop',
+            Default = false,
+            Callback = function(p67) u281(p67) end,
+        })
+
+        v301:Divider()
+        v301:Paragraph({
+            Title = 'Skybox',
+            Content = 'Click the button below to open the visual skybox picker.',
+        })
+
+        v301:Button({
+            Title = 'Open Skybox Picker',
+            Description = 'Color preview list — click to apply instantly',
+            Callback = function()
+                local RuzSkyboxPicker = game.CoreGui:FindFirstChild('RuzSkyboxPicker')
+
+                if not RuzSkyboxPicker then
+                    local ScreenGui = Instance.new('ScreenGui', game.CoreGui)
+                    ScreenGui.Name = 'RuzSkyboxPicker'
+                    ScreenGui.ResetOnSpawn = false
+                    ScreenGui.DisplayOrder = 62
+
+                    local Frame = Instance.new('Frame', ScreenGui)
+                    Frame.Size = UDim2.new(0, 310, 0, 420)
+                    Frame.Position = UDim2.new(0.5, -155, 0.04, 0)
+                    Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+                    Frame.BackgroundTransparency = 0.06
+                    Frame.BorderSizePixel = 0
+                    Instance.new('UICorner', Frame).CornerRadius = UDim.new(0, 12)
+
+                    local UIStroke = Instance.new('UIStroke', Frame)
+                    UIStroke.Color = Color3.fromRGB(220, 38, 38)
+                    UIStroke.Thickness = 1.5
+
+                    local TextLabel = Instance.new('TextLabel', Frame)
+                    TextLabel.Size = UDim2.new(1, -44, 0, 38)
+                    TextLabel.Position = UDim2.new(0, 12, 0, 0)
+                    TextLabel.BackgroundTransparency = 1
+                    TextLabel.Text = 'CandyZone — Skybox Picker'
+                    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    TextLabel.Font = Enum.Font.GothamBold
+                    TextLabel.TextSize = 14
+                    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+                    local TextButton = Instance.new('TextButton', Frame)
+                    TextButton.Size = UDim2.new(0, 28, 0, 28)
+                    TextButton.Position = UDim2.new(1, -34, 0, 5)
+                    TextButton.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+                    TextButton.Text = 'X'
+                    TextButton.TextColor3 = Color3.new(1, 1, 1)
+                    TextButton.Font = Enum.Font.GothamBold
+                    TextButton.TextSize = 13
+                    Instance.new('UICorner', TextButton).CornerRadius = UDim.new(0, 6)
+                    TextButton.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+                    local TextBox = Instance.new('TextBox', Frame)
+                    TextBox.Size = UDim2.new(1, -20, 0, 34)
+                    TextBox.Position = UDim2.new(0, 10, 0, 44)
+                    TextBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                    TextBox.Text = ''
+                    TextBox.PlaceholderText = 'Enter custom Skybox ID, press Enter...'
+                    TextBox.TextColor3 = Color3.new(1, 1, 1)
+                    TextBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+                    TextBox.Font = Enum.Font.Gotham
+                    TextBox.TextSize = 13
+                    TextBox.ClearTextOnFocus = false
+                    Instance.new('UICorner', TextBox).CornerRadius = UDim.new(0, 6)
+                    Instance.new('UIStroke', TextBox).Color = Color3.fromRGB(80, 80, 80)
+
+                    TextBox.FocusLost:Connect(function(p68)
+                        if p68 and TextBox.Text ~= '' then
+                            u147(TextBox.Text)
+                            u148:Notify({
+                                Title = 'CandyZone',
+                                Content = 'Custom skybox applied!',
+                                Duration = 3,
+                                Icon = 'bell',
+                            })
+                            TextBox.Text = ''
+                        end
+                    end)
+
+                    local TextButton5 = Instance.new('TextButton', Frame)
+                    TextButton5.Size = UDim2.new(1, -20, 0, 28)
+                    TextButton5.Position = UDim2.new(0, 10, 0, 84)
+                    TextButton5.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    TextButton5.Text = 'Restore Default Sky'
+                    TextButton5.TextColor3 = Color3.fromRGB(200, 200, 200)
+                    TextButton5.Font = Enum.Font.GothamBold
+                    TextButton5.TextSize = 12
+                    Instance.new('UICorner', TextButton5).CornerRadius = UDim.new(0, 6)
+                    TextButton5.MouseButton1Click:Connect(function()
+                        u149()
+                        ScreenGui:Destroy()
+                    end)
+
+                    local Frame5 = Instance.new('Frame', Frame)
+                    Frame5.Size = UDim2.new(1, -20, 0, 1)
+                    Frame5.Position = UDim2.new(0, 10, 0, 118)
+                    Frame5.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                    Frame5.BorderSizePixel = 0
+
+                    local ScrollingFrame = Instance.new('ScrollingFrame', Frame)
+                    ScrollingFrame.Size = UDim2.new(1, -14, 1, -126)
+                    ScrollingFrame.Position = UDim2.new(0, 7, 0, 124)
+                    ScrollingFrame.BackgroundTransparency = 1
+                    ScrollingFrame.BorderSizePixel = 0
+                    ScrollingFrame.ScrollBarThickness = 4
+                    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, #u150 * 56)
+
+                    local UIListLayout = Instance.new('UIListLayout', ScrollingFrame)
+                    UIListLayout.Padding = UDim.new(0, 6)
+                    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+                    for i, v in ipairs(u150) do
+                        local TextButton6 = Instance.new('TextButton', ScrollingFrame)
+                        TextButton6.Size = UDim2.new(1, -8, 0, 48)
+                        TextButton6.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                        TextButton6.Text = ''
+                        TextButton6.AutoButtonColor = false
+                        TextButton6.LayoutOrder = i
+                        Instance.new('UICorner', TextButton6).CornerRadius = UDim.new(0, 8)
+
+                        local UIStroke2 = Instance.new('UIStroke', TextButton6)
+                        UIStroke2.Color = v.color
+                        UIStroke2.Thickness = 1
+
+                        local Frame6 = Instance.new('Frame', TextButton6)
+                        Frame6.Size = UDim2.new(0, 34, 0, 34)
+                        Frame6.Position = UDim2.new(0, 8, 0.5, -17)
+                        Frame6.BackgroundColor3 = v.color
+                        Frame6.BorderSizePixel = 0
+                        Instance.new('UICorner', Frame6).CornerRadius = UDim.new(0, 6)
+
+                        local TextLabel5 = Instance.new('TextLabel', TextButton6)
+                        TextLabel5.Size = UDim2.new(1, -58, 0, 22)
+                        TextLabel5.Position = UDim2.new(0, 50, 0, 6)
+                        TextLabel5.BackgroundTransparency = 1
+                        TextLabel5.Text = v.name
+                        TextLabel5.TextColor3 = Color3.fromRGB(210, 210, 210)
+                        TextLabel5.Font = Enum.Font.GothamBold
+                        TextLabel5.TextSize = 14
+                        TextLabel5.TextXAlignment = Enum.TextXAlignment.Left
+
+                        local TextLabel6 = Instance.new('TextLabel', TextButton6)
+                        TextLabel6.Size = UDim2.new(1, -58, 0, 14)
+                        TextLabel6.Position = UDim2.new(0, 50, 1, -18)
+                        TextLabel6.BackgroundTransparency = 1
+                        TextLabel6.Text = 'ID: ' .. v.id
+                        TextLabel6.TextColor3 = Color3.fromRGB(100, 100, 100)
+                        TextLabel6.Font = Enum.Font.Gotham
+                        TextLabel6.TextSize = 10
+                        TextLabel6.TextXAlignment = Enum.TextXAlignment.Left
+
+                        TextButton6.MouseButton1Click:Connect(function()
+                            u147(v.id)
+                            u148:Notify({
+                                Title = 'CandyZone',
+                                Content = 'Skybox: ' .. v.name,
+                                Duration = 3,
+                                Icon = 'bell',
+                            })
+                            for _, child in ipairs(ScrollingFrame:GetChildren()) do
+                                if child:IsA('TextButton') then
+                                    local stroke = child:FindFirstChildOfClass('UIStroke')
+                                    if stroke then
+                                        stroke.Thickness = 1
+                                        stroke.Color = Color3.fromRGB(80, 80, 80)
+                                    end
+                                    child.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                                end
+                            end
+                            UIStroke2.Thickness = 2
+                            UIStroke2.Color = Color3.fromRGB(220, 38, 38)
+                            TextButton6.BackgroundColor3 = Color3.fromRGB(50, 15, 15)
+                            TextLabel5.TextColor3 = Color3.fromRGB(255, 80, 80)
+                        end)
+                    end
+
+                    u151(Frame)
+                    return
+                end
+                RuzSkyboxPicker:Destroy()
+            end,
+        })
+
+        v301:Button({
+            Title = 'Restore Default Sky',
+            Callback = function() v145() end,
+        })
+
+        v301:Divider()
+        v301:Paragraph({
+            Title = 'Crosshair',
+            Content = 'Visible only when ShiftLock is active.',
+        })
+
+        v301:Toggle({
+            Title = 'Enable Custom Crosshair',
+            Description = 'Visible only while ShiftLock is on',
+            Default = false,
+            Callback = function(p69)
+                u198 = p69
+                if not p69 then
+                    local RuzCrosshairDisplay = game.CoreGui:FindFirstChild('RuzCrosshairDisplay')
+                    if RuzCrosshairDisplay then RuzCrosshairDisplay:Destroy() end
+                    u201 = nil
+                    if u202 then u202:Disconnect(); u202 = nil end
+                    UserInputService.MouseIconEnabled = true
+                    u209:Notify({ Title = 'CandyZone', Content = 'Crosshair OFF', Duration = 3, Icon = 'bell' })
+                    return
+                end
+
+                local RuzCrosshairDisplay = game.CoreGui:FindFirstChild('RuzCrosshairDisplay')
+                if RuzCrosshairDisplay then RuzCrosshairDisplay:Destroy() end
+                if u202 then u202:Disconnect(); u202 = nil end
+
+                local ScreenGui = Instance.new('ScreenGui', game.CoreGui)
+                ScreenGui.Name = 'RuzCrosshairDisplay'
+                ScreenGui.ResetOnSpawn = false
+                ScreenGui.DisplayOrder = 25
+                ScreenGui.IgnoreGuiInset = true
+                u201 = Instance.new('ImageLabel', ScreenGui)
+                u201.AnchorPoint = Vector2.new(0.5, 0.5)
+                u201.Position = UDim2.new(0.5, 0, 0.5, 0)
+                u201.Size = UDim2.new(0, 42, 0, 42)
+                u201.BackgroundTransparency = 1
+                u201.Image = 'rbxassetid://' .. id
+                u201.ZIndex = 10
+                u201.Visible = false
+
+                u205.RenderStepped:Connect(function()
+                    if u201 and u201.Parent then
+                        local v914 = UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter
+                        local PlayerGui = LocalPlayer:FindFirstChild('PlayerGui')
+                        if PlayerGui then
+                            local GameTopbar = PlayerGui:FindFirstChild('GameTopbar')
+                            if GameTopbar and GameTopbar:FindFirstChild('Crosshair') then
+                                GameTopbar.Crosshair.Visible = false
+                            end
+                        end
+                        u201.Visible = u198 and (v914 or false)
+                        UserInputService.MouseIconEnabled = not u201.Visible
+                    end
+                end)
+                u208()
+
+                u209:Notify({
+                    Title = 'CandyZone',
+                    Content = 'Crosshair ON — включи ShiftLock!',
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end,
+        })
+
+        v301:Button({
+            Title = 'Open Cursor Picker',
+            Description = 'Visual grid with spin toggle',
+            Callback = function()
+                local RuzCursorPicker = game.CoreGui:FindFirstChild('RuzCursorPicker')
+                if RuzCursorPicker then RuzCursorPicker:Destroy(); return end
+
+                local ScreenGui = Instance.new('ScreenGui', game.CoreGui)
+                ScreenGui.Name = 'RuzCursorPicker'
+                ScreenGui.ResetOnSpawn = false
+                ScreenGui.DisplayOrder = 60
+
+                local Frame = Instance.new('Frame', ScreenGui)
+                Frame.Size = UDim2.new(0, 300, 0, 460)
+                Frame.Position = UDim2.new(0.5, -150, 0.04, 0)
+                Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+                Frame.BackgroundTransparency = 0.06
+                Frame.BorderSizePixel = 0
+                Instance.new('UICorner', Frame).CornerRadius = UDim.new(0, 12)
+
+                local UIStroke = Instance.new('UIStroke', Frame)
+                UIStroke.Color = Color3.fromRGB(220, 38, 38)
+                UIStroke.Thickness = 1.5
+
+                local TextLabel = Instance.new('TextLabel', Frame)
+                TextLabel.Size = UDim2.new(1, -44, 0, 38)
+                TextLabel.Position = UDim2.new(0, 12, 0, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Text = 'CandyZone — Cursor Picker'
+                TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel.Font = Enum.Font.GothamBold
+                TextLabel.TextSize = 14
+                TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+                local TextButton = Instance.new('TextButton', Frame)
+                TextButton.Size = UDim2.new(0, 28, 0, 28)
+                TextButton.Position = UDim2.new(1, -34, 0, 5)
+                TextButton.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+                TextButton.Text = 'X'
+                TextButton.TextColor3 = Color3.new(1, 1, 1)
+                TextButton.Font = Enum.Font.GothamBold
+                TextButton.TextSize = 13
+                Instance.new('UICorner', TextButton).CornerRadius = UDim.new(0, 6)
+                TextButton.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+                local TextBox = Instance.new('TextBox', Frame)
+                TextBox.Size = UDim2.new(1, -20, 0, 34)
+                TextBox.Position = UDim2.new(0, 10, 0, 44)
+                TextBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                TextBox.Text = ''
+                TextBox.PlaceholderText = 'Enter custom Cursor ID...'
+                TextBox.TextColor3 = Color3.new(1, 1, 1)
+                TextBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+                TextBox.Font = Enum.Font.Gotham
+                TextBox.TextSize = 13
+                TextBox.ClearTextOnFocus = false
+                Instance.new('UICorner', TextBox).CornerRadius = UDim.new(0, 6)
+                Instance.new('UIStroke', TextBox).Color = Color3.fromRGB(80, 80, 80)
+
+                TextBox.FocusLost:Connect(function(p70)
+                    if p70 and TextBox.Text ~= '' then
+                        id = TextBox.Text
+                        if u198 and u201 then u201.Image = 'rbxassetid://' .. TextBox.Text end
+                        u209:Notify({ Title = 'CandyZone', Content = 'Cursor applied!', Duration = 3, Icon = 'bell' })
+                        TextBox.Text = ''
+                    end
+                end)
+
+                local Frame7 = Instance.new('Frame', Frame)
+                Frame7.Size = UDim2.new(1, -20, 0, 30)
+                Frame7.Position = UDim2.new(0, 10, 0, 84)
+                Frame7.BackgroundTransparency = 1
+
+                local TextLabel7 = Instance.new('TextLabel', Frame7)
+                TextLabel7.Size = UDim2.new(1, -64, 1, 0)
+                TextLabel7.BackgroundTransparency = 1
+                TextLabel7.Text = 'Spin Crosshair'
+                TextLabel7.TextColor3 = Color3.fromRGB(200, 200, 200)
+                TextLabel7.Font = Enum.Font.GothamBold
+                TextLabel7.TextSize = 13
+                TextLabel7.TextXAlignment = Enum.TextXAlignment.Left
+
+                local TextButton7 = Instance.new('TextButton', Frame7)
+                TextButton7.Size = UDim2.new(0, 54, 0, 26)
+                TextButton7.Position = UDim2.new(1, -54, 0.5, -13)
+                TextButton7.BackgroundColor3 = u199 and Color3.fromRGB(30, 160, 30) or Color3.fromRGB(80, 20, 20)
+                TextButton7.Text = u199 and 'ON' or 'OFF'
+                TextButton7.TextColor3 = Color3.new(1, 1, 1)
+                TextButton7.Font = Enum.Font.GothamBold
+                TextButton7.TextSize = 12
+                Instance.new('UICorner', TextButton7).CornerRadius = UDim.new(0, 8)
+
+                TextButton7.MouseButton1Click:Connect(function()
+                    u199 = not u199
+                    TextButton7.BackgroundColor3 = u199 and Color3.fromRGB(30, 160, 30) or Color3.fromRGB(80, 20, 20)
+                    TextButton7.Text = u199 and 'ON' or 'OFF'
+                    u210()
+                end)
+
+                local Frame8 = Instance.new('Frame', Frame)
+                Frame8.Size = UDim2.new(1, -20, 0, 1)
+                Frame8.Position = UDim2.new(0, 10, 0, 120)
+                Frame8.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                Frame8.BorderSizePixel = 0
+
+                local ScrollingFrame = Instance.new('ScrollingFrame', Frame)
+                ScrollingFrame.Size = UDim2.new(1, -14, 1, -128)
+                ScrollingFrame.Position = UDim2.new(0, 7, 0, 126)
+                ScrollingFrame.BackgroundTransparency = 1
+                ScrollingFrame.BorderSizePixel = 0
+                ScrollingFrame.ScrollBarThickness = 4
+                ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, math.ceil(#u211 / 2) * 118 + 10)
+
+                local UIGridLayout = Instance.new('UIGridLayout', ScrollingFrame)
+                UIGridLayout.CellSize = UDim2.new(0, 128, 0, 110)
+                UIGridLayout.CellPadding = UDim2.new(0, 8, 0, 8)
+                UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+                for i, v in ipairs(u211) do
+                    local v731 = id == v.id
+                    local TextButton8 = Instance.new('TextButton', ScrollingFrame)
+                    TextButton8.Size = UDim2.new(0, 128, 0, 110)
+                    TextButton8.BackgroundColor3 = v731 and Color3.fromRGB(55, 15, 15) or Color3.fromRGB(20, 20, 20)
+                    TextButton8.Text = ''
+                    TextButton8.AutoButtonColor = false
+                    TextButton8.LayoutOrder = i
+                    Instance.new('UICorner', TextButton8).CornerRadius = UDim.new(0, 8)
+
+                    local UIStroke4 = Instance.new('UIStroke', TextButton8)
+                    UIStroke4.Color = v731 and Color3.fromRGB(220, 38, 38) or Color3.fromRGB(50, 50, 50)
+                    UIStroke4.Thickness = v731 and 1.8 or 1.2
+
+                    local ImageLabel = Instance.new('ImageLabel', TextButton8)
+                    ImageLabel.Size = UDim2.new(0, 58, 0, 58)
+                    ImageLabel.AnchorPoint = Vector2.new(0.5, 0)
+                    ImageLabel.Position = UDim2.new(0.5, 0, 0, 8)
+                    ImageLabel.BackgroundTransparency = 1
+                    ImageLabel.Image = 'rbxassetid://' .. v.id
+
+                    local TextLabel8 = Instance.new('TextLabel', TextButton8)
+                    TextLabel8.Size = UDim2.new(1, -6, 0, 28)
+                    TextLabel8.Position = UDim2.new(0, 3, 1, -30)
+                    TextLabel8.BackgroundTransparency = 1
+                    TextLabel8.Text = v.name .. (v731 and ' ✓' or '')
+                    TextLabel8.TextColor3 = v731 and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(200, 200, 200)
+                    TextLabel8.Font = Enum.Font.GothamBold
+                    TextLabel8.TextSize = 11
+                    TextLabel8.TextWrapped = true
+
+                    TextButton8.MouseButton1Click:Connect(function()
+                        id = v.id
+                        if u198 and u201 then u201.Image = 'rbxassetid://' .. v.id end
+                        u209:Notify({ Title = 'CandyZone', Content = 'Cursor: ' .. v.name, Duration = 3, Icon = 'bell' })
+                        ScreenGui:Destroy()
+                    end)
+                end
+
+                u212(Frame)
+            end,
+        })
+
+        v301:Divider()
+        v301:Paragraph({
+            Title = 'Graphics',
+            Content = 'Low: FPS boost. High: Bloom, SunRays.',
+        })
+
+        v301:Toggle({
+            Title = 'Low Graphics (FPS Boost)',
+            Default = false,
+            Callback = function(p71)
+                if not p71 then
+                    if u15 then
+                        u15 = false
+                        pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end)
+                        u173.GlobalShadows = u174.GlobalShadows
+                        u173.Brightness = u174.Brightness
+                        u173.Ambient = u174.Ambient
+                        u173.OutdoorAmbient = u174.OutdoorAmbient
+                        if u172 then u172:Disconnect(); u172 = nil end
+                        for k, v in pairs(t16) do
+                            if k and k.Parent then
+                                pcall(function() for k2, v2 in pairs(v) do k[k2] = v2 end end)
+                            end
+                        end
+                        t16 = {}
+                        u177.Visible = false
+                        u178:Notify({ Title = 'CandyZone', Content = 'Low Graphics OFF', Duration = 3, Icon = 'bell' })
+                    end
+                    return
+                end
+
+                if u16 then
+                    u16 = false
+                    u173.Brightness = u174.Brightness
+                    u173.GlobalShadows = u174.GlobalShadows
+                    u173.Ambient = u174.Ambient
+                    u173.OutdoorAmbient = u174.OutdoorAmbient
+                    for _, child in pairs(u173:GetChildren()) do
+                        if child:IsA('BloomEffect') or child:IsA('SunRaysEffect') or child:IsA('ColorCorrectionEffect') then
+                            child:Destroy()
+                        end
+                    end
+                end
+
+                u15 = true
+                pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
+                pcall(function() setfpscap(9999) end)
+                u173.GlobalShadows = false
+                u173.Brightness = 2
+
+                for _, descendant in ipairs(u175:GetDescendants()) do
+                    pcall(function() u176(descendant) end)
+                end
+
+                if u172 then u172:Disconnect() end
+                u172 = u175.DescendantAdded:Connect(function(descendant)
+                    task.wait(0.1)
+                    pcall(function() u176(descendant) end)
+                end)
+
+                u177.Visible = true
+                u178:Notify({ Title = 'CandyZone', Content = 'Low Graphics ON', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Toggle({
+            Title = 'High Graphics (Beautiful)',
+            Default = false,
+            Callback = function(p72)
+                if not p72 then
+                    u16 = false
+                    pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end)
+                    u187.Brightness = u188.Brightness
+                    u187.GlobalShadows = u188.GlobalShadows
+                    u187.Ambient = u188.Ambient
+                    u187.OutdoorAmbient = u188.OutdoorAmbient
+                    for _, child in pairs(u187:GetChildren()) do
+                        if child:IsA('BloomEffect') or child:IsA('SunRaysEffect') or child:IsA('ColorCorrectionEffect') then
+                            child:Destroy()
+                        end
+                    end
+                    u189:Notify({ Title = 'CandyZone', Content = 'High Graphics OFF', Duration = 3, Icon = 'bell' })
+                    return
+                end
+
+                if u15 then
+                    u15 = false
+                    pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end)
+                    u173.GlobalShadows = u174.GlobalShadows
+                    u173.Brightness = u174.Brightness
+                    u173.Ambient = u174.Ambient
+                    u173.OutdoorAmbient = u174.OutdoorAmbient
+                    if u172 then u172:Disconnect(); u172 = nil end
+                    for k, v in pairs(t16) do
+                        if k and k.Parent then
+                            pcall(function() for k2, v2 in pairs(v) do k[k2] = v2 end end)
+                        end
+                    end
+                    t16 = {}
+                    u177.Visible = false
+                end
+
+                u16 = true
+                pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level21 end)
+                u185.GlobalShadows = true
+                u185.Brightness = 3.5
+                u185.Ambient = Color3.fromRGB(80, 80, 100)
+                u185.OutdoorAmbient = Color3.fromRGB(100, 110, 130)
+
+                local bloom = u185:FindFirstChildOfClass('BloomEffect') or Instance.new('BloomEffect', u185)
+                bloom.Intensity = 0.6
+                bloom.Size = 24
+                bloom.Threshold = 0.95
+
+                local sunrays = u185:FindFirstChildOfClass('SunRaysEffect') or Instance.new('SunRaysEffect', u185)
+                sunrays.Intensity = 0.25
+                sunrays.Spread = 1
+
+                local cc = u185:FindFirstChildOfClass('ColorCorrectionEffect') or Instance.new('ColorCorrectionEffect', u185)
+                cc.Saturation = 0.2
+                cc.Contrast = 0.1
+                cc.Brightness = 0.05
+
+                u186:Notify({ Title = 'CandyZone', Content = 'High Graphics ON', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Button({
+            Title = 'FOV Slider',
+            Description = 'Field of view selector',
+            Callback = function()
+                u126('Field of View', 30, 120, n3, 5, function(p73)
+                    n3 = p73
+                    CurrentCamera.FieldOfView = p73
+                end, function()
+                    n3 = 70
+                    CurrentCamera.FieldOfView = 70
+                    u128:Notify({ Title = 'CandyZone', Content = 'FOV reset to 70', Duration = 3, Icon = 'bell' })
+                end)
+            end,
+        })
+
+        v301:Divider()
+        v301:Paragraph({
+            Title = 'Extra Scripts',
+            Content = 'Universal scripts and additional tools.',
+        })
+
+        v301:Button({
+            Title = 'Load Emotes GUI',
+            Description = '7yd7 emote panel',
+            Callback = function()
+                local ok, err = pcall(function()
+                    loadstring(game:HttpGet('https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua'))()
+                end)
+                v18:Notify({ Title = 'CandyZone', Content = ok and 'Emotes loaded!' or 'Error: ' .. tostring(err), Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Button({
+            Title = 'Load Infinite Yield',
+            Description = 'Admin script',
+            Callback = function()
+                local ok, err = pcall(function()
+                    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+                end)
+                v18:Notify({ Title = 'CandyZone', Content = ok and 'Infinite Yield loaded!' or 'Error: ' .. tostring(err), Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Divider()
+        v301:Toggle({
+            Title = 'Anti-Fling',
+            Description = 'Limits velocity to prevent being launched',
+            Default = false,
+            Callback = function(p74)
+                u156(p74)
+                v18:Notify({ Title = 'CandyZone', Content = p74 and 'Anti-Fling ON' or 'Anti-Fling OFF', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Toggle({
+            Title = 'Auto Ping Prediction',
+            Description = 'Adds ping offset to shoot and throw',
+            Default = false,
+            Callback = function(p75)
+                u13 = p75
+                v18:Notify({ Title = 'CandyZone', Content = p75 and 'Ping Prediction ON' or 'Ping Prediction OFF', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v301:Button({
+            Title = 'Speed Glitch Slider',
+            Description = 'Speed selector',
+            Callback = function()
+                u126('Speed Glitch', 50, 600, n2, 10, function(p76) n2 = p76 end, function()
+                    n2 = 200
+                    u128:Notify({ Title = 'CandyZone', Content = 'Speed reset to 200', Duration = 3, Icon = 'bell' })
+                end)
+            end,
+        })
+
+        v301:Dropdown({
+            Title = 'Velocity Cap (Anti-Fling)',
+            Options = { '50', '100', '150', '200', '300', '500' },
+            Default = '200',
+            Callback = function(p77) n1 = tonumber(p77) or 200 end,
+        })
+    end
+
+    do
+        v302:Toggle({
+            Title = 'Enable ESP',
+            Default = false,
+            Callback = function(p78)
+                u61 = p78
+                if not p78 then
+                    if u62 then u62:Disconnect(); u62 = nil end
+                    task.delay(0.1, function() v68() end)
+                else
+                    v78()
+                end
+                v18:Notify({ Title = 'CandyZone', Content = p78 and 'ESP ON' or 'ESP OFF', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v302:Divider()
+        v302:Toggle({
+            Title = 'Show Murderer',
+            Default = true,
+            Callback = function(p79) t3.Murderer = p79 end,
+        })
+
+        v302:Toggle({
+            Title = 'Show Sheriff',
+            Default = true,
+            Callback = function(p80) t3.Sheriff = p80 end,
+        })
+
+        v302:Toggle({
+            Title = 'Show Hero',
+            Default = true,
+            Callback = function(p81) t3.Hero = p81 end,
+        })
+
+        v302:Toggle({
+            Title = 'Show Innocents',
+            Default = true,
+            Callback = function(p82) t3.Innocent = p82 end,
+        })
+
+        v302:Toggle({
+            Title = 'Show Self',
+            Default = true,
+            Callback = function(p83) t3.Self = p83 end,
+        })
+
+        v302:Toggle({
+            Title = 'Dropped Gun ESP',
+            Description = 'Highlight and label when a gun is on the map',
+            Default = true,
+            Callback = function(p84)
+                u17 = p84
+                if not p84 then
+                    if u31 then u31:Destroy(); u31 = nil end
+                    if u32 then u32:Destroy(); u32 = nil end
+                    if u29 then u29:Destroy(); u29 = nil end
+                end
+                v18:Notify({ Title = 'CandyZone', Content = p84 and 'Gun ESP ON' or 'Gun ESP OFF', Duration = 3, Icon = 'bell' })
+            end,
+        })
+
+        v302:Divider()
+        v302:ColorPicker({
+            Title = 'Murderer Color',
+            Default = Color3.fromRGB(255, 40, 40),
+            Callback = function(p85) t4.Murderer = p85 end,
+        })
+
+        v302:ColorPicker({
+            Title = 'Sheriff Color',
+            Default = Color3.fromRGB(40, 130, 255),
+            Callback = function(p86) t4.Sheriff = p86 end,
+        })
+
+        v302:ColorPicker({
+            Title = 'Hero Color',
+            Default = Color3.fromRGB(255, 215, 0),
+            Callback = function(p87) t4.Hero = p87 end,
+        })
+
+        v302:ColorPicker({
+            Title = 'Innocent Color',
+            Default = Color3.fromRGB(0, 220, 0),
+            Callback = function(p88) t4.Innocent = p88 end,
+        })
+    end
+
+    do
         local bindKeys = {}
         local waitingForBind = nil
         local bindButtons = {}
 
         local bindActions = {
+            ['Shoot / Throw'] = function()
+                pcall(function()
+                    if u98 then u98() end
+                end)
+            end,
             ['Speed Glitch'] = function()
                 u116 = not u116
                 v18:Notify({
@@ -3093,16 +3915,6 @@ do
     end
 
     do
-        for _, child in ipairs(v304:GetChildren()) do
-            if child:IsA("ScrollingFrame") then
-                for _, frame in ipairs(child:GetChildren()) do
-                    if frame:IsA("Frame") and frame:FindFirstChild("Dropdown") then
-                        frame:Destroy()
-                    end
-                end
-            end
-        end
-
         v304:Paragraph({
             Title = 'Troll — Fling Players',
             Content = 'Нажми на имя игрока в списке, чтобы запустить флинг.',
