@@ -2976,66 +2976,287 @@ do
     -- * actions below are UI/local utility actions only
 
     local bindEntries = {
-        {
-            Name = 'Low Graphics',
-            Key = nil,
-            Run = function()
-                pcall(function()
-                    if not getgenv().CandyZoneLowGraphics then
-                        getgenv().CandyZoneLowGraphics = true
-                        pcall(u319)
-                    else
-                        getgenv().CandyZoneLowGraphics = false
-                        pcall(u320)
+    {
+        Name = 'Low Graphics',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                if not u15 then
+                    u316()
+                else
+                    u317()
+                end
+            end)
+        end,
+    },
+    {
+        Name = 'High Graphics',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u16 = not u16
+                if u16 then
+                    u319()
+                else
+                    u320()
+                end
+            end)
+        end,
+    },
+    {
+        Name = 'ESP',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u61 = not u61
+                if u61 then
+                    u78()
+                else
+                    if u62 then
+                        u62:Disconnect()
+                        u62 = nil
                     end
-                end)
-            end,
-        },
-        {
-            Name = 'High Graphics',
-            Key = nil,
-            Run = function()
-                pcall(function()
-                    if not getgenv().CandyZoneHighGraphics then
-                        getgenv().CandyZoneHighGraphics = true
-                        pcall(u319)
-                    else
-                        getgenv().CandyZoneHighGraphics = false
-                        pcall(u320)
+                    task.delay(0.1, u68)
+                end
+                local txt = u61 and 'ESP ON' or 'ESP OFF'
+                u251:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Gun ESP',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u17 = not u17
+                if not u17 then
+                    if u31 then
+                        u31:Destroy()
+                        u31 = nil
                     end
-                end)
-            end,
-        },
-        {
-            Name = 'Crosshair Spin',
-            Key = nil,
-            Run = function()
-                pcall(function()
-                    u199 = not u199
-                    pcall(u208)
-                end)
-            end,
-        },
-        {
-            Name = 'Anti-Fling',
-            Key = nil,
-            Run = function()
-                pcall(function()
-                    u152 = not u152
-                    pcall(u156, u152)
-                end)
-            end,
-        },
-        {
-            Name = 'Auto Ping Prediction',
-            Key = nil,
-            Run = function()
+                    if u32 then
+                        u32:Destroy()
+                        u32 = nil
+                    end
+                    if u29 then
+                        u29:Destroy()
+                        u29 = nil
+                    end
+                end
+                local txt = u17 and 'Gun ESP ON' or 'Gun ESP OFF'
+                u351:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Speed Glitch',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u116 = not u116
+                local txt = u116 and 'Speed Glitch ON' or 'Speed Glitch OFF'
+                u262:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Stretch',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u120 = not u120
+                u127(u120)
+                local txt = u120 and 'Stretch ON' or 'Stretch OFF'
+                u269:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Anti-Fling',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u152 = not u152
+                u156(u152)
+                local txt = u152 and 'Anti-Fling ON' or 'Anti-Fling OFF'
+                u330:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Auto Ping Prediction',
+        Key = nil,
+        Run = function()
+            pcall(function()
                 u13 = not u13
-            end,
-        },
-    }
+                local txt = u13 and 'Ping Prediction ON' or 'Ping Prediction OFF'
+                u332:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
+        Name = 'Crosshair',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u198 = not u198
+                if not u198 then
+                    local RuzCrosshairDisplay = game.CoreGui:FindFirstChild('RuzCrosshairDisplay')
+                    if RuzCrosshairDisplay then
+                        RuzCrosshairDisplay:Destroy()
+                        u201 = nil
+                    end
+                    if u202 then
+                        u202:Disconnect()
+                        u202 = nil
+                    end
+                    u314.MouseIconEnabled = true
+                    u313:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Crosshair OFF',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                else
+                    u312()
+                    u313:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Crosshair ON — enable ShiftLock to see it!',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end
+            end)
+        end,
+    },
+    {
+        Name = 'Crosshair Spin',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u199 = not u199
+                u208()
+            end)
+        end,
+    },
+    {
+        Name = 'Flick',
+        Key = nil,
+        Run = function()
+            pcall(u104)
+        end,
+    },
+    {
+        Name = 'Wall Hop',
+        Key = nil,
+        Run = function()
+            pcall(u110)
+        end,
+    },
+    {
+        Name = 'Shoot / Throw',
+        Key = nil,
+        Run = function()
+            pcall(u98)
+        end,
+    },
+    {
+        Name = 'Grab Gun',
+        Key = nil,
+        Run = function()
+            pcall(u275)
+        end,
+    },
+    {
+        Name = 'Gold Bomb',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                if not u9 then
+                    u115('GoldBomb', true)
+                else
+                    u237:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Gold Bomb on cooldown.',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end
+            end)
+        end,
+    },
+    {
+        Name = 'Normal Bomb',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                if not u10 then
+                    u115('FakeBomb', false)
+                else
+                    u237:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Normal Bomb on cooldown.',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end
+            end)
+        end,
+    },
+    {
+        Name = 'Fling Murderer',
+        Key = nil,
+        Run = function()
+            pcall(u286)
+        end,
+    },
+    {
+        Name = 'Fling Sheriff',
+        Key = nil,
+        Run = function()
+            pcall(u292)
+        end,
+    },
+    {
+        Name = 'Restore Sky',
+        Key = nil,
+        Run = function()
+            pcall(u149)
+        end,
+    },
+}
 
-    local bindWaitingIndex = nil
+local bindWaitingIndex = nil
     local bindButtons = {}
 
     local function bindKeyName(keyCode)
