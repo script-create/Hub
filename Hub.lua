@@ -2966,61 +2966,195 @@ do
         Icon = 'swords',
     })
 
-    -- Safe bind system: every bind starts unassigned.
-    -- Click the keybind field and press a key to assign/change it.
-    local bindActions = {
-        ['Speed Glitch'] = function()
-            u116 = not u116
-        end,
+    -- Bind system:
+    -- * all binds start as NONE
+    -- * one independent bind per row
+    -- * clicking a row enters key-selection mode
+    -- * pressing Backspace/Delete clears the selected bind
+    -- * pressing Escape cancels key-selection mode
+    -- * duplicate keys are prevented: assigning a key moves the old row back to NONE
+    -- * actions below are UI/local utility actions only
 
-        ['Stretch'] = function()
-            u120 = not u120
-            pcall(u127, u120)
-        end,
-
-        ['Wall Hop'] = function()
-            pcall(u110)
-        end,
+    local bindEntries = {
+        {
+            Name = 'Low Graphics',
+            Key = nil,
+            Run = function()
+                pcall(function()
+                    if not getgenv().CandyZoneLowGraphics then
+                        getgenv().CandyZoneLowGraphics = true
+                        pcall(u319)
+                    else
+                        getgenv().CandyZoneLowGraphics = false
+                        pcall(u320)
+                    end
+                end)
+            end,
+        },
+        {
+            Name = 'High Graphics',
+            Key = nil,
+            Run = function()
+                pcall(function()
+                    if not getgenv().CandyZoneHighGraphics then
+                        getgenv().CandyZoneHighGraphics = true
+                        pcall(u319)
+                    else
+                        getgenv().CandyZoneHighGraphics = false
+                        pcall(u320)
+                    end
+                end)
+            end,
+        },
+        {
+            Name = 'Crosshair Spin',
+            Key = nil,
+            Run = function()
+                pcall(function()
+                    u199 = not u199
+                    pcall(u208)
+                end)
+            end,
+        },
+        {
+            Name = 'Anti-Fling',
+            Key = nil,
+            Run = function()
+                pcall(function()
+                    u152 = not u152
+                    pcall(u156, u152)
+                end)
+            end,
+        },
+        {
+            Name = 'Auto Ping Prediction',
+            Key = nil,
+            Run = function()
+                u13 = not u13
+            end,
+        },
     }
+
+    local bindWaitingIndex = nil
+    local bindButtons = {}
+
+    local function bindKeyName(keyCode)
+        if not keyCode or keyCode == Enum.KeyCode.Unknown then
+            return 'NONE'
+        end
+        return keyCode.Name
+    end
+
+    local function updateBindButton(index)
+        local entry = bindEntries[index]
+        local button = bindButtons[index]
+        if not entry or not button then
+            return
+        end
+
+        pcall(function()
+            button:SetTitle(entry.Name .. '  [' .. bindKeyName(entry.Key) .. ']')
+        end)
+    end
+
+    local function clearBind(index)
+        if bindEntries[index] then
+            bindEntries[index].Key = nil
+            updateBindButton(index)
+        end
+    end
+
+    local function assignBind(index, keyCode)
+        if not bindEntries[index] or not keyCode then
+            return
+        end
+
+        -- Do not allow one key to activate multiple rows.
+        for i, entry in ipairs(bindEntries) do
+            if i ~= index and entry.Key == keyCode then
+                entry.Key = nil
+                updateBindButton(i)
+            end
+        end
+
+        bindEntries[index].Key = keyCode
+        updateBindButton(index)
+    end
 
     v303:Paragraph({
         Title = 'Keybinds',
-        Content = 'Each bind is separate. Click NONE and press a key. No keys are assigned by default.',
+        Content = 'Click a row, then press a key. Each row has its own bind and starts at NONE. Backspace/Delete clears it.',
     })
 
-    local bindElements = {}
+    for index, entry in ipairs(bindEntries) do
+        local button
+        button = v303:Button({
+            Title = entry.Name .. '  [NONE]',
+            Description = 'Click to choose a key',
+            Callback = function()
+                bindWaitingIndex = index
 
-    for title, action in pairs(bindActions) do
-        bindElements[title] = v303:Keybind({
-            Title = title,
-            Desc = 'Press a key to bind',
-            Value = nil,
-            AllowNone = true,
-            Callback = function(key)
-                if typeof(key) == 'EnumItem' then
-                    print('[CandyZone] Bind:', title, key.Name)
-                    task.spawn(function()
-                        pcall(action)
-                    end)
-                elseif key == nil then
-                    print('[CandyZone] Bind cleared:', title)
+                pcall(function()
+                    button:SetTitle(entry.Name .. '  [PRESS KEY]')
+                end)
+
+                if v18 and v18.Notify then
+                    v18:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Press a key for ' .. entry.Name .. ' (Esc = cancel)',
+                        Duration = 2,
+                        Icon = 'keyboard',
+                    })
                 end
             end,
         })
+
+        bindButtons[index] = button
     end
 
-    v303:Button({
-        Title = 'Clear All Binds',
-        Description = 'Reset every bind to NONE',
-        Callback = function()
-            for _, element in pairs(bindElements) do
-                pcall(function()
-                    element:Set(nil)
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then
+            return
+        end
+
+        -- While selecting a bind, consume only the selection itself.
+        if bindWaitingIndex then
+            local index = bindWaitingIndex
+            bindWaitingIndex = nil
+
+            if input.KeyCode == Enum.KeyCode.Escape then
+                updateBindButton(index)
+                return
+            end
+
+            if input.KeyCode == Enum.KeyCode.Backspace
+                or input.KeyCode == Enum.KeyCode.Delete then
+                clearBind(index)
+                return
+            end
+
+            if input.KeyCode ~= Enum.KeyCode.Unknown then
+                assignBind(index, input.KeyCode)
+            else
+                updateBindButton(index)
+            end
+
+            return
+        end
+
+        if gameProcessed then
+            return
+        end
+
+        -- Execute every matching bind. Duplicate keys are prevented by assignBind().
+        for _, entry in ipairs(bindEntries) do
+            if entry.Key and input.KeyCode == entry.Key then
+                task.spawn(function()
+                    pcall(entry.Run)
                 end)
             end
-            print('[CandyZone] All binds cleared.')
-        end,
-    })
+        end
+    end)
 
     v304:Paragraph({
         Title = 'Troll',
@@ -4310,4 +4444,4 @@ v18:Notify({
     Icon = 'bell',
 })
 print('[CandyZone] v1.0 loaded.')
-print('[CandyZone] Bind/Troll loaded.')
+print('[CandyZone] Bind system loaded.')
