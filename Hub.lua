@@ -1211,6 +1211,7 @@ do
                                 return
                             end
                         end
+                        getgenv().CandyZone_ShootThrow = u98
                     end
 
                     u99 = false
@@ -2980,7 +2981,19 @@ do
         Name = 'Shoot / Throw',
         Key = nil,
         Run = function()
-            pcall(u98)
+            pcall(function()
+                local fn = getgenv().CandyZone_ShootThrow
+                if fn then
+                    fn()
+                else
+                    v18:Notify({
+                        Title = 'CandyZone',
+                        Content = 'Shoot/Throw not ready yet',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                end
+            end)
         end,
     },
     {
@@ -3005,6 +3018,22 @@ do
         end,
     },
     {
+        Name = 'Speed Glitch',
+        Key = nil,
+        Run = function()
+            pcall(function()
+                u116 = not u116
+                local txt = u116 and 'Speed Glitch ON' or 'Speed Glitch OFF'
+                v18:Notify({
+                    Title = 'CandyZone',
+                    Content = txt,
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end)
+        end,
+    },
+    {
         Name = 'Stretch',
         Key = nil,
         Run = function()
@@ -3012,7 +3041,7 @@ do
                 u120 = not u120
                 u127(u120)
                 local txt = u120 and 'Stretch ON' or 'Stretch OFF'
-                u269:Notify({
+                v18:Notify({
                     Title = 'CandyZone',
                     Content = txt,
                     Duration = 3,
