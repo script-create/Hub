@@ -117,7 +117,7 @@ do
                                 TextLabel2.Size = UDim2.new(1, -44, 0, 36)
                                 TextLabel2.Position = UDim2.new(0, 12, 0, 0)
                                 TextLabel2.BackgroundTransparency = 1
-                                TextLabel2.Text = 'CandyZone  \u{2014}  ' .. p4
+                                TextLabel2.Text = 'CrystalHub  \u{2014}  ' .. p4
                                 TextLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
                                 TextLabel2.Font = Enum.Font.GothamBold
                                 TextLabel2.TextSize = 14
@@ -268,7 +268,7 @@ do
                                     local v853 = u409 .. ' set to ' .. u386
 
                                     u23:Notify({
-                                        Title = 'CandyZone',
+                                        Title = 'CrystalHub',
                                         Content = tostring(v853),
                                         Duration = 3,
                                         Icon = 'bell',
@@ -485,7 +485,7 @@ do
                                                     end
 
                                                     u41:Notify({
-                                                        Title = 'CandyZone',
+                                                        Title = 'CrystalHub',
                                                         Content = tostring('Gun dropped on the map!'),
                                                         Duration = 3,
                                                         Icon = 'bell',
@@ -545,7 +545,7 @@ do
                                         end
 
                                         u46:Notify({
-                                            Title = 'CandyZone',
+                                            Title = 'CrystalHub',
                                             Content = tostring('Gun dropped on the map!'),
                                             Duration = 3,
                                             Icon = 'bell',
@@ -570,7 +570,7 @@ do
                                         end
 
                                         u50:Notify({
-                                            Title = 'CandyZone',
+                                            Title = 'CrystalHub',
                                             Content = tostring('Gun dropped on the map!'),
                                             Duration = 3,
                                             Icon = 'bell',
@@ -610,7 +610,7 @@ do
                                                                         end
 
                                                                         u53:Notify({
-                                                                            Title = 'CandyZone',
+                                                                            Title = 'CrystalHub',
                                                                             Content = tostring('Gun dropped on the map!'),
                                                                             Duration = 3,
                                                                             Icon = 'bell',
@@ -642,7 +642,7 @@ do
                                                                         end
 
                                                                         u53:Notify({
-                                                                            Title = 'CandyZone',
+                                                                            Title = 'CrystalHub',
                                                                             Content = tostring('Gun dropped on the map!'),
                                                                             Duration = 3,
                                                                             Icon = 'bell',
@@ -695,7 +695,7 @@ do
                                                                 end
 
                                                                 u60:Notify({
-                                                                    Title = 'CandyZone',
+                                                                    Title = 'CrystalHub',
                                                                     Content = tostring('Gun dropped on the map!'),
                                                                     Duration = 3,
                                                                     Icon = 'bell',
@@ -727,7 +727,7 @@ do
                                                                 end
 
                                                                 u60:Notify({
-                                                                    Title = 'CandyZone',
+                                                                    Title = 'CrystalHub',
                                                                     Content = tostring('Gun dropped on the map!'),
                                                                     Duration = 3,
                                                                     Icon = 'bell',
@@ -769,10 +769,10 @@ do
                             function v68()
                                 for _, player in ipairs(u67:GetPlayers())do
                                     if player.Character then
-                                        local CandyZone_ESP = player.Character:FindFirstChild('CandyZone_ESP')
+                                        local CrystalHub_ESP = player.Character:FindFirstChild('CrystalHub_ESP')
 
-                                        if CandyZone_ESP then
-                                            CandyZone_ESP:Destroy()
+                                        if CrystalHub_ESP then
+                                            CrystalHub_ESP:Destroy()
                                         end
                                     end
                                 end
@@ -813,9 +813,9 @@ do
                             local u75 = LocalPlayer
 
                             local function u76(p21, p22)
-                                local v451 = p21:FindFirstChild('CandyZone_ESP') or Instance.new('Highlight')
+                                local v451 = p21:FindFirstChild('CrystalHub_ESP') or Instance.new('Highlight')
 
-                                v451.Name = 'CandyZone_ESP'
+                                v451.Name = 'CrystalHub_ESP'
                                 v451.Parent = p21
                                 v451.FillColor = p22
                                 v451.FillTransparency = 0.7
@@ -862,10 +862,10 @@ do
                                                         v872 = false
                                                     end
                                                     if not v872 then
-                                                        local CandyZone_ESP = player.Character:FindFirstChild('CandyZone_ESP')
+                                                        local CrystalHub_ESP = player.Character:FindFirstChild('CrystalHub_ESP')
 
-                                                        if CandyZone_ESP then
-                                                            CandyZone_ESP:Destroy()
+                                                        if CrystalHub_ESP then
+                                                            CrystalHub_ESP:Destroy()
                                                         end
                                                     else
                                                         u76(player.Character, u77[v871])
@@ -881,7 +881,7 @@ do
                                 end
 
                                 u70:Notify({
-                                    Title = 'CandyZone',
+                                    Title = 'CrystalHub',
                                     Content = tostring('ESP remote not found!'),
                                     Duration = 3,
                                     Icon = 'bell',
@@ -1114,7 +1114,7 @@ do
                                         end
 
                                         u93:Notify({
-                                            Title = 'CandyZone',
+                                            Title = 'CrystalHub',
                                             Content = tostring('No target found!'),
                                             Duration = 3,
                                             Icon = 'bell',
@@ -1124,7 +1124,7 @@ do
                                     end
 
                                     u93:Notify({
-                                        Title = 'CandyZone',
+                                        Title = 'CrystalHub',
                                         Content = tostring('No knife in inventory!'),
                                         Duration = 3,
                                         Icon = 'bell',
@@ -1175,7 +1175,7 @@ do
                                         end
 
                                         u90:Notify({
-                                            Title = 'CandyZone',
+                                            Title = 'CrystalHub',
                                             Content = tostring('No target found.'),
                                             Duration = 3,
                                             Icon = 'bell',
@@ -1185,7 +1185,7 @@ do
                                     end
 
                                     u90:Notify({
-                                        Title = 'CandyZone',
+                                        Title = 'CrystalHub',
                                         Content = tostring('No gun in inventory!'),
                                         Duration = 3,
                                         Icon = 'bell',
@@ -1575,7 +1575,7 @@ do
                             local v601 = 'No ' .. p23 .. ' found!'
 
                             u114:Notify({
-                                Title = 'CandyZone',
+                                Title = 'CrystalHub',
                                 Content = tostring(v601),
                                 Duration = 3,
                                 Icon = 'bell',
@@ -1743,7 +1743,7 @@ do
                         u141 = false
 
                         u144:Notify({
-                            Title = 'CandyZone',
+                            Title = 'CrystalHub',
                             Content = tostring('Skybox restored to default.'),
                             Duration = 3,
                             Icon = 'bell',
@@ -1761,7 +1761,7 @@ do
 
                         local Sky = Instance.new('Sky', u146)
 
-                        Sky.Name = 'CandyZone_CustomSky'
+                        Sky.Name = 'CrystalHub_CustomSky'
 
                         local v625 = 'rbxassetid://' .. tostring(p27)
 
@@ -1903,7 +1903,7 @@ do
                                                     local v674 = p29.Name .. ' \u{2014} no valid fling part.'
 
                                                     u159:Notify({
-                                                        Title = 'CandyZone',
+                                                        Title = 'CrystalHub',
                                                         Content = tostring(v674),
                                                         Duration = 3,
                                                         Icon = 'bell',
@@ -1996,7 +1996,7 @@ do
                                                     u160.FallenPartsDestroyHeight = getgenv().RuzFPDH
 
                                                     u159:Notify({
-                                                        Title = 'CandyZone',
+                                                        Title = 'CrystalHub',
                                                         Content = tostring('Returned to previous position.'),
                                                         Duration = 3,
                                                         Icon = 'bell',
@@ -2014,7 +2014,7 @@ do
                                         local v680 = p29.Name .. ' is sitting, skipped.'
 
                                         u159:Notify({
-                                            Title = 'CandyZone',
+                                            Title = 'CrystalHub',
                                             Content = tostring(v680),
                                             Duration = 3,
                                             Icon = 'bell',
@@ -2125,7 +2125,7 @@ do
                     u181.Visible = false
 
                     u182:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring('Low Graphics OFF'),
                         Duration = 3,
                         Icon = 'bell',
@@ -2216,15 +2216,15 @@ do
             u211 = t17
             u212 = v21
 
-            local CandyZone_BtnLayer = game.CoreGui:FindFirstChild('CandyZone_BtnLayer')
+            local CrystalHub_BtnLayer = game.CoreGui:FindFirstChild('CrystalHub_BtnLayer')
 
-            if CandyZone_BtnLayer then
-                CandyZone_BtnLayer:Destroy()
+            if CrystalHub_BtnLayer then
+                CrystalHub_BtnLayer:Destroy()
             end
 
             local ScreenGui = Instance.new('ScreenGui', game.CoreGui)
 
-            ScreenGui.Name = 'CandyZone_BtnLayer'
+            ScreenGui.Name = 'CrystalHub_BtnLayer'
             ScreenGui.ResetOnSpawn = false
             ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
             ScreenGui.DisplayOrder = 10
@@ -2395,7 +2395,7 @@ do
                         end
 
                         u230:Notify({
-                            Title = 'CandyZone',
+                            Title = 'CrystalHub',
                             Content = tostring('Gold Bomb on cooldown.'),
                             Duration = 3,
                             Icon = 'bell',
@@ -2429,7 +2429,7 @@ do
                         end
 
                         u237:Notify({
-                            Title = 'CandyZone',
+                            Title = 'CrystalHub',
                             Content = tostring('Normal Bomb on cooldown.'),
                             Duration = 3,
                             Icon = 'bell',
@@ -2498,7 +2498,7 @@ do
                     local v927 = u61 and 'ESP ON' or 'ESP OFF'
 
                     u251:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v927),
                         Duration = 3,
                         Icon = 'bell',
@@ -2548,7 +2548,7 @@ do
                     local v928 = u116 and 'Speed Glitch ON' or 'Speed Glitch OFF'
 
                     u262:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v928),
                         Duration = 3,
                         Icon = 'bell',
@@ -2582,7 +2582,7 @@ do
                     local v929 = u120 and 'Stretch ON' or 'Stretch OFF'
 
                     u269:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v929),
                         Duration = 3,
                         Icon = 'bell',
@@ -2631,7 +2631,7 @@ do
                     v611.CFrame = CFrame5
 
                     u130:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring('Teleported to gun!'),
                         Duration = 3,
                         Icon = 'bell',
@@ -2641,7 +2641,7 @@ do
                 end
 
                 u130:Notify({
-                    Title = 'CandyZone',
+                    Title = 'CrystalHub',
                     Content = tostring('Gun position not found!'),
                     Duration = 3,
                     Icon = 'bell',
@@ -2654,7 +2654,7 @@ do
         end
 
         u130:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('No gun on map!'),
             Duration = 3,
             Icon = 'bell',
@@ -2709,7 +2709,7 @@ do
                         local v684 = 'Flinging: ' .. player.Name
 
                         u162:Notify({
-                            Title = 'CandyZone',
+                            Title = 'CrystalHub',
                             Content = tostring(v684),
                             Duration = 3,
                             Icon = 'bell',
@@ -2722,7 +2722,7 @@ do
             end
 
             u162:Notify({
-                Title = 'CandyZone',
+                Title = 'CrystalHub',
                 Content = tostring('No knife player found!'),
                 Duration = 3,
                 Icon = 'bell',
@@ -2732,7 +2732,7 @@ do
         end
 
         u162:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('Fling in progress...'),
             Duration = 3,
             Icon = 'bell',
@@ -2768,7 +2768,7 @@ do
                         local v688 = 'Flinging: ' .. player.Name
 
                         u166:Notify({
-                            Title = 'CandyZone',
+                            Title = 'CrystalHub',
                             Content = tostring(v688),
                             Duration = 3,
                             Icon = 'bell',
@@ -2781,7 +2781,7 @@ do
             end
 
             u166:Notify({
-                Title = 'CandyZone',
+                Title = 'CrystalHub',
                 Content = tostring('No gun player found!'),
                 Duration = 3,
                 Icon = 'bell',
@@ -2791,7 +2791,7 @@ do
         end
 
         u166:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('Fling in progress...'),
             Duration = 3,
             Icon = 'bell',
@@ -2913,7 +2913,7 @@ do
         end
     end)
     v18:Popup({
-        Title = 'CandyZone Mmv And Mm2',
+        Title = 'CrystalHub Mmv And Mm2',
         Icon = 'sparkles',
         Content = 'v7.3 loaded!\nBombs and Shoot auto-loaded.\nOpen menu to configure everything.',
         Buttons = {
@@ -2927,16 +2927,16 @@ do
     })
 
     local v300 = v18:CreateWindow({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Icon = 'sparkles',
         Author = 'Mmv And Mm2',
-        Folder = 'CandyZone',
+        Folder = 'CrystalHub',
         Size = UDim2.fromOffset(700, 550),
         Theme = 'Crimson',
         Acrylic = false,
         HideSearchBar = false,
         OpenButton = {
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             CornerRadius = UDim.new(1, 0),
             StrokeThickness = 2,
             Enabled = true,
@@ -2944,7 +2944,7 @@ do
             Color = ColorSequence.new(Color3.fromHex('#dc2626'), Color3.fromHex('#991b1b')),
         },
     }):Section({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Opened = true,
     })
 
@@ -2989,7 +2989,7 @@ do
                         Callback = function()
                             if u157 then
                                 v18:Notify({
-                                    Title = 'CandyZone',
+                                    Title = 'CrystalHub',
                                     Content = tostring('Fling in progress...'),
                                     Duration = 3,
                                     Icon = 'bell',
@@ -3002,7 +3002,7 @@ do
 
                             if target and target.Character then
                                 v18:Notify({
-                                    Title = 'CandyZone',
+                                    Title = 'CrystalHub',
                                     Content = tostring('Flinging: ' .. target.Name),
                                     Duration = 3,
                                     Icon = 'bell',
@@ -3010,7 +3010,7 @@ do
                                 task.spawn(u165, target)
                             else
                                 v18:Notify({
-                                    Title = 'CandyZone',
+                                    Title = 'CrystalHub',
                                     Content = tostring('Player left or has no character!'),
                                     Duration = 3,
                                     Icon = 'bell',
@@ -3136,7 +3136,7 @@ v301:Button({
             local v886 = 'Stretch set to ' .. p64 .. '%  (1.0 = normal)'
 
             u128:Notify({
-                Title = 'CandyZone',
+                Title = 'CrystalHub',
                 Content = tostring(v886),
                 Duration = 3,
                 Icon = 'bell',
@@ -3149,7 +3149,7 @@ v301:Button({
             end
 
             u128:Notify({
-                Title = 'CandyZone',
+                Title = 'CrystalHub',
                 Content = tostring('Stretch reset to 50%'),
                 Duration = 3,
                 Icon = 'bell',
@@ -3215,7 +3215,7 @@ v301:Button({
             TextLabel.Size = UDim2.new(1, -44, 0, 38)
             TextLabel.Position = UDim2.new(0, 12, 0, 0)
             TextLabel.BackgroundTransparency = 1
-            TextLabel.Text = 'CandyZone  \u{2014}  Skybox Picker'
+            TextLabel.Text = 'CrystalHub  \u{2014}  Skybox Picker'
             TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
             TextLabel.Font = Enum.Font.GothamBold
             TextLabel.TextSize = 14
@@ -3264,7 +3264,7 @@ v301:Button({
                     local v888 = 'Custom skybox applied \u{2014} ID: ' .. u636.Text
 
                     u148:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v888),
                         Duration = 3,
                         Icon = 'bell',
@@ -3372,7 +3372,7 @@ v301:Button({
                     local v889 = 'Skybox applied: ' .. u651.name
 
                     u148:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v889),
                         Duration = 3,
                         Icon = 'bell',
@@ -3503,7 +3503,7 @@ function t31.Callback(p69)
         u314.MouseIconEnabled = true
 
         u313:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('Crosshair OFF'),
             Duration = 3,
             Icon = 'bell',
@@ -3514,7 +3514,7 @@ function t31.Callback(p69)
 
     u312()
     u313:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring('Crosshair ON \u{2014} enable ShiftLock to see it!'),
         Duration = 3,
         Icon = 'bell',
@@ -3554,7 +3554,7 @@ v301:Button({
             TextLabel.Size = UDim2.new(1, -44, 0, 38)
             TextLabel.Position = UDim2.new(0, 12, 0, 0)
             TextLabel.BackgroundTransparency = 1
-            TextLabel.Text = 'CandyZone  \u{2014}  Cursor Picker'
+            TextLabel.Text = 'CrystalHub  \u{2014}  Cursor Picker'
             TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
             TextLabel.Font = Enum.Font.GothamBold
             TextLabel.TextSize = 14
@@ -3605,7 +3605,7 @@ v301:Button({
                     end
 
                     u209:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring('Custom cursor applied \u{2014} enable ShiftLock to see it!'),
                         Duration = 3,
                         Icon = 'bell',
@@ -3655,7 +3655,7 @@ v301:Button({
                 local v919 = 'Crosshair Spin: ' .. (u199 and 'ON' or 'OFF')
 
                 u209:Notify({
-                    Title = 'CandyZone',
+                    Title = 'CrystalHub',
                     Content = tostring(v919),
                     Duration = 3,
                     Icon = 'bell',
@@ -3737,7 +3737,7 @@ v301:Button({
                     local v920 = 'Cursor: ' .. u737.name .. ' \u{2014} enable ShiftLock to see it!'
 
                     u209:Notify({
-                        Title = 'CandyZone',
+                        Title = 'CrystalHub',
                         Content = tostring(v920),
                         Duration = 3,
                         Icon = 'bell',
@@ -3817,7 +3817,7 @@ local function u316()
     u177.Visible = true
 
     u178:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring('Low Graphics ON \u{2014} FPS boost active'),
         Duration = 3,
         Icon = 'bell',
@@ -3877,7 +3877,7 @@ local function u319()
     v703.Brightness = 0.05
 
     u186:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring('High Graphics ON'),
         Duration = 3,
         Icon = 'bell',
@@ -3902,7 +3902,7 @@ local function u320()
     end
 
     u189:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring('High Graphics OFF'),
         Duration = 3,
         Icon = 'bell',
@@ -3938,7 +3938,7 @@ function t34.Callback()
         u323.FieldOfView = 70
 
         u324:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('FOV reset to 70'),
             Duration = 3,
             Icon = 'bell',
@@ -3966,7 +3966,7 @@ function t35.Callback()
     local v814 = ok and 'Emotes GUI loaded!' or 'Error: ' .. tostring(result)
 
     u326:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v814),
         Duration = 3,
         Icon = 'bell',
@@ -3988,7 +3988,7 @@ function t36.Callback()
     local v817 = ok and 'Infinite Yield loaded!' or 'Error: ' .. tostring(result)
 
     u328:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v817),
         Duration = 3,
         Icon = 'bell',
@@ -4011,7 +4011,7 @@ function t37.Callback(p74)
     local v819 = p74 and 'Anti-Fling ON' or 'Anti-Fling OFF'
 
     u330:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v819),
         Duration = 3,
         Icon = 'bell',
@@ -4033,7 +4033,7 @@ function t38.Callback(p75)
     local v821 = p75 and 'Ping Prediction ON' or 'Ping Prediction OFF'
 
     u332:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v821),
         Duration = 3,
         Icon = 'bell',
@@ -4056,7 +4056,7 @@ function t39.Callback()
         n2 = 200
 
         u335:Notify({
-            Title = 'CandyZone',
+            Title = 'CrystalHub',
             Content = tostring('Speed reset to 200'),
             Duration = 3,
             Icon = 'bell',
@@ -4107,7 +4107,7 @@ function t40.Callback(p78)
     local v824 = p78 and 'ESP ON' or 'ESP OFF'
 
     u339:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v824),
         Duration = 3,
         Icon = 'bell',
@@ -4208,7 +4208,7 @@ function t46.Callback(p84)
     local v831 = p84 and 'Gun ESP ON' or 'Gun ESP OFF'
 
     u351:Notify({
-        Title = 'CandyZone',
+        Title = 'CrystalHub',
         Content = tostring(v831),
         Duration = 3,
         Icon = 'bell',
@@ -4270,9 +4270,9 @@ v232(true)
 v239(true)
 v244(true)
 v18:Notify({
-    Title = 'CandyZone',
-    Content = tostring('CandyZone Ready!'),
+    Title = 'CrystalHub',
+    Content = tostring('CrystalHub Ready!'),
     Duration = 3,
     Icon = 'bell',
 })
-print('[CandyZone] v1.0 loaded.')
+print('[CrystalHub] v1.0 loaded.')
