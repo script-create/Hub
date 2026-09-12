@@ -2933,6 +2933,28 @@ do
     })
 
 
+    local v300 = v18:CreateWindow({
+        Title = 'CrystalHub',
+        Icon = 'sparkles',
+        Author = 'Mmv And Mm2',
+        Folder = 'CrystalHub',
+        Size = UDim2.fromOffset(700, 550),
+        Theme = 'Crimson',
+        Acrylic = false,
+        HideSearchBar = false,
+        OpenButton = {
+            Title = 'CrystalHub',
+            CornerRadius = UDim.new(1, 0),
+            StrokeThickness = 2,
+            Enabled = true,
+            OnlyMobile = false,
+            Color = ColorSequence.new(Color3.fromHex('#dc2626'), Color3.fromHex('#991b1b')),
+        },
+    }):Section({
+        Title = 'CrystalHub',
+        Opened = true,
+    })
+
     -- CrystalHub AutoFarm
     do
         local AFPlayers = game:GetService("Players")
@@ -3470,29 +3492,6 @@ do
             end,
         })
     end
-
-
-    local v300 = v18:CreateWindow({
-        Title = 'CrystalHub',
-        Icon = 'sparkles',
-        Author = 'Mmv And Mm2',
-        Folder = 'CrystalHub',
-        Size = UDim2.fromOffset(700, 550),
-        Theme = 'Crimson',
-        Acrylic = false,
-        HideSearchBar = false,
-        OpenButton = {
-            Title = 'CrystalHub',
-            CornerRadius = UDim.new(1, 0),
-            StrokeThickness = 2,
-            Enabled = true,
-            OnlyMobile = false,
-            Color = ColorSequence.new(Color3.fromHex('#dc2626'), Color3.fromHex('#991b1b')),
-        },
-    }):Section({
-        Title = 'CrystalHub',
-        Opened = true,
-    })
 
     v301 = v300:Tab({
         Title = 'Main',
