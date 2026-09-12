@@ -3456,25 +3456,34 @@ do
             end,
         })
 
+        -- WindUI uses Values/Value for Dropdowns.
         AutoFarmTab:Dropdown({
             Title = "Farm Mode",
-            Options = {"Underground", "Sit"},
-            Default = AFSettings.FarmMode,
+            Values = {"Underground", "Sit"},
+            Value = AFSettings.FarmMode,
             Callback = function(value)
-                AFSettings.FarmMode = value
+                if value == "Underground" or value == "Sit" then
+                    AFSettings.FarmMode = value
+                end
             end,
         })
 
+        -- Use WindUI's supported Slider format.
         AutoFarmTab:Slider({
             Title = "Tween Speed",
             Step = 1,
+            IsTooltip = true,
+            IsTextbox = true,
             Value = {
                 Min = 10,
                 Max = 100,
                 Default = AFSettings.TweenSpeed,
             },
             Callback = function(value)
-                AFSettings.TweenSpeed = value
+                value = tonumber(value)
+                if value then
+                    AFSettings.TweenSpeed = math.clamp(math.floor(value), 10, 100)
+                end
             end,
         })
 
@@ -3494,16 +3503,16 @@ do
             end,
         })
 
-        AutoFarmTab:Slider({
+        -- Coin limit is intentionally a 40/50 selector instead of a slider.
+        AutoFarmTab:Dropdown({
             Title = "Coin Limit",
-            Step = 1,
-            Value = {
-                Min = 10,
-                Max = 40,
-                Default = AFSettings.CoinLimit,
-            },
+            Values = {"40", "50"},
+            Value = tostring(AFSettings.CoinLimit),
             Callback = function(value)
-                AFSettings.CoinLimit = value
+                local limit = tonumber(value)
+                if limit == 40 or limit == 50 then
+                    AFSettings.CoinLimit = limit
+                end
             end,
         })
     end
