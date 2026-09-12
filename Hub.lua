@@ -2955,6 +2955,21 @@ do
         Opened = true,
     })
 
+    v301 = v300:Tab({
+        Title = 'Main',
+        Icon = 'zap',
+    })
+    v302 = v300:Tab({
+        Title = 'ESP',
+        Icon = 'eye',
+    })
+
+    v303 = v300:Tab({
+        Title = 'Fling',
+        Icon = 'target',
+    })
+
+
     -- CrystalHub AutoFarm
     do
         local AFPlayers = game:GetService("Players")
@@ -3493,19 +3508,7 @@ do
         })
     end
 
-    v301 = v300:Tab({
-        Title = 'Main',
-        Icon = 'zap',
-    })
-    v302 = v300:Tab({
-        Title = 'ESP',
-        Icon = 'eye',
-    })
 
-    v303 = v300:Tab({
-        Title = 'Fling',
-        Icon = 'target',
-    })
 
     v303:Paragraph({
         Title = 'Fling Players',
