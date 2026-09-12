@@ -485,7 +485,7 @@ do
                                                     end
 
                                                     u41:Notify({
-                                                        Title = 'CandyZone',
+                                                        Title = 'pankyWare',
                                                         Content = tostring('Gun dropped on the map!'),
                                                         Duration = 3,
                                                         Icon = 'bell',
@@ -695,7 +695,7 @@ do
                                                                 end
 
                                                                 u60:Notify({
-                                                                    Title = 'CandyZone',
+                                                                    Title = 'spanky',
                                                                     Content = tostring('Gun dropped on the map!'),
                                                                     Duration = 3,
                                                                     Icon = 'bell',
@@ -1685,7 +1685,7 @@ do
                     }
                     local t13 = {
                         name = 'Cosmic',
-                        id = '77816282467771',
+                        id = '6444884337',
                         color = Color3.fromRGB(80, 40, 160),
                     }
                     local t14 = {
