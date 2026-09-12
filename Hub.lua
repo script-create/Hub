@@ -36,7 +36,7 @@ do
                     u17 = true
                     v18 = loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/WindUI/refs/heads/main/dist/main.lua'))()
 
-                    v18:SetTheme('midnight')
+                    v18:SetTheme('blue')
 
                     do
                         local _ = v18
