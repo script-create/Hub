@@ -2932,6 +2932,546 @@ do
         },
     })
 
+
+    -- CrystalHub AutoFarm
+    do
+        local AFPlayers = game:GetService("Players")
+        local AFRunService = game:GetService("RunService")
+        local AFTweenService = game:GetService("TweenService")
+        local AFLocalPlayer = AFPlayers.LocalPlayer
+
+        local AFSettings = {
+            AutoFarmEnabled = false,
+            FarmMode = "Underground",
+            TweenSpeed = 25,
+            AutoReset = true,
+            AvoidMurder = true,
+            UndergroundOffset = 4,
+            MaxDistance = 600,
+            CoinLimit = 40,
+        }
+
+        local AFState = {
+            isFarming = false,
+            isActivelyFlying = false,
+            currentTargetCoin = nil,
+            ignoredCoins = {},
+            currentTween = nil,
+        }
+
+        local function afGetTorso(char)
+            if not char then return nil end
+            return char:FindFirstChild("Torso")
+                or char:FindFirstChild("LowerTorso")
+                or char:FindFirstChild("HumanoidRootPart")
+        end
+
+        local function afGetCurrentCoins()
+            local ok, result = pcall(function()
+                local gui = AFLocalPlayer.PlayerGui:FindFirstChild("MainGUI")
+                local gameGui = gui and gui:FindFirstChild("Game")
+                local coinBags = gameGui and gameGui:FindFirstChild("CoinBags")
+                local container = coinBags and coinBags:FindFirstChild("Container")
+                local coin = container and container:FindFirstChild("Coin")
+                local currencyFrame = coin and coin:FindFirstChild("CurrencyFrame")
+                local icon = currencyFrame and currencyFrame:FindFirstChild("Icon")
+                local coinsText = icon and icon:FindFirstChild("Coins")
+                return coinsText and coinsText.Text or 0
+            end)
+            return ok and (tonumber(result) or 0) or 0
+        end
+
+        local function afIsRoundOver()
+            local pGui = AFLocalPlayer:FindFirstChild("PlayerGui")
+            local victoryGui = pGui and pGui:FindFirstChild("Victory")
+            if victoryGui then
+                for _, child in ipairs(victoryGui:GetChildren()) do
+                    if child:IsA("GuiObject") and child.Visible then
+                        return true
+                    end
+                end
+            end
+            return false
+        end
+
+        local function afIsBagFull()
+            local pGui = AFLocalPlayer:FindFirstChild("PlayerGui")
+            local mainGui = pGui and pGui:FindFirstChild("MainGUI")
+            local lobby = mainGui and mainGui:FindFirstChild("Lobby")
+            local dock = lobby and lobby:FindFirstChild("Dock")
+            local coinBags = dock and dock:FindFirstChild("CoinBags")
+            local notification = coinBags and coinBags:FindFirstChild("FullBagNotification")
+            return notification and notification.Visible == true or false
+        end
+
+        local function afHasNearbyMurderer()
+            if not AFSettings.AvoidMurder then return false end
+
+            local char = AFLocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return false end
+
+            for _, player in ipairs(AFPlayers:GetPlayers()) do
+                if player ~= AFLocalPlayer and player.Character then
+                    local otherHRP = player.Character:FindFirstChild("HumanoidRootPart")
+                    local backpack = player:FindFirstChild("Backpack")
+                    if otherHRP and (otherHRP.Position - hrp.Position).Magnitude <= 10 then
+                        if player.Character:FindFirstChild("Knife")
+                            or (backpack and backpack:FindFirstChild("Knife")) then
+                            return true
+                        end
+                    end
+                end
+            end
+            return false
+        end
+
+        local function afGetNearestCoin(torso)
+            local container
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj.Name == "CoinContainer" then
+                    container = obj
+                    break
+                end
+            end
+            if not container then return nil end
+
+            local nearestCoin
+            local minDist = math.huge
+
+            for _, coin in ipairs(container:GetChildren()) do
+                if coin.Name == "Coin_Server"
+                    and coin:IsA("BasePart")
+                    and not AFState.ignoredCoins[coin] then
+
+                    local dist = (torso.Position - coin.Position).Magnitude
+                    if dist < minDist and dist <= AFSettings.MaxDistance then
+                        minDist = dist
+                        nearestCoin = coin
+                    end
+                end
+            end
+
+            return nearestCoin
+        end
+
+        local function afApplyFlightPhysics(char)
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return CFrame.identity end
+
+            local bv = hrp:FindFirstChild("CrystalHubFarmBV")
+            if not bv then
+                bv = Instance.new("BodyVelocity")
+                bv.Name = "CrystalHubFarmBV"
+                bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                bv.Velocity = Vector3.zero
+                bv.Parent = hrp
+            end
+
+            local bg = hrp:FindFirstChild("CrystalHubFarmBG")
+            if not bg then
+                bg = Instance.new("BodyGyro")
+                bg.Name = "CrystalHubFarmBG"
+                bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                bg.P = 50000
+                bg.Parent = hrp
+
+                local _, rotY, _ = hrp.CFrame:ToOrientation()
+                bg.CFrame =
+                    CFrame.new(hrp.Position)
+                    * CFrame.Angles(0, rotY, 0)
+                    * CFrame.Angles(math.rad(-90), 0, 0)
+            end
+
+            return bg.CFrame.Rotation
+        end
+
+        local function afRemovePhysics()
+            local char = AFLocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local bv = hrp:FindFirstChild("CrystalHubFarmBV")
+                local bg = hrp:FindFirstChild("CrystalHubFarmBG")
+                if bv then bv:Destroy() end
+                if bg then bg:Destroy() end
+                hrp.Anchored = false
+            end
+        end
+
+        local function afSetupNoclip()
+            local char = AFLocalPlayer.Character
+            if not char then return end
+
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then humanoid.PlatformStand = true end
+
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+
+        local function afFlyToPoint(targetPos, targetCoin, hrp, torso, lockedRotation)
+            local dist = (torso.Position - targetPos).Magnitude
+            local duration = math.max(dist / math.max(AFSettings.TweenSpeed, 1), 0.05)
+            local tween = AFTweenService:Create(
+                hrp,
+                TweenInfo.new(duration, Enum.EasingStyle.Linear),
+                {CFrame = CFrame.new(targetPos) * lockedRotation}
+            )
+
+            AFState.currentTween = tween
+            local reached = false
+            local connection
+
+            tween:Play()
+
+            connection = AFRunService.Heartbeat:Connect(function()
+                if not AFState.isFarming
+                    or not targetCoin
+                    or not targetCoin:IsDescendantOf(workspace) then
+                    pcall(function() tween:Cancel() end)
+                    connection:Disconnect()
+                    return
+                end
+
+                if firetouchinterest then
+                    pcall(function()
+                        firetouchinterest(torso, targetCoin, 0)
+                        firetouchinterest(torso, targetCoin, 1)
+                    end)
+                end
+
+                if (torso.Position - targetPos).Magnitude <= 1.5 then
+                    reached = true
+                    pcall(function() tween:Cancel() end)
+                    connection:Disconnect()
+                end
+            end)
+
+            while connection.Connected and AFState.isFarming do
+                AFRunService.Heartbeat:Wait()
+            end
+
+            return reached
+        end
+
+        local function afTweenToCoin(coin)
+            if not coin or not coin.Parent or not coin:FindFirstChild("TouchInterest") then
+                return false
+            end
+
+            local char = AFLocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if not hrp or not hum then return false end
+
+            local target = coin.Position + Vector3.new(0, 2, 0)
+            if (hrp.Position - target).Magnitude < 5 then
+                return true
+            end
+
+            if AFState.currentTween then
+                pcall(function() AFState.currentTween:Cancel() end)
+            end
+
+            local duration = math.max(
+                (hrp.Position - target).Magnitude / math.max(AFSettings.TweenSpeed, 1),
+                0.05
+            )
+
+            AFState.currentTween = AFTweenService:Create(
+                hrp,
+                TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {CFrame = CFrame.new(target)}
+            )
+
+            hum.Sit = true
+            AFState.currentTween:Play()
+
+            local done = false
+            local connection
+            connection = AFState.currentTween.Completed:Connect(function()
+                done = true
+                connection:Disconnect()
+            end)
+
+            local started = os.clock()
+            while not done and AFState.isFarming do
+                task.wait(0.1)
+
+                if not coin.Parent or not coin:FindFirstChild("TouchInterest") then
+                    pcall(function() AFState.currentTween:Cancel() end)
+                    hum.Sit = false
+                    return false
+                end
+
+                if os.clock() - started > 30 then
+                    pcall(function() AFState.currentTween:Cancel() end)
+                    hum.Sit = false
+                    return false
+                end
+            end
+
+            hum.Sit = false
+            return done
+        end
+
+        local function afCollectCoin(coin)
+            local char = AFLocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp or not coin or not coin.Parent then return end
+
+            if firetouchinterest then
+                pcall(function()
+                    firetouchinterest(hrp, coin, 0)
+                    task.wait(0.05)
+                    firetouchinterest(hrp, coin, 1)
+                end)
+            end
+        end
+
+        local function afStopFarming()
+            AFState.isFarming = false
+            AFState.isActivelyFlying = false
+            AFState.currentTargetCoin = nil
+
+            if AFState.currentTween then
+                pcall(function() AFState.currentTween:Cancel() end)
+                AFState.currentTween = nil
+            end
+
+            afRemovePhysics()
+
+            local char = AFLocalPlayer.Character
+            local humanoid = char and char:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.PlatformStand = false
+                humanoid.Sit = false
+            end
+        end
+
+        local function afStartFarming()
+            if AFState.isFarming then return end
+
+            AFState.isFarming = true
+            table.clear(AFState.ignoredCoins)
+
+            task.spawn(function()
+                while AFState.isFarming do
+                    task.wait()
+
+                    local success = pcall(function()
+                        if afHasNearbyMurderer() then
+                            AFState.isActivelyFlying = false
+                            AFState.currentTargetCoin = nil
+                            afRemovePhysics()
+
+                            local char = AFLocalPlayer.Character
+                            local hum = char and char:FindFirstChild("Humanoid")
+                            if hum then hum.Sit = false end
+
+                            task.wait(1)
+                            return
+                        end
+
+                        local char = AFLocalPlayer.Character
+                        if not char then return end
+
+                        local hrp = char:FindFirstChild("HumanoidRootPart")
+                        local torso = afGetTorso(char)
+                        local humanoid = char:FindFirstChild("Humanoid")
+
+                        if not hrp or not torso or not humanoid or humanoid.Health <= 0 then
+                            AFState.isActivelyFlying = false
+                            AFState.currentTargetCoin = nil
+                            afRemovePhysics()
+                            task.wait(1)
+                            return
+                        end
+
+                        if afIsRoundOver() or afIsBagFull() then
+                            AFState.isActivelyFlying = false
+                            AFState.currentTargetCoin = nil
+                            afRemovePhysics()
+                            humanoid.Sit = false
+                            task.wait(1)
+                            return
+                        end
+
+                        if AFSettings.AutoReset and afGetCurrentCoins() >= AFSettings.CoinLimit then
+                            humanoid.Health = 0
+                            task.wait(5)
+                            return
+                        end
+
+                        local targetCoin = afGetNearestCoin(torso)
+                        if not targetCoin or not targetCoin:IsDescendantOf(workspace) then
+                            AFState.isActivelyFlying = false
+                            AFState.currentTargetCoin = nil
+                            afRemovePhysics()
+                            humanoid.Sit = false
+                            task.wait(0.5)
+                            return
+                        end
+
+                        AFState.isActivelyFlying = true
+                        AFState.currentTargetCoin = targetCoin
+
+                        local reachedTarget = false
+
+                        if AFSettings.FarmMode == "Underground" then
+                            afSetupNoclip()
+                            local lockedRotation = afApplyFlightPhysics(char)
+                            local targetPos =
+                                targetCoin.Position
+                                - Vector3.new(0, AFSettings.UndergroundOffset, 0)
+
+                            reachedTarget = afFlyToPoint(
+                                targetPos,
+                                targetCoin,
+                                hrp,
+                                torso,
+                                lockedRotation
+                            )
+                        else
+                            reachedTarget = afTweenToCoin(targetCoin)
+                            if reachedTarget and AFState.isFarming and humanoid.Health > 0 then
+                                afCollectCoin(targetCoin)
+                            end
+                        end
+
+                        if reachedTarget and AFState.isFarming and humanoid.Health > 0 then
+                            AFState.ignoredCoins[targetCoin] = true
+                            task.delay(5, function()
+                                AFState.ignoredCoins[targetCoin] = nil
+                            end)
+                            task.wait(0.2)
+                        end
+
+                        AFState.currentTargetCoin = nil
+                    end)
+
+                    if not success then
+                        AFState.isActivelyFlying = false
+                        AFState.currentTargetCoin = nil
+                        afRemovePhysics()
+                        task.wait(1)
+                    end
+                end
+            end)
+        end
+
+        AFRunService.Stepped:Connect(function()
+            if not AFState.isFarming
+                or not AFState.isActivelyFlying
+                or AFSettings.FarmMode ~= "Underground" then
+                return
+            end
+
+            local char = AFLocalPlayer.Character
+            if not char then return end
+
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then humanoid.PlatformStand = true end
+
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end)
+
+        local AutoFarmTab = v300:Tab({
+            Title = "AutoFarm",
+            Icon = "refresh-cw",
+        })
+
+        AutoFarmTab:Paragraph({
+            Title = "CrystalHub AutoFarm",
+            Content = "Автоматический сбор монет. Настройки применяются сразу.",
+        })
+
+        AutoFarmTab:Toggle({
+            Title = "Auto Farm",
+            Default = AFSettings.AutoFarmEnabled,
+            Callback = function(value)
+                AFSettings.AutoFarmEnabled = value
+
+                if value then
+                    afStartFarming()
+                    v18:Notify({
+                        Title = "CrystalHub",
+                        Content = "AutoFarm ON",
+                        Duration = 3,
+                        Icon = "check",
+                    })
+                else
+                    afStopFarming()
+                    v18:Notify({
+                        Title = "CrystalHub",
+                        Content = "AutoFarm OFF",
+                        Duration = 3,
+                        Icon = "x",
+                    })
+                end
+            end,
+        })
+
+        AutoFarmTab:Dropdown({
+            Title = "Farm Mode",
+            Options = {"Underground", "Sit"},
+            Default = AFSettings.FarmMode,
+            Callback = function(value)
+                AFSettings.FarmMode = value
+            end,
+        })
+
+        AutoFarmTab:Slider({
+            Title = "Tween Speed",
+            Step = 1,
+            Value = {
+                Min = 10,
+                Max = 100,
+                Default = AFSettings.TweenSpeed,
+            },
+            Callback = function(value)
+                AFSettings.TweenSpeed = value
+            end,
+        })
+
+        AutoFarmTab:Toggle({
+            Title = "Auto Reset",
+            Default = AFSettings.AutoReset,
+            Callback = function(value)
+                AFSettings.AutoReset = value
+            end,
+        })
+
+        AutoFarmTab:Toggle({
+            Title = "Avoid Murder",
+            Default = AFSettings.AvoidMurder,
+            Callback = function(value)
+                AFSettings.AvoidMurder = value
+            end,
+        })
+
+        AutoFarmTab:Slider({
+            Title = "Coin Limit",
+            Step = 1,
+            Value = {
+                Min = 10,
+                Max = 40,
+                Default = AFSettings.CoinLimit,
+            },
+            Callback = function(value)
+                AFSettings.CoinLimit = value
+            end,
+        })
+    end
+
+
     local v300 = v18:CreateWindow({
         Title = 'CrystalHub',
         Icon = 'sparkles',
