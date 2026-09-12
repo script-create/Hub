@@ -1600,16 +1600,22 @@ do
                         local RenderStepped = u118.RenderStepped
                         local u605 = Humanoid
 
+                        local u901 = false
+
                         u117 = RenderStepped:Connect(function()
                             if u116 then
+                                u901 = true
+
                                 local State = u605:GetState()
 
                                 u605.WalkSpeed = (State == Enum.HumanoidStateType.Jumping or State == Enum.HumanoidStateType.Freefall) and (u605.MoveDirection.Magnitude > 0 and n2) or 16
 
                                 return
                             end
-
-                            u605.WalkSpeed = 16
+                            if u901 then
+                                u901 = false
+                                u605.WalkSpeed = 16
+                            end
                         end)
                     end
 
