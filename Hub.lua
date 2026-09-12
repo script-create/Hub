@@ -2964,143 +2964,29 @@ do
 
     v303:Paragraph({
         Title = 'Fling Players',
-        Content = 'Open the player list and click a nickname to fling that player.\nYou will return to your original position after.',
+        Content = 'Click a player name below to fling them.\nYou will return to your original position after. Use Refresh to update the list.',
     })
 
-    v303:Button({
-        Title = 'Open Fling List',
-        Description = 'Click a player name to fling them',
-        Callback = function()
-            local RuzFlingList = game.CoreGui:FindFirstChild('RuzFlingList')
+    do
+        local flingElements = {}
 
-            if RuzFlingList then
-                RuzFlingList:Destroy()
+        local function rebuildFlingList()
+            for _, el in ipairs(flingElements)do
+                pcall(function()
+                    el:Destroy()
+                end)
             end
 
-            local ScreenGui = Instance.new('ScreenGui', game.CoreGui)
+            flingElements = {}
 
-            ScreenGui.Name = 'RuzFlingList'
-            ScreenGui.ResetOnSpawn = false
-            ScreenGui.DisplayOrder = 64
+            for _, player in ipairs(Players:GetPlayers())do
+                if player ~= LocalPlayer then
+                    local u901 = player
 
-            local Frame = Instance.new('Frame', ScreenGui)
-
-            Frame.Size = UDim2.new(0, 300, 0, 420)
-            Frame.Position = UDim2.new(0.5, -150, 0.04, 0)
-            Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-            Frame.BackgroundTransparency = 0.06
-            Frame.BorderSizePixel = 0
-            Instance.new('UICorner', Frame).CornerRadius = UDim.new(0, 12)
-
-            local UIStroke = Instance.new('UIStroke', Frame)
-
-            UIStroke.Color = Color3.fromRGB(220, 38, 38)
-            UIStroke.Thickness = 1.5
-
-            local TitleLbl = Instance.new('TextLabel', Frame)
-
-            TitleLbl.Size = UDim2.new(1, -44, 0, 38)
-            TitleLbl.Position = UDim2.new(0, 12, 0, 0)
-            TitleLbl.BackgroundTransparency = 1
-            TitleLbl.Text = 'CandyZone  \u{2014}  Fling List'
-            TitleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-            TitleLbl.Font = Enum.Font.GothamBold
-            TitleLbl.TextSize = 14
-            TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
-
-            local CloseBtn = Instance.new('TextButton', Frame)
-
-            CloseBtn.Size = UDim2.new(0, 28, 0, 28)
-            CloseBtn.Position = UDim2.new(1, -34, 0, 5)
-            CloseBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
-            CloseBtn.Text = 'X'
-            CloseBtn.TextColor3 = Color3.new(1, 1, 1)
-            CloseBtn.Font = Enum.Font.GothamBold
-            CloseBtn.TextSize = 13
-            Instance.new('UICorner', CloseBtn).CornerRadius = UDim.new(0, 6)
-
-            local u900 = ScreenGui
-
-            CloseBtn.MouseButton1Click:Connect(function()
-                u900:Destroy()
-            end)
-
-            local RefreshBtn = Instance.new('TextButton', Frame)
-
-            RefreshBtn.Size = UDim2.new(1, -20, 0, 28)
-            RefreshBtn.Position = UDim2.new(0, 10, 0, 44)
-            RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            RefreshBtn.Text = 'Refresh List'
-            RefreshBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-            RefreshBtn.Font = Enum.Font.GothamBold
-            RefreshBtn.TextSize = 12
-            Instance.new('UICorner', RefreshBtn).CornerRadius = UDim.new(0, 6)
-
-            local ScrollingFrame = Instance.new('ScrollingFrame', Frame)
-
-            ScrollingFrame.Size = UDim2.new(1, -14, 1, -84)
-            ScrollingFrame.Position = UDim2.new(0, 7, 0, 80)
-            ScrollingFrame.BackgroundTransparency = 1
-            ScrollingFrame.BorderSizePixel = 0
-            ScrollingFrame.ScrollBarThickness = 4
-
-            local UIListLayout = Instance.new('UIListLayout', ScrollingFrame)
-
-            UIListLayout.Padding = UDim.new(0, 6)
-            UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-            local function rebuildList()
-                for _, child in ipairs(ScrollingFrame:GetChildren())do
-                    if child:IsA('TextButton') then
-                        child:Destroy()
-                    end
-                end
-
-                local order = 0
-
-                for _, player in ipairs(Players:GetPlayers())do
-                    if player ~= LocalPlayer then
-                        order = order + 1
-
-                        local Btn = Instance.new('TextButton', ScrollingFrame)
-
-                        Btn.Size = UDim2.new(1, -8, 0, 44)
-                        Btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-                        Btn.Text = ''
-                        Btn.AutoButtonColor = false
-                        Btn.LayoutOrder = order
-                        Instance.new('UICorner', Btn).CornerRadius = UDim.new(0, 8)
-
-                        local Stroke = Instance.new('UIStroke', Btn)
-
-                        Stroke.Color = Color3.fromRGB(80, 80, 80)
-                        Stroke.Thickness = 1
-
-                        local NameLbl = Instance.new('TextLabel', Btn)
-
-                        NameLbl.Size = UDim2.new(1, -16, 0, 22)
-                        NameLbl.Position = UDim2.new(0, 8, 0, 4)
-                        NameLbl.BackgroundTransparency = 1
-                        NameLbl.Text = player.Name
-                        NameLbl.TextColor3 = Color3.fromRGB(220, 220, 220)
-                        NameLbl.Font = Enum.Font.GothamBold
-                        NameLbl.TextSize = 14
-                        NameLbl.TextXAlignment = Enum.TextXAlignment.Left
-
-                        local StatusLbl = Instance.new('TextLabel', Btn)
-
-                        StatusLbl.Size = UDim2.new(1, -16, 0, 14)
-                        StatusLbl.Position = UDim2.new(0, 8, 1, -18)
-                        StatusLbl.BackgroundTransparency = 1
-                        StatusLbl.Text = 'Click to fling'
-                        StatusLbl.TextColor3 = Color3.fromRGB(100, 100, 100)
-                        StatusLbl.Font = Enum.Font.Gotham
-                        StatusLbl.TextSize = 10
-                        StatusLbl.TextXAlignment = Enum.TextXAlignment.Left
-
-                        local u901 = player
-
-                        Btn.MouseButton1Click:Connect(function()
+                    table.insert(flingElements, v303:Button({
+                        Title = player.Name,
+                        Description = 'Click to fling',
+                        Callback = function()
                             if u157 then
                                 v18:Notify({
                                     Title = 'CandyZone',
@@ -3130,18 +3016,26 @@ do
                                     Icon = 'bell',
                                 })
                             end
-                        end)
-                    end
+                        end,
+                    }))
                 end
-
-                ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, order * 50 + 10)
             end
+        end
 
-            RefreshBtn.MouseButton1Click:Connect(rebuildList)
-            rebuildList()
-            u151(Frame)
-        end,
-    })
+        v303:Button({
+            Title = 'Refresh List',
+            Description = 'Update the player list',
+            Callback = rebuildFlingList,
+        })
+        rebuildFlingList()
+
+        Players.PlayerAdded:Connect(function()
+            task.delay(0.3, rebuildFlingList)
+        end)
+        Players.PlayerRemoving:Connect(function()
+            task.delay(0.3, rebuildFlingList)
+        end)
+    end
 
     v301:Paragraph({
         Title = 'Auto-Loaded Buttons',
