@@ -2468,14 +2468,6 @@ do
             end
         end
 
-        -- Show the original three floating buttons immediately when CrystalHub starts.
-        -- They are visual UI buttons only.
-        task.defer(function()
-            v232(true)
-            v239(true)
-            v244(true)
-        end)
-
         local u245 = t25
         local u246 = v220
         local u247 = t26
