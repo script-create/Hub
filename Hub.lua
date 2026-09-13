@@ -3768,7 +3768,428 @@ do
         end)
     end
 
-    -- Visuals tab: ready for the user's Visuals code.
+
+    ----------------------------------------------------------------
+    -- CrystalHub Visuals / ESP extensions
+    -- Clean local implementation based on the visual feature set
+    ----------------------------------------------------------------
+    local CHVisuals = {
+        ESPName = false,
+        ESPDistance = false,
+        ESPTool = false,
+        ESPHealth = false,
+        ESPTracer = false,
+        ESPFilled = false,
+        ESPMaxDistance = 1000,
+
+        SelfChams = false,
+        SelfChamsColor = Color3.fromRGB(168, 122, 207),
+
+        SelfForceField = false,
+        SelfForceFieldColor = Color3.fromRGB(168, 122, 207),
+
+        Aura = false,
+        AuraStyle = "1",
+        AuraColor = Color3.fromRGB(168, 122, 207),
+
+        Trail = false,
+        TrailColor = Color3.fromRGB(168, 122, 207),
+
+        FOVCircle = false,
+        FOVSize = 70,
+        FOVColor = Color3.fromRGB(255, 255, 255),
+    }
+
+    local CHPlayers = game:GetService("Players")
+    local CHRunService = game:GetService("RunService")
+    local CHLocalPlayer = CHPlayers.LocalPlayer
+    local CHEspCache = {}
+    local CHVisualConnections = {}
+    local CHFOVCircle = nil
+
+    local function CHGetRole(player)
+        local roleData = rawget(_G, "t2")
+        if type(roleData) ~= "table" then
+            roleData = t2
+        end
+
+        local data = roleData and roleData[player.Name]
+        local role = data and (data.Role or data.role or data.Team) or ""
+        role = tostring(role):lower()
+
+        if role:find("murd") then
+            return "Murderer"
+        elseif role:find("sheriff") or role:find("gun") then
+            return "Sheriff"
+        elseif role:find("hero") then
+            return "Hero"
+        end
+        return "Innocent"
+    end
+
+    local function CHRoleColor(player)
+        local role = CHGetRole(player)
+        if t4 and t4[role] then
+            return t4[role]
+        end
+        return Color3.fromRGB(255, 255, 255)
+    end
+
+    local function CHGetRoot(player)
+        local character = player and player.Character
+        return character and character:FindFirstChild("HumanoidRootPart")
+    end
+
+    local function CHMakeLabel(parent, name, order, textSize)
+        local label = Instance.new("TextLabel")
+        label.Name = name
+        label.BackgroundTransparency = 1
+        label.Size = UDim2.new(1, 0, 0, textSize + 2)
+        label.Position = UDim2.new(0, 0, 0, order * (textSize + 2))
+        label.Font = Enum.Font.SourceSans
+        label.TextSize = textSize
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextStrokeTransparency = 0
+        label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        label.TextXAlignment = Enum.TextXAlignment.Center
+        label.Parent = parent
+        return label
+    end
+
+    local function CHCreateESP(player)
+        if player == CHLocalPlayer or CHEspCache[player] then
+            return
+        end
+
+        local gui = Instance.new("BillboardGui")
+        gui.Name = "CrystalHub_ESP_Details"
+        gui.AlwaysOnTop = true
+        gui.LightInfluence = 0
+        gui.Size = UDim2.fromOffset(180, 80)
+        gui.StudsOffset = Vector3.new(0, 3.2, 0)
+        gui.Enabled = false
+
+        local frame = Instance.new("Frame")
+        frame.BackgroundTransparency = 1
+        frame.Size = UDim2.fromScale(1, 1)
+        frame.Parent = gui
+
+        local name = CHMakeLabel(frame, "Name", 0, 13)
+        local distance = CHMakeLabel(frame, "Distance", 1, 12)
+        local tool = CHMakeLabel(frame, "Tool", 2, 12)
+
+        local healthBack = Instance.new("Frame")
+        healthBack.Name = "HealthBack"
+        healthBack.BorderSizePixel = 0
+        healthBack.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        healthBack.Size = UDim2.new(0.75, 0, 0, 5)
+        healthBack.Position = UDim2.new(0.125, 0, 0, 55)
+        healthBack.Parent = frame
+
+        local healthFill = Instance.new("Frame")
+        healthFill.Name = "HealthFill"
+        healthFill.BorderSizePixel = 0
+        healthFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        healthFill.Size = UDim2.fromScale(1, 1)
+        healthFill.Parent = healthBack
+
+        local tracer = nil
+        pcall(function()
+            tracer = Drawing.new("Line")
+            tracer.Thickness = 1
+            tracer.Transparency = 1
+            tracer.Visible = false
+        end)
+
+        CHEspCache[player] = {
+            Gui = gui,
+            Name = name,
+            Distance = distance,
+            Tool = tool,
+            HealthBack = healthBack,
+            HealthFill = healthFill,
+            Tracer = tracer,
+        }
+    end
+
+    local function CHDestroyESP(player)
+        local data = CHEspCache[player]
+        if not data then return end
+
+        if data.Gui then
+            data.Gui:Destroy()
+        end
+        if data.Tracer then
+            pcall(function() data.Tracer:Remove() end)
+        end
+        CHEspCache[player] = nil
+    end
+
+    local function CHUpdateESP(player)
+        local data = CHEspCache[player]
+        local root = CHGetRoot(player)
+        local character = player and player.Character
+        if not data or not root or not character then
+            if data and data.Gui then data.Gui.Enabled = false end
+            if data and data.Tracer then data.Tracer.Visible = false end
+            return
+        end
+
+        local localRoot = CHGetRoot(CHLocalPlayer)
+        if not localRoot then return end
+
+        local distanceValue = (root.Position - localRoot.Position).Magnitude
+        local visible = distanceValue <= CHVisuals.ESPMaxDistance
+
+        data.Gui.Enabled = visible and (CHVisuals.ESPName or CHVisuals.ESPDistance or CHVisuals.ESPTool or CHVisuals.ESPHealth)
+
+        if data.Gui.Parent ~= root then
+            data.Gui.Parent = root
+        end
+
+        local roleColor = CHRoleColor(player)
+
+        -- Use the existing role Highlight as the ESP box/fill layer.
+        local roleHighlight = character:FindFirstChild("CrystalHub_ESP")
+        if roleHighlight and roleHighlight:IsA("Highlight") then
+            roleHighlight.FillTransparency = CHVisuals.ESPFilled and 0.7 or 1
+        end
+
+        data.Name.Text = player.DisplayName or player.Name
+        data.Name.TextColor3 = roleColor
+        data.Name.Visible = CHVisuals.ESPName
+
+        data.Distance.Text = string.format("[%d studs]", math.floor(distanceValue))
+        data.Distance.Visible = CHVisuals.ESPDistance
+
+        local toolName = "Tool: None"
+        local equipped = character:FindFirstChildOfClass("Tool")
+        if equipped then
+            toolName = "Tool: " .. equipped.Name
+        end
+        data.Tool.Text = toolName
+        data.Tool.Visible = CHVisuals.ESPTool
+
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            local hp = math.clamp(humanoid.Health / math.max(humanoid.MaxHealth, 1), 0, 1)
+            data.HealthFill.Size = UDim2.new(hp, 0, 1, 0)
+            data.HealthFill.BackgroundColor3 = Color3.new(1 - hp, hp, 0)
+        end
+        data.HealthBack.Visible = CHVisuals.ESPHealth
+
+        if data.Tracer then
+            local camera = workspace.CurrentCamera
+            local point, onScreen = camera:WorldToViewportPoint(root.Position)
+            local viewport = camera.ViewportSize
+            data.Tracer.Visible = visible and CHVisuals.ESPTracer and onScreen
+            if data.Tracer.Visible then
+                data.Tracer.From = Vector2.new(viewport.X / 2, viewport.Y)
+                data.Tracer.To = Vector2.new(point.X, point.Y)
+                data.Tracer.Color = roleColor
+            end
+        end
+    end
+
+    local function CHUpdateESPAll()
+        for _, player in ipairs(CHPlayers:GetPlayers()) do
+            if player ~= CHLocalPlayer then
+                CHCreateESP(player)
+                CHUpdateESP(player)
+            end
+        end
+    end
+
+    local function CHApplySelfVisuals()
+        local character = CHLocalPlayer.Character
+        if not character then return end
+
+        local chams = character:FindFirstChild("CrystalHub_SelfChams")
+        if CHVisuals.SelfChams then
+            if not chams then
+                chams = Instance.new("Highlight")
+                chams.Name = "CrystalHub_SelfChams"
+                chams.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                chams.Parent = character
+            end
+            chams.FillColor = CHVisuals.SelfChamsColor
+            chams.OutlineColor = Color3.fromRGB(255, 255, 255)
+            chams.FillTransparency = 0.45
+            chams.OutlineTransparency = 0
+        elseif chams then
+            chams:Destroy()
+        end
+
+        local force = character:FindFirstChild("CrystalHub_SelfForceField")
+        if CHVisuals.SelfForceField then
+            if not force then
+                force = Instance.new("Highlight")
+                force.Name = "CrystalHub_SelfForceField"
+                force.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                force.Parent = character
+            end
+            force.FillColor = CHVisuals.SelfForceFieldColor
+            force.OutlineColor = CHVisuals.SelfForceFieldColor
+            force.FillTransparency = 0.75
+            force.OutlineTransparency = 0.1
+        elseif force then
+            force:Destroy()
+        end
+    end
+
+    local function CHClearAuraAndTrail()
+        local character = CHLocalPlayer.Character
+        if not character then return end
+        for _, obj in ipairs(character:GetDescendants()) do
+            if obj.Name == "CrystalHub_Aura" or obj.Name == "CrystalHub_Trail" then
+                obj:Destroy()
+            end
+        end
+    end
+
+    local function CHApplyAura()
+        local character = CHLocalPlayer.Character
+        local root = CHGetRoot(CHLocalPlayer)
+        if not character or not root then return end
+
+        local old = root:FindFirstChild("CrystalHub_Aura")
+        if old then old:Destroy() end
+        if not CHVisuals.Aura then return end
+
+        local attachment = Instance.new("Attachment")
+        attachment.Name = "CrystalHub_Aura"
+        attachment.Parent = root
+
+        local emitter = Instance.new("ParticleEmitter")
+        emitter.Name = "CrystalHub_Aura"
+        emitter.Parent = attachment
+        emitter.Enabled = true
+        emitter.Rate = 18
+        emitter.Lifetime = NumberRange.new(0.8, 1.5)
+        emitter.Speed = NumberRange.new(1.5, 3.5)
+        emitter.SpreadAngle = Vector2.new(360, 360)
+        emitter.RotSpeed = NumberRange.new(-180, 180)
+        emitter.LightEmission = 0.65
+        emitter.Size = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.35),
+            NumberSequenceKeypoint.new(0.5, 0.7),
+            NumberSequenceKeypoint.new(1, 0),
+        })
+        emitter.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.15),
+            NumberSequenceKeypoint.new(0.75, 0.35),
+            NumberSequenceKeypoint.new(1, 1),
+        })
+
+        local style = tonumber(CHVisuals.AuraStyle) or 1
+        local hue = ((style - 1) % 20) / 20
+        local c = Color3.fromHSV(hue, 0.75, 1)
+        if CHVisuals.AuraColor then c = CHVisuals.AuraColor end
+        emitter.Color = ColorSequence.new(c)
+        emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+    end
+
+    local function CHApplyTrail()
+        local character = CHLocalPlayer.Character
+        local root = CHGetRoot(CHLocalPlayer)
+        if not character or not root then return end
+
+        local old = root:FindFirstChild("CrystalHub_Trail")
+        if old then old:Destroy() end
+        if not CHVisuals.Trail then return end
+
+        local a0 = Instance.new("Attachment")
+        a0.Name = "CrystalHub_Trail"
+        a0.Position = Vector3.new(0, 1.5, 0)
+        a0.Parent = root
+
+        local a1 = Instance.new("Attachment")
+        a1.Name = "CrystalHub_Trail"
+        a1.Position = Vector3.new(0, -1.5, 0)
+        a1.Parent = root
+
+        local trail = Instance.new("Trail")
+        trail.Name = "CrystalHub_Trail"
+        trail.Attachment0 = a0
+        trail.Attachment1 = a1
+        trail.Lifetime = 0.65
+        trail.MinLength = 0.05
+        trail.FaceCamera = true
+        trail.LightEmission = 0.6
+        trail.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.1),
+            NumberSequenceKeypoint.new(1, 1),
+        })
+        trail.Color = ColorSequence.new(CHVisuals.TrailColor)
+        trail.Parent = root
+    end
+
+    local function CHUpdateFOV()
+        if not CHVisuals.FOVCircle then
+            if CHFOVCircle then
+                pcall(function() CHFOVCircle.Visible = false end)
+            end
+            return
+        end
+
+        if not CHFOVCircle then
+            local ok, circle = pcall(function()
+                return Drawing.new("Circle")
+            end)
+            if not ok or not circle then return end
+            CHFOVCircle = circle
+            CHFOVCircle.NumSides = 64
+            CHFOVCircle.Thickness = 1.5
+            CHFOVCircle.Filled = false
+            CHFOVCircle.Transparency = 1
+        end
+
+        local camera = workspace.CurrentCamera
+        local viewport = camera.ViewportSize
+        CHFOVCircle.Position = Vector2.new(viewport.X / 2, viewport.Y / 2)
+        CHFOVCircle.Radius = CHVisuals.FOVSize
+        CHFOVCircle.Color = CHVisuals.FOVColor
+        CHFOVCircle.Visible = true
+    end
+
+    local function CHRefreshCharacterVisuals()
+        CHApplySelfVisuals()
+        CHApplyAura()
+        CHApplyTrail()
+    end
+
+    CHVisualConnections.Render = CHRunService.RenderStepped:Connect(function()
+        CHUpdateESPAll()
+        CHUpdateFOV()
+    end)
+
+    CHPlayers.PlayerAdded:Connect(function(player)
+        if player ~= CHLocalPlayer then
+            CHCreateESP(player)
+            player.CharacterAdded:Connect(function()
+                task.wait(0.25)
+                CHCreateESP(player)
+            end)
+        end
+    end)
+
+    CHPlayers.PlayerRemoving:Connect(function(player)
+        CHDestroyESP(player)
+    end)
+
+    for _, player in ipairs(CHPlayers:GetPlayers()) do
+        if player ~= CHLocalPlayer then
+            CHCreateESP(player)
+        end
+    end
+
+    CHLocalPlayer.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        CHRefreshCharacterVisuals()
+    end)
+    CHRefreshCharacterVisuals()
+
+    -- Visuals tab: non-ESP visual effects from the supplied visual set.
     local VisualsTab = v300:Tab({
         Title = 'Visuals',
         Icon = 'eye',
@@ -3776,7 +4197,128 @@ do
 
     VisualsTab:Paragraph({
         Title = 'CrystalHub Visuals',
-        Content = 'Visual functions will be added here.',
+        Content = 'Self chams, forcefield, aura, trail and FOV circle.',
+    })
+
+    VisualsTab:Toggle({
+        Title = 'Self Chams',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.SelfChams = value
+            CHApplySelfVisuals()
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'Chams Color',
+        Default = CHVisuals.SelfChamsColor,
+        Callback = function(value)
+            CHVisuals.SelfChamsColor = value
+            CHApplySelfVisuals()
+        end,
+    })
+
+    VisualsTab:Toggle({
+        Title = 'Self ForceField',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.SelfForceField = value
+            CHApplySelfVisuals()
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'ForceField Color',
+        Default = CHVisuals.SelfForceFieldColor,
+        Callback = function(value)
+            CHVisuals.SelfForceFieldColor = value
+            CHApplySelfVisuals()
+        end,
+    })
+
+    VisualsTab:Divider()
+
+    VisualsTab:Toggle({
+        Title = 'Aura',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.Aura = value
+            CHApplyAura()
+        end,
+    })
+
+    VisualsTab:Dropdown({
+        Title = 'Aura Style',
+        Values = {
+            '1','2','3','4','5','6','7','8','9','10',
+            '11','12','13','14','15','16','17','18','19','20'
+        },
+        Value = CHVisuals.AuraStyle,
+        Callback = function(value)
+            CHVisuals.AuraStyle = tostring(value)
+            CHApplyAura()
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'Aura Color',
+        Default = CHVisuals.AuraColor,
+        Callback = function(value)
+            CHVisuals.AuraColor = value
+            CHApplyAura()
+        end,
+    })
+
+    VisualsTab:Toggle({
+        Title = 'Player Trail',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.Trail = value
+            CHApplyTrail()
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'Trail Color',
+        Default = CHVisuals.TrailColor,
+        Callback = function(value)
+            CHVisuals.TrailColor = value
+            CHApplyTrail()
+        end,
+    })
+
+    VisualsTab:Divider()
+
+    VisualsTab:Toggle({
+        Title = 'FOV Circle',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.FOVCircle = value
+            CHUpdateFOV()
+        end,
+    })
+
+    VisualsTab:Slider({
+        Title = 'FOV Size',
+        Step = 1,
+        Value = {
+            Min = 20,
+            Max = 300,
+            Default = CHVisuals.FOVSize,
+        },
+        Callback = function(value)
+            CHVisuals.FOVSize = tonumber(value) or 70
+            CHUpdateFOV()
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'FOV Color',
+        Default = CHVisuals.FOVColor,
+        Callback = function(value)
+            CHVisuals.FOVColor = value
+            CHUpdateFOV()
+        end,
     })
 
     v301:Paragraph({
@@ -5007,6 +5549,75 @@ function t50.Callback(p88)
 end
 
 v302:ColorPicker(t50)
+
+
+    v302:Divider()
+
+    v302:Paragraph({
+        Title = 'Detailed ESP',
+        Content = 'Extra ESP functions taken from the supplied visual set.',
+    })
+
+    v302:Toggle({
+        Title = 'ESP Name',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPName = value
+        end,
+    })
+
+    v302:Toggle({
+        Title = 'ESP Distance',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPDistance = value
+        end,
+    })
+
+    v302:Toggle({
+        Title = 'ESP Tool',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPTool = value
+        end,
+    })
+
+    v302:Toggle({
+        Title = 'ESP Health Bar',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPHealth = value
+        end,
+    })
+
+    v302:Toggle({
+        Title = 'ESP Tracer',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPTracer = value
+        end,
+    })
+
+    v302:Toggle({
+        Title = 'ESP Filled Box',
+        Default = false,
+        Callback = function(value)
+            CHVisuals.ESPFilled = value
+        end,
+    })
+
+    v302:Slider({
+        Title = 'ESP Max Distance',
+        Step = 50,
+        Value = {
+            Min = 100,
+            Max = 2000,
+            Default = CHVisuals.ESPMaxDistance,
+        },
+        Callback = function(value)
+            CHVisuals.ESPMaxDistance = tonumber(value) or 1000
+        end,
+    })
 task.wait(0.4)
 v232(true)
 v239(true)
