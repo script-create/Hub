@@ -3768,774 +3768,7 @@ do
         end)
     end
 
-    ----------------------------------------------------------------
-    -- CrystalHub Visuals
-    -- Imported as standalone logic:
-    --   * Player ESP -> existing ESP tab (v302)
-    --   * World / Self / Aura -> Visuals tab
-    --
-    -- No Discord invites, webhooks, HTTP requests, loadstring URLs,
-    -- or external data-sending logic is used by this block.
-    ----------------------------------------------------------------
-
-    local VisualsTab = v300:Tab({
-        Title = 'Visuals',
-        Icon = 'eye',
-    })
-
-    local VisualsPlayers = game:GetService('Players')
-    local VisualsRunService = game:GetService('RunService')
-    local VisualsLighting = game:GetService('Lighting')
-    local VisualsLocalPlayer = VisualsPlayers.LocalPlayer
-
-    local CHVisuals = {
-        ESP = {
-            Enabled = false,
-            Distance = 2500,
-            Box = true,
-            Names = true,
-            Health = true,
-            DistanceText = true,
-            Highlight = false,
-            BoxColor = Color3.fromRGB(155, 125, 175),
-            NameColor = Color3.fromRGB(255, 255, 255),
-            HealthFullColor = Color3.fromRGB(80, 255, 120),
-            HealthEmptyColor = Color3.fromRGB(255, 70, 70),
-            HighlightColor = Color3.fromRGB(155, 125, 175),
-        },
-        World = {
-            Enabled = false,
-            Ambient = Color3.fromRGB(80, 80, 80),
-            OutdoorAmbient = Color3.fromRGB(80, 80, 80),
-            FogColor = Color3.fromRGB(120, 120, 120),
-            FogStart = 0,
-            FogEnd = 1000,
-            Brightness = 2,
-            ClockTime = 14,
-            Exposure = 0,
-        },
-        Self = {
-            CharacterChams = false,
-            CharacterColor = Color3.fromRGB(155, 125, 175),
-            ToolMaterial = false,
-            ToolColor = Color3.fromRGB(155, 125, 175),
-            Aura = false,
-            AuraColor = Color3.fromRGB(155, 125, 175),
-        },
-    }
-
-    local espObjects = {}
-    local savedCharacterAppearance = {}
-    local savedToolAppearance = {}
-    local worldSaved = false
-    local savedWorld = {}
-
-    local function safeDestroy(obj)
-        if obj then
-            pcall(function()
-                obj:Destroy()
-            end)
-        end
-    end
-
-    --// ESP ---------------------------------------------------------
-    local function removePlayerESP(player)
-        local data = espObjects[player]
-        if not data then
-            return
-        end
-
-        safeDestroy(data.Gui)
-        safeDestroy(data.Highlight)
-        espObjects[player] = nil
-    end
-
-    local function removeAllPlayerESP()
-        for player in pairs(espObjects) do
-            removePlayerESP(player)
-        end
-    end
-
-    local function createPlayerESP(player)
-        if player == VisualsLocalPlayer then
-            return nil
-        end
-
-        local character = player.Character
-        local root = character and character:FindFirstChild('HumanoidRootPart')
-        if not root then
-            return nil
-        end
-
-        local data = espObjects[player]
-        if data and data.Gui and data.Gui.Parent then
-            return data
-        end
-
-        removePlayerESP(player)
-
-        local gui = Instance.new('BillboardGui')
-        gui.Name = 'CrystalHub_PlayerESP'
-        gui.Adornee = root
-        gui.AlwaysOnTop = true
-        gui.LightInfluence = 0
-        gui.Size = UDim2.fromOffset(150, 110)
-        gui.StudsOffset = Vector3.new(0, 0.15, 0)
-        gui.ResetOnSpawn = false
-        gui.Parent = root
-
-        local box = Instance.new('Frame')
-        box.Name = 'Box'
-        box.BackgroundTransparency = 1
-        box.BorderSizePixel = 0
-        box.AnchorPoint = Vector2.new(0.5, 0.5)
-        box.Position = UDim2.fromScale(0.5, 0.5)
-        box.Size = UDim2.fromScale(0.58, 0.78)
-        box.Parent = gui
-
-        local stroke = Instance.new('UIStroke')
-        stroke.Name = 'BoxStroke'
-        stroke.Thickness = 1
-        stroke.Parent = box
-
-        local nameLabel = Instance.new('TextLabel')
-        nameLabel.Name = 'Name'
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.AnchorPoint = Vector2.new(0.5, 1)
-        nameLabel.Position = UDim2.fromScale(0.5, 0.08)
-        nameLabel.Size = UDim2.fromScale(1, 0.2)
-        nameLabel.Font = Enum.Font.GothamSemibold
-        nameLabel.TextSize = 12
-        nameLabel.TextStrokeTransparency = 0.35
-        nameLabel.Text = player.DisplayName ~= player.Name
-            and (player.DisplayName .. '  @' .. player.Name)
-            or player.Name
-        nameLabel.Parent = gui
-
-        local healthBack = Instance.new('Frame')
-        healthBack.Name = 'HealthBack'
-        healthBack.AnchorPoint = Vector2.new(1, 0.5)
-        healthBack.Position = UDim2.fromScale(0.18, 0.5)
-        healthBack.Size = UDim2.fromOffset(4, 70)
-        healthBack.BorderSizePixel = 0
-        healthBack.BackgroundTransparency = 0.15
-        healthBack.Parent = gui
-
-        local healthFill = Instance.new('Frame')
-        healthFill.Name = 'HealthFill'
-        healthFill.AnchorPoint = Vector2.new(0, 1)
-        healthFill.Position = UDim2.fromScale(0, 1)
-        healthFill.Size = UDim2.fromScale(1, 1)
-        healthFill.BorderSizePixel = 0
-        healthFill.Parent = healthBack
-
-        local distanceLabel = Instance.new('TextLabel')
-        distanceLabel.Name = 'Distance'
-        distanceLabel.BackgroundTransparency = 1
-        distanceLabel.AnchorPoint = Vector2.new(0.5, 0)
-        distanceLabel.Position = UDim2.fromScale(0.5, 0.84)
-        distanceLabel.Size = UDim2.fromScale(1, 0.16)
-        distanceLabel.Font = Enum.Font.Gotham
-        distanceLabel.TextSize = 11
-        distanceLabel.TextStrokeTransparency = 0.4
-        distanceLabel.Parent = gui
-
-        data = {
-            Gui = gui,
-            Box = box,
-            Stroke = stroke,
-            Name = nameLabel,
-            HealthBack = healthBack,
-            HealthFill = healthFill,
-            Distance = distanceLabel,
-        }
-
-        espObjects[player] = data
-        return data
-    end
-
-    local function updatePlayerESP()
-        if not CHVisuals.ESP.Enabled then
-            removeAllPlayerESP()
-            return
-        end
-
-        local localCharacter = VisualsLocalPlayer.Character
-        local localRoot = localCharacter and localCharacter:FindFirstChild('HumanoidRootPart')
-        if not localRoot then
-            removeAllPlayerESP()
-            return
-        end
-
-        for _, player in ipairs(VisualsPlayers:GetPlayers()) do
-            if player ~= VisualsLocalPlayer then
-                local character = player.Character
-                local humanoid = character and character:FindFirstChildOfClass('Humanoid')
-                local root = character and character:FindFirstChild('HumanoidRootPart')
-
-                if root and humanoid and humanoid.Health > 0 then
-                    local distance = (root.Position - localRoot.Position).Magnitude
-                    local data = createPlayerESP(player)
-
-                    if data then
-                        local visible = distance <= CHVisuals.ESP.Distance
-                        data.Gui.Enabled = visible
-
-                        if visible then
-                            data.Box.Visible = CHVisuals.ESP.Box
-                            data.Stroke.Color = CHVisuals.ESP.BoxColor
-                            data.Name.Visible = CHVisuals.ESP.Names
-                            data.Name.TextColor3 = CHVisuals.ESP.NameColor
-                            data.Distance.Visible = CHVisuals.ESP.DistanceText
-                            data.Distance.TextColor3 = CHVisuals.ESP.NameColor
-                            data.Distance.Text = string.format('%dm', math.floor(distance + 0.5))
-
-                            data.HealthBack.Visible = CHVisuals.ESP.Health
-                            data.HealthFill.Visible = CHVisuals.ESP.Health
-                            local ratio = math.clamp(humanoid.Health / math.max(humanoid.MaxHealth, 1), 0, 1)
-                            data.HealthFill.Size = UDim2.fromScale(1, ratio)
-                            data.HealthFill.BackgroundColor3 = CHVisuals.ESP.HealthEmptyColor:Lerp(
-                                CHVisuals.ESP.HealthFullColor,
-                                ratio
-                            )
-                        end
-                    end
-
-                    if CHVisuals.ESP.Highlight then
-                        local highlight = character:FindFirstChild('CrystalHub_VisualESP')
-                        if not highlight then
-                            highlight = Instance.new('Highlight')
-                            highlight.Name = 'CrystalHub_VisualESP'
-                            highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                            highlight.FillTransparency = 0.75
-                            highlight.OutlineTransparency = 0.1
-                            highlight.Parent = character
-                        end
-                        highlight.FillColor = CHVisuals.ESP.HighlightColor
-                        highlight.Enabled = distance <= CHVisuals.ESP.Distance
-                        if data then
-                            data.Highlight = highlight
-                        end
-                    else
-                        local highlight = character:FindFirstChild('CrystalHub_VisualESP')
-                        if highlight then
-                            highlight:Destroy()
-                        end
-                    end
-                else
-                    removePlayerESP(player)
-                    if character then
-                        local highlight = character:FindFirstChild('CrystalHub_VisualESP')
-                        if highlight then
-                            highlight:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    -- Player lifecycle: refresh/rebuild instead of leaving stale ESP objects.
-    VisualsPlayers.PlayerRemoving:Connect(removePlayerESP)
-    VisualsPlayers.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function()
-            task.wait(0.2)
-            removePlayerESP(player)
-        end)
-    end)
-
-    VisualsLocalPlayer.CharacterAdded:Connect(function()
-        task.wait(0.2)
-        removeAllPlayerESP()
-    end)
-
-    -- Put all ESP controls in the existing ESP tab.
-    v302:Divider()
-    v302:Paragraph({
-        Title = 'Player ESP',
-        Content = 'Standalone visual ESP. It does not use external requests or Discord/webhook code.',
-    })
-
-    v302:Toggle({
-        Title = 'Player ESP',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.ESP.Enabled = value
-            if not value then
-                removeAllPlayerESP()
-            end
-        end,
-    })
-
-    v302:Slider({
-        Title = 'ESP Distance',
-        Step = 50,
-        Value = {
-            Min = 100,
-            Max = 5000,
-            Default = CHVisuals.ESP.Distance,
-        },
-        Callback = function(value)
-            value = tonumber(value)
-            if value then
-                CHVisuals.ESP.Distance = math.clamp(value, 100, 5000)
-            end
-        end,
-    })
-
-    v302:Toggle({
-        Title = 'ESP Boxes',
-        Default = true,
-        Callback = function(value)
-            CHVisuals.ESP.Box = value
-        end,
-    })
-
-    v302:ColorPicker({
-        Title = 'ESP Box Color',
-        Default = CHVisuals.ESP.BoxColor,
-        Callback = function(value)
-            CHVisuals.ESP.BoxColor = value
-        end,
-    })
-
-    v302:Toggle({
-        Title = 'ESP Names',
-        Default = true,
-        Callback = function(value)
-            CHVisuals.ESP.Names = value
-        end,
-    })
-
-    v302:ColorPicker({
-        Title = 'ESP Name Color',
-        Default = CHVisuals.ESP.NameColor,
-        Callback = function(value)
-            CHVisuals.ESP.NameColor = value
-        end,
-    })
-
-    v302:Toggle({
-        Title = 'ESP Health',
-        Default = true,
-        Callback = function(value)
-            CHVisuals.ESP.Health = value
-        end,
-    })
-
-    v302:ColorPicker({
-        Title = 'Health Full Color',
-        Default = CHVisuals.ESP.HealthFullColor,
-        Callback = function(value)
-            CHVisuals.ESP.HealthFullColor = value
-        end,
-    })
-
-    v302:ColorPicker({
-        Title = 'Health Empty Color',
-        Default = CHVisuals.ESP.HealthEmptyColor,
-        Callback = function(value)
-            CHVisuals.ESP.HealthEmptyColor = value
-        end,
-    })
-
-    v302:Toggle({
-        Title = 'ESP Distance',
-        Default = true,
-        Callback = function(value)
-            CHVisuals.ESP.DistanceText = value
-        end,
-    })
-
-    v302:Toggle({
-        Title = 'ESP Highlight',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.ESP.Highlight = value
-        end,
-    })
-
-    v302:ColorPicker({
-        Title = 'ESP Highlight Color',
-        Default = CHVisuals.ESP.HighlightColor,
-        Callback = function(value)
-            CHVisuals.ESP.HighlightColor = value
-        end,
-    })
-
-    --// World -------------------------------------------------------
-    VisualsTab:Paragraph({
-        Title = 'World',
-        Content = 'Lighting controls with full restoration when disabled.',
-    })
-
-    VisualsTab:Toggle({
-        Title = 'Lighting Modifications',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.World.Enabled = value
-
-            if value then
-                if not worldSaved then
-                    worldSaved = true
-                    savedWorld = {
-                        Ambient = VisualsLighting.Ambient,
-                        OutdoorAmbient = VisualsLighting.OutdoorAmbient,
-                        FogColor = VisualsLighting.FogColor,
-                        FogStart = VisualsLighting.FogStart,
-                        FogEnd = VisualsLighting.FogEnd,
-                        Brightness = VisualsLighting.Brightness,
-                        ClockTime = VisualsLighting.ClockTime,
-                        Exposure = VisualsLighting.ExposureCompensation,
-                    }
-                end
-            elseif worldSaved then
-                VisualsLighting.Ambient = savedWorld.Ambient
-                VisualsLighting.OutdoorAmbient = savedWorld.OutdoorAmbient
-                VisualsLighting.FogColor = savedWorld.FogColor
-                VisualsLighting.FogStart = savedWorld.FogStart
-                VisualsLighting.FogEnd = savedWorld.FogEnd
-                VisualsLighting.Brightness = savedWorld.Brightness
-                VisualsLighting.ClockTime = savedWorld.ClockTime
-                VisualsLighting.ExposureCompensation = savedWorld.Exposure
-            end
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Ambient Color',
-        Default = CHVisuals.World.Ambient,
-        Callback = function(value)
-            CHVisuals.World.Ambient = value
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Outdoor Ambient',
-        Default = CHVisuals.World.OutdoorAmbient,
-        Callback = function(value)
-            CHVisuals.World.OutdoorAmbient = value
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Fog Color',
-        Default = CHVisuals.World.FogColor,
-        Callback = function(value)
-            CHVisuals.World.FogColor = value
-        end,
-    })
-
-    VisualsTab:Slider({
-        Title = 'Fog Start',
-        Step = 10,
-        Value = {
-            Min = 0,
-            Max = 1000,
-            Default = CHVisuals.World.FogStart,
-        },
-        Callback = function(value)
-            CHVisuals.World.FogStart = math.clamp(tonumber(value) or 0, 0, 1000)
-        end,
-    })
-
-    VisualsTab:Slider({
-        Title = 'Fog End',
-        Step = 10,
-        Value = {
-            Min = 100,
-            Max = 5000,
-            Default = CHVisuals.World.FogEnd,
-        },
-        Callback = function(value)
-            CHVisuals.World.FogEnd = math.clamp(tonumber(value) or 1000, 100, 5000)
-        end,
-    })
-
-    VisualsTab:Slider({
-        Title = 'Brightness',
-        Step = 0.1,
-        Value = {
-            Min = 0,
-            Max = 10,
-            Default = CHVisuals.World.Brightness,
-        },
-        Callback = function(value)
-            CHVisuals.World.Brightness = math.clamp(tonumber(value) or 2, 0, 10)
-        end,
-    })
-
-    VisualsTab:Slider({
-        Title = 'Clock Time',
-        Step = 0.5,
-        Value = {
-            Min = 0,
-            Max = 24,
-            Default = CHVisuals.World.ClockTime,
-        },
-        Callback = function(value)
-            CHVisuals.World.ClockTime = math.clamp(tonumber(value) or 14, 0, 24)
-        end,
-    })
-
-    VisualsTab:Slider({
-        Title = 'Exposure',
-        Step = 0.1,
-        Value = {
-            Min = -3,
-            Max = 3,
-            Default = CHVisuals.World.Exposure,
-        },
-        Callback = function(value)
-            CHVisuals.World.Exposure = math.clamp(tonumber(value) or 0, -3, 3)
-        end,
-    })
-
-    --// Self visuals ------------------------------------------------
-    local function getCurrentCharacter()
-        return VisualsLocalPlayer.Character
-    end
-
-    local function saveCharacterAppearance(character)
-        table.clear(savedCharacterAppearance)
-        for _, obj in ipairs(character:GetDescendants()) do
-            if obj:IsA('BasePart') then
-                savedCharacterAppearance[obj] = {
-                    Material = obj.Material,
-                    Color = obj.Color,
-                }
-            end
-        end
-    end
-
-    local function applyCharacterChams()
-        local character = getCurrentCharacter()
-        if not character then
-            return
-        end
-
-        if next(savedCharacterAppearance) == nil then
-            saveCharacterAppearance(character)
-        end
-
-        for _, obj in ipairs(character:GetDescendants()) do
-            if obj:IsA('BasePart') then
-                obj.Material = Enum.Material.ForceField
-                obj.Color = CHVisuals.Self.CharacterColor
-            end
-        end
-    end
-
-    local function restoreCharacterAppearance()
-        for part, data in pairs(savedCharacterAppearance) do
-            if part and part.Parent then
-                part.Material = data.Material
-                part.Color = data.Color
-            end
-        end
-        table.clear(savedCharacterAppearance)
-    end
-
-    local function saveToolAppearance(tool)
-        table.clear(savedToolAppearance)
-        for _, obj in ipairs(tool:GetDescendants()) do
-            if obj:IsA('BasePart') then
-                savedToolAppearance[obj] = {
-                    Material = obj.Material,
-                    Color = obj.Color,
-                }
-            end
-        end
-    end
-
-    local function restoreToolAppearance()
-        for part, data in pairs(savedToolAppearance) do
-            if part and part.Parent then
-                part.Material = data.Material
-                part.Color = data.Color
-            end
-        end
-        table.clear(savedToolAppearance)
-    end
-
-    local function updateToolMaterial()
-        local character = getCurrentCharacter()
-        if not character then
-            return
-        end
-
-        local tool = character:FindFirstChildOfClass('Tool')
-        if not tool then
-            restoreToolAppearance()
-            return
-        end
-
-        if CHVisuals.Self.ToolMaterial then
-            if next(savedToolAppearance) == nil then
-                saveToolAppearance(tool)
-            end
-
-            for _, obj in ipairs(tool:GetDescendants()) do
-                if obj:IsA('BasePart') then
-                    obj.Material = Enum.Material.ForceField
-                    obj.Color = CHVisuals.Self.ToolColor
-                end
-            end
-        else
-            restoreToolAppearance()
-        end
-    end
-
-    local function removeAura()
-        local character = getCurrentCharacter()
-        if not character then
-            return
-        end
-
-        local aura = character:FindFirstChild('CrystalHub_Aura')
-        if aura then
-            aura:Destroy()
-        end
-    end
-
-    local function updateAura()
-        removeAura()
-
-        if not CHVisuals.Self.Aura then
-            return
-        end
-
-        local character = getCurrentCharacter()
-        if not character then
-            return
-        end
-
-        local aura = Instance.new('Highlight')
-        aura.Name = 'CrystalHub_Aura'
-        aura.DepthMode = Enum.HighlightDepthMode.Occluded
-        aura.FillColor = CHVisuals.Self.AuraColor
-        aura.FillTransparency = 0.78
-        aura.OutlineColor = CHVisuals.Self.AuraColor
-        aura.OutlineTransparency = 0.05
-        aura.Parent = character
-    end
-
-    VisualsTab:Paragraph({
-        Title = 'Self',
-        Content = 'Character and tool appearance. Changes are restored when disabled or after respawn.',
-    })
-
-    VisualsTab:Toggle({
-        Title = 'Character Chams',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.Self.CharacterChams = value
-
-            if value then
-                applyCharacterChams()
-            else
-                restoreCharacterAppearance()
-            end
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Character Chams Color',
-        Default = CHVisuals.Self.CharacterColor,
-        Callback = function(value)
-            CHVisuals.Self.CharacterColor = value
-            if CHVisuals.Self.CharacterChams then
-                applyCharacterChams()
-            end
-        end,
-    })
-
-    VisualsTab:Toggle({
-        Title = 'Tool Material',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.Self.ToolMaterial = value
-            if not value then
-                restoreToolAppearance()
-            end
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Tool Color',
-        Default = CHVisuals.Self.ToolColor,
-        Callback = function(value)
-            CHVisuals.Self.ToolColor = value
-        end,
-    })
-
-    VisualsTab:Toggle({
-        Title = 'Aura',
-        Default = false,
-        Callback = function(value)
-            CHVisuals.Self.Aura = value
-            updateAura()
-        end,
-    })
-
-    VisualsTab:ColorPicker({
-        Title = 'Aura Color',
-        Default = CHVisuals.Self.AuraColor,
-        Callback = function(value)
-            CHVisuals.Self.AuraColor = value
-            if CHVisuals.Self.Aura then
-                updateAura()
-            end
-        end,
-    })
-
-    -- Character respawn: restore old objects, then re-apply enabled visuals.
-    VisualsLocalPlayer.CharacterAdded:Connect(function(character)
-        table.clear(savedCharacterAppearance)
-        table.clear(savedToolAppearance)
-
-        task.wait(0.35)
-
-        if CHVisuals.Self.CharacterChams then
-            applyCharacterChams()
-        end
-
-        if CHVisuals.Self.Aura then
-            updateAura()
-        end
-    end)
-
-    -- One update loop keeps all visual state synchronized and prevents
-    -- several independent Heartbeat/RenderStepped loops from fighting.
-    VisualsRunService.RenderStepped:Connect(function()
-        updatePlayerESP()
-
-        if CHVisuals.World.Enabled then
-            VisualsLighting.Ambient = CHVisuals.World.Ambient
-            VisualsLighting.OutdoorAmbient = CHVisuals.World.OutdoorAmbient
-            VisualsLighting.FogColor = CHVisuals.World.FogColor
-            VisualsLighting.FogStart = math.min(CHVisuals.World.FogStart, CHVisuals.World.FogEnd - 1)
-            VisualsLighting.FogEnd = math.max(CHVisuals.World.FogEnd, CHVisuals.World.FogStart + 1)
-            VisualsLighting.Brightness = CHVisuals.World.Brightness
-            VisualsLighting.ClockTime = CHVisuals.World.ClockTime
-            VisualsLighting.ExposureCompensation = CHVisuals.World.Exposure
-        end
-
-        if CHVisuals.Self.CharacterChams then
-            applyCharacterChams()
-        end
-
-        if CHVisuals.Self.ToolMaterial then
-            updateToolMaterial()
-        end
-    end)
-
-    v301:Paragraph({
-        Title = 'Auto-Loaded Buttons',
-        Content = 'Gold Bomb, Normal Bomb and Shoot/Throw are enabled by default.',
-    })
-
-    local t27 = {
+local t27 = {
         Title = 'Show Gold Bomb',
         Default = true,
     }
@@ -5758,6 +4991,347 @@ function t50.Callback(p88)
 end
 
 v302:ColorPicker(t50)
+----------------------------------------------------------------
+-- CrystalHub Visuals (safe, self-contained)
+-- IMPORTANT: this block is intentionally placed AFTER all Main/ESP
+-- controls. A visual callback can never prevent Main/ESP from being built.
+-- No Discord/webhook/HTTP sending code is used here.
+----------------------------------------------------------------
+do
+    local VisualsPlayers = game:GetService('Players')
+    local VisualsRunService = game:GetService('RunService')
+    local VisualsLighting = game:GetService('Lighting')
+    local VisualsCoreGui = game:GetService('CoreGui')
+    local VisualsLocalPlayer = VisualsPlayers.LocalPlayer
+    local VisualsCamera = workspace.CurrentCamera
+
+    local visualState = {
+        FullBright = false,
+        NoFog = false,
+        SelfChams = false,
+        Crosshair = false,
+        CrosshairSize = 6,
+        CrosshairGap = 5,
+        CrosshairThickness = 2,
+        CrosshairColor = Color3.fromRGB(255, 255, 255),
+    }
+
+    local savedLighting = nil
+    local savedFog = nil
+    local savedFov = nil
+    local savedChams = {}
+    local crosshairGui = nil
+    local crosshairLines = {}
+
+    local function getCamera()
+        VisualsCamera = workspace.CurrentCamera or VisualsCamera
+        return VisualsCamera
+    end
+
+    local function makeCrosshair()
+        if crosshairGui and crosshairGui.Parent then
+            return
+        end
+
+        local old = VisualsCoreGui:FindFirstChild('CrystalHub_Crosshair')
+        if old then
+            old:Destroy()
+        end
+
+        crosshairGui = Instance.new('ScreenGui')
+        crosshairGui.Name = 'CrystalHub_Crosshair'
+        crosshairGui.IgnoreGuiInset = true
+        crosshairGui.ResetOnSpawn = false
+        crosshairGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+        crosshairGui.DisplayOrder = 999
+        crosshairGui.Parent = VisualsCoreGui
+
+        for i = 1, 4 do
+            local line = Instance.new('Frame')
+            line.Name = 'Line' .. i
+            line.BorderSizePixel = 0
+            line.AnchorPoint = Vector2.new(0.5, 0.5)
+            line.Parent = crosshairGui
+            crosshairLines[i] = line
+        end
+    end
+
+    local function destroyCrosshair()
+        if crosshairGui then
+            pcall(function() crosshairGui:Destroy() end)
+        end
+        crosshairGui = nil
+        table.clear(crosshairLines)
+    end
+
+    local function updateCrosshair()
+        if not visualState.Crosshair then
+            if crosshairGui then
+                for _, line in ipairs(crosshairLines) do
+                    line.Visible = false
+                end
+            end
+            return
+        end
+
+        makeCrosshair()
+        local camera = getCamera()
+        if not camera then return end
+
+        local center = camera.ViewportSize / 2
+        local s = math.max(1, visualState.CrosshairSize)
+        local g = math.max(0, visualState.CrosshairGap)
+        local thickness = math.max(1, visualState.CrosshairThickness)
+
+        -- Top, bottom, left, right.
+        crosshairLines[1].Position = UDim2.fromOffset(center.X, center.Y - g - s / 2)
+        crosshairLines[1].Size = UDim2.fromOffset(thickness, s)
+        crosshairLines[2].Position = UDim2.fromOffset(center.X, center.Y + g + s / 2)
+        crosshairLines[2].Size = UDim2.fromOffset(thickness, s)
+        crosshairLines[3].Position = UDim2.fromOffset(center.X - g - s / 2, center.Y)
+        crosshairLines[3].Size = UDim2.fromOffset(s, thickness)
+        crosshairLines[4].Position = UDim2.fromOffset(center.X + g + s / 2, center.Y)
+        crosshairLines[4].Size = UDim2.fromOffset(s, thickness)
+
+        for _, line in ipairs(crosshairLines) do
+            line.BackgroundColor3 = visualState.CrosshairColor
+            line.Visible = true
+        end
+    end
+
+    local function enableFullBright()
+        if not savedLighting then
+            savedLighting = {
+                Brightness = VisualsLighting.Brightness,
+                Ambient = VisualsLighting.Ambient,
+                OutdoorAmbient = VisualsLighting.OutdoorAmbient,
+                GlobalShadows = VisualsLighting.GlobalShadows,
+            }
+        end
+        visualState.FullBright = true
+    end
+
+    local function disableFullBright()
+        visualState.FullBright = false
+        if savedLighting then
+            VisualsLighting.Brightness = savedLighting.Brightness
+            VisualsLighting.Ambient = savedLighting.Ambient
+            VisualsLighting.OutdoorAmbient = savedLighting.OutdoorAmbient
+            VisualsLighting.GlobalShadows = savedLighting.GlobalShadows
+        end
+    end
+
+    local function enableNoFog()
+        if not savedFog then
+            savedFog = {
+                FogStart = VisualsLighting.FogStart,
+                FogEnd = VisualsLighting.FogEnd,
+            }
+        end
+        visualState.NoFog = true
+    end
+
+    local function disableNoFog()
+        visualState.NoFog = false
+        if savedFog then
+            VisualsLighting.FogStart = savedFog.FogStart
+            VisualsLighting.FogEnd = savedFog.FogEnd
+        end
+    end
+
+    local function applySelfChams()
+        local character = VisualsLocalPlayer.Character
+        if not character then return end
+
+        for _, obj in ipairs(character:GetDescendants()) do
+            if obj:IsA('BasePart') and obj.Name ~= 'HumanoidRootPart' then
+                if not savedChams[obj] then
+                    savedChams[obj] = {
+                        Material = obj.Material,
+                        Color = obj.Color,
+                        LocalTransparencyModifier = obj.LocalTransparencyModifier,
+                    }
+                end
+                obj.Material = Enum.Material.ForceField
+                obj.Color = visualState.ChamsColor or Color3.fromRGB(155, 125, 175)
+            end
+        end
+    end
+
+    local function restoreSelfChams()
+        for part, data in pairs(savedChams) do
+            if part and part.Parent then
+                pcall(function()
+                    part.Material = data.Material
+                    part.Color = data.Color
+                    part.LocalTransparencyModifier = data.LocalTransparencyModifier
+                end)
+            end
+        end
+        table.clear(savedChams)
+    end
+
+    VisualsTab = v300:Tab({
+        Title = 'Visuals',
+        Icon = 'eye',
+    })
+
+    VisualsTab:Paragraph({
+        Title = 'World',
+        Content = 'Lighting and visibility options. Original settings are restored when disabled.',
+    })
+
+    VisualsTab:Toggle({
+        Title = 'FullBright',
+        Description = 'Maximum ambient lighting without changing the map.',
+        Default = false,
+        Callback = function(value)
+            if value then
+                enableFullBright()
+            else
+                disableFullBright()
+            end
+        end,
+    })
+
+    VisualsTab:Toggle({
+        Title = 'No Fog',
+        Description = 'Removes local fog while enabled.',
+        Default = false,
+        Callback = function(value)
+            if value then
+                enableNoFog()
+            else
+                disableNoFog()
+            end
+        end,
+    })
+
+    VisualsTab:Paragraph({
+        Title = 'Self Visuals',
+        Content = 'Appearance effects are local and are restored after disabling or respawning.',
+    })
+
+    VisualsTab:Toggle({
+        Title = 'Character Chams',
+        Default = false,
+        Callback = function(value)
+            visualState.SelfChams = value
+            if value then
+                applySelfChams()
+            else
+                restoreSelfChams()
+            end
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'Chams Color',
+        Default = Color3.fromRGB(155, 125, 175),
+        Callback = function(value)
+            visualState.ChamsColor = value
+            if visualState.SelfChams then
+                applySelfChams()
+            end
+        end,
+    })
+
+    VisualsTab:Paragraph({
+        Title = 'Crosshair',
+        Content = 'Mobile-friendly screen crosshair. No Drawing API required.',
+    })
+
+    VisualsTab:Toggle({
+        Title = 'Crosshair',
+        Default = false,
+        Callback = function(value)
+            visualState.Crosshair = value
+            if not value then
+                destroyCrosshair()
+            else
+                makeCrosshair()
+            end
+        end,
+    })
+
+    VisualsTab:Slider({
+        Title = 'Crosshair Size',
+        Step = 1,
+        Value = {
+            Min = 2,
+            Max = 20,
+            Default = visualState.CrosshairSize,
+        },
+        Callback = function(value)
+            visualState.CrosshairSize = math.clamp(tonumber(value) or 6, 2, 20)
+        end,
+    })
+
+    VisualsTab:Slider({
+        Title = 'Crosshair Gap',
+        Step = 1,
+        Value = {
+            Min = 0,
+            Max = 20,
+            Default = visualState.CrosshairGap,
+        },
+        Callback = function(value)
+            visualState.CrosshairGap = math.clamp(tonumber(value) or 5, 0, 20)
+        end,
+    })
+
+    VisualsTab:Slider({
+        Title = 'Crosshair Thickness',
+        Step = 1,
+        Value = {
+            Min = 1,
+            Max = 6,
+            Default = visualState.CrosshairThickness,
+        },
+        Callback = function(value)
+            visualState.CrosshairThickness = math.clamp(tonumber(value) or 2, 1, 6)
+        end,
+    })
+
+    VisualsTab:ColorPicker({
+        Title = 'Crosshair Color',
+        Default = visualState.CrosshairColor,
+        Callback = function(value)
+            visualState.CrosshairColor = value
+        end,
+    })
+
+    VisualsLocalPlayer.CharacterAdded:Connect(function()
+        table.clear(savedChams)
+        if visualState.SelfChams then
+            task.wait(0.25)
+            applySelfChams()
+        end
+    end)
+
+    VisualsRunService.RenderStepped:Connect(function()
+        if visualState.FullBright then
+            VisualsLighting.Brightness = 3
+            VisualsLighting.Ambient = Color3.fromRGB(255, 255, 255)
+            VisualsLighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+            VisualsLighting.GlobalShadows = false
+        end
+
+        if visualState.NoFog then
+            VisualsLighting.FogStart = 0
+            VisualsLighting.FogEnd = 100000
+        end
+
+        if visualState.SelfChams then
+            applySelfChams()
+        end
+
+        if visualState.Crosshair then
+            updateCrosshair()
+        end
+    end)
+end
+
 task.wait(0.4)
 v232(true)
 v239(true)
