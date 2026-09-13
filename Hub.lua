@@ -33,7 +33,7 @@ do
                     n3 = 70
                     u15 = false
                     u16 = false
-                    u17 = true
+                    u17 = false
                     v18 = loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/WindUI/refs/heads/main/dist/main.lua'))()
 
                     v18:SetTheme('Crimson')
@@ -751,11 +751,11 @@ do
                             t2 = {}
                             n4 = 0
                             t3 = {
-                                Murderer = true,
-                                Sheriff = true,
-                                Hero = true,
-                                Innocent = true,
-                                Self = true,
+                                Murderer = false,
+                                Sheriff = false,
+                                Hero = false,
+                                Innocent = false,
+                                Self = false,
                             }
                             t4 = {
                                 Murderer = Color3.fromRGB(255, 40, 40),
@@ -2394,16 +2394,10 @@ do
                 if p45 then
                     u227('GoldBomb', u228.GoldBomb, u229, Color3.fromRGB(255, 215, 0), 'GOLD\nJUMP')
                     u226.GoldBomb.btn.MouseButton1Click:Connect(function()
-                        if not u9 then
-                            u231('GoldBomb', true)
-
-                            return
-                        end
-
                         u230:Notify({
                             Title = 'CrystalHub',
-                            Content = tostring('Gold Bomb on cooldown.'),
-                            Duration = 3,
+                            Content = 'Gold button ready.',
+                            Duration = 2,
                             Icon = 'bell',
                         })
                     end)
@@ -2428,16 +2422,10 @@ do
                 if p46 then
                     u234('NormalBomb', u235.NormalBomb, u236, Color3.fromRGB(0, 170, 255), 'NORMAL\nJUMP')
                     u233.NormalBomb.btn.MouseButton1Click:Connect(function()
-                        if not u10 then
-                            u238('FakeBomb', false)
-
-                            return
-                        end
-
                         u237:Notify({
                             Title = 'CrystalHub',
-                            Content = tostring('Normal Bomb on cooldown.'),
-                            Duration = 3,
+                            Content = 'Bomb button ready.',
+                            Duration = 2,
                             Icon = 'bell',
                         })
                     end)
@@ -2462,7 +2450,14 @@ do
                 local v769 = u241('Shoot', u242.Shoot, u243, Color3.fromRGB(255, 255, 255), 'SHOOT')
 
                 u222(v769, 5159914132)
-                v769.btn.MouseButton1Click:Connect(u98)
+                v769.btn.MouseButton1Click:Connect(function()
+                    v18:Notify({
+                        Title = 'CrystalHub',
+                        Content = 'Shoot button ready.',
+                        Duration = 2,
+                        Icon = 'bell',
+                    })
+                end)
 
                 return
             end
@@ -2472,6 +2467,14 @@ do
                 u240.Shoot = nil
             end
         end
+
+        -- Show the original three floating buttons immediately when CrystalHub starts.
+        -- They are visual UI buttons only.
+        task.defer(function()
+            v232(true)
+            v239(true)
+            v244(true)
+        end)
 
         local u245 = t25
         local u246 = v220
@@ -2981,9 +2984,9 @@ do
             AutoFarmEnabled = false,
             FarmMode = "Underground",
             TweenSpeed = 25,
-            AutoReset = true,
-            AvoidMurder = true,
-            AntiAfkEnabled = true,
+            AutoReset = false,
+            AvoidMurder = false,
+            AntiAfkEnabled = false,
             AntiAfkInterval = 120,
             UndergroundOffset = 4,
             MaxDistance = 600,
@@ -3792,10 +3795,10 @@ do
         ESP = {
             Enabled = false,
             Distance = 2500,
-            Box = true,
-            Names = true,
-            Health = true,
-            DistanceText = true,
+            Box = false,
+            Names = false,
+            Health = false,
+            DistanceText = false,
             Highlight = false,
             BoxColor = Color3.fromRGB(155, 125, 175),
             NameColor = Color3.fromRGB(255, 255, 255),
@@ -4052,10 +4055,6 @@ do
     -- Put all ESP controls in the existing ESP tab.
     v302:Divider()
     v302:Paragraph({
-        Title = 'Feature activation',
-        Content = 'Master toggles control the whole function. Child settings only take effect while their master is enabled.',
-    })
-    v302:Paragraph({
         Title = 'Player ESP',
         Content = 'Standalone visual ESP. It does not use external requests or Discord/webhook code.',
     })
@@ -4065,12 +4064,6 @@ do
         Default = false,
         Callback = function(value)
             CHVisuals.ESP.Enabled = value
-            -- Master switch: all ESP settings are active only while Player ESP is ON.
-            CHVisuals.ESP.Box = value
-            CHVisuals.ESP.Names = value
-            CHVisuals.ESP.Health = value
-            CHVisuals.ESP.DistanceText = value
-            CHVisuals.ESP.Highlight = value
             if not value then
                 removeAllPlayerESP()
             end
@@ -4095,7 +4088,7 @@ do
 
     v302:Toggle({
         Title = 'ESP Boxes',
-        Default = true,
+        Default = false,
         Callback = function(value)
             CHVisuals.ESP.Box = value
         end,
@@ -4111,7 +4104,7 @@ do
 
     v302:Toggle({
         Title = 'ESP Names',
-        Default = true,
+        Default = false,
         Callback = function(value)
             CHVisuals.ESP.Names = value
         end,
@@ -4127,7 +4120,7 @@ do
 
     v302:Toggle({
         Title = 'ESP Health',
-        Default = true,
+        Default = false,
         Callback = function(value)
             CHVisuals.ESP.Health = value
         end,
@@ -4151,7 +4144,7 @@ do
 
     v302:Toggle({
         Title = 'ESP Distance',
-        Default = true,
+        Default = false,
         Callback = function(value)
             CHVisuals.ESP.DistanceText = value
         end,
@@ -4303,7 +4296,6 @@ do
 
     --// Extra player visuals ---------------------------------------
     local ExtraESP = {
-        MasterEnabled = false,
         MaterialEnabled = false,
         Material = 'Neon',
         MaterialColor = Color3.fromRGB(255, 255, 255),
@@ -4348,9 +4340,6 @@ do
     end
 
     local function updateExtraESP()
-        if not ExtraESP.MasterEnabled then
-            return
-        end
         for _, player in ipairs(VisualsPlayers:GetPlayers()) do
             if player ~= VisualsLocalPlayer then
                 local character = player.Character
@@ -4394,28 +4383,6 @@ do
     })
 
     VisualsTab:Toggle({
-        Title = 'Extra Player Visuals',
-        Default = false,
-        Callback = function(value)
-            ExtraESP.MasterEnabled = value
-            ExtraESP.MaterialEnabled = value
-            ExtraESP.HighlightEnabled = value
-            if not value then
-                for character in pairs(extraESPOriginals) do
-                    restoreExtraESPCharacter(character)
-                end
-                for _, player in ipairs(VisualsPlayers:GetPlayers()) do
-                    local character = player.Character
-                    local highlight = character and character:FindFirstChild('CrystalHub_ExtraHighlight')
-                    if highlight then
-                        highlight:Destroy()
-                    end
-                end
-            end
-        end,
-    })
-
-    VisualsTab:Toggle({
         Title = 'Player Material',
         Default = false,
         Callback = function(value)
@@ -4449,7 +4416,7 @@ do
         Title = 'Player Highlight',
         Default = false,
         Callback = function(value)
-            ExtraESP.HighlightEnabled = ExtraESP.MasterEnabled and value
+            ExtraESP.HighlightEnabled = value
         end,
     })
 
@@ -4524,9 +4491,6 @@ do
         Default = false,
         Callback = function(value)
             WalkSteps.Enabled = value
-            if not value then
-                lastWalkStep = 0
-            end
         end,
     })
 
@@ -4690,35 +4654,13 @@ do
         Content = 'Character and tool appearance. Changes are restored when disabled or after respawn.',
     })
 
-    local SelfVisualMaster = false
-
-    VisualsTab:Toggle({
-        Title = 'Self Visuals',
-        Default = false,
-        Callback = function(value)
-            SelfVisualMaster = value
-            CHVisuals.Self.CharacterChams = value
-            CHVisuals.Self.ToolMaterial = value
-            CHVisuals.Self.Aura = value
-            if value then
-                applyCharacterChams()
-                updateToolMaterial()
-                updateAura()
-            else
-                restoreCharacterAppearance()
-                restoreToolAppearance()
-                removeAura()
-            end
-        end,
-    })
-
     VisualsTab:Toggle({
         Title = 'Character Chams',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.CharacterChams = SelfVisualMaster and value
+            CHVisuals.Self.CharacterChams = value
 
-            if CHVisuals.Self.CharacterChams then
+            if value then
                 applyCharacterChams()
             else
                 restoreCharacterAppearance()
@@ -4741,8 +4683,8 @@ do
         Title = 'Tool Material',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.ToolMaterial = SelfVisualMaster and value
-            if not CHVisuals.Self.ToolMaterial then
+            CHVisuals.Self.ToolMaterial = value
+            if not value then
                 restoreToolAppearance()
             end
         end,
@@ -4760,7 +4702,7 @@ do
         Title = 'Aura',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.Aura = SelfVisualMaster and value
+            CHVisuals.Self.Aura = value
             updateAura()
         end,
     })
@@ -4783,11 +4725,11 @@ do
 
         task.wait(0.35)
 
-        if SelfVisualMaster and CHVisuals.Self.CharacterChams then
+        if CHVisuals.Self.CharacterChams then
             applyCharacterChams()
         end
 
-        if SelfVisualMaster and CHVisuals.Self.Aura then
+        if CHVisuals.Self.Aura then
             updateAura()
         end
     end)
@@ -5581,11 +5523,11 @@ VisualsTab:Button(t34)
             VisualsLighting.ExposureCompensation = CHVisuals.World.Exposure
         end
 
-        if SelfVisualMaster and CHVisuals.Self.CharacterChams then
+        if CHVisuals.Self.CharacterChams then
             applyCharacterChams()
         end
 
-        if SelfVisualMaster and CHVisuals.Self.ToolMaterial then
+        if CHVisuals.Self.ToolMaterial then
             updateToolMaterial()
         end
 
@@ -5913,7 +5855,7 @@ v302:Divider()
 
 local t41 = {
     Title = 'Show Murderer',
-    Default = true,
+    Default = false,
 }
 local u341 = t3
 
@@ -5925,7 +5867,7 @@ v302:Toggle(t41)
 
 local t42 = {
     Title = 'Show Sheriff',
-    Default = true,
+    Default = false,
 }
 local u343 = t3
 
@@ -5937,7 +5879,7 @@ v302:Toggle(t42)
 
 local t43 = {
     Title = 'Show Hero',
-    Default = true,
+    Default = false,
 }
 local u345 = t3
 
@@ -5949,7 +5891,7 @@ v302:Toggle(t43)
 
 local t44 = {
     Title = 'Show Innocents',
-    Default = true,
+    Default = false,
 }
 local u347 = t3
 
@@ -5961,7 +5903,7 @@ v302:Toggle(t44)
 
 local t45 = {
     Title = 'Show Self',
-    Default = true,
+    Default = false,
 }
 local u349 = t3
 
@@ -6060,9 +6002,6 @@ end
 
 v302:Colorpicker(t50)
 task.wait(0.4)
-v232(true)
-v239(true)
-v244(true)
 v18:Notify({
     Title = 'CrystalHub',
     Content = tostring('CrystalHub Ready!'),
