@@ -4052,6 +4052,10 @@ do
     -- Put all ESP controls in the existing ESP tab.
     v302:Divider()
     v302:Paragraph({
+        Title = 'Feature activation',
+        Content = 'Master toggles control the whole function. Child settings only take effect while their master is enabled.',
+    })
+    v302:Paragraph({
         Title = 'Player ESP',
         Content = 'Standalone visual ESP. It does not use external requests or Discord/webhook code.',
     })
@@ -4061,6 +4065,12 @@ do
         Default = false,
         Callback = function(value)
             CHVisuals.ESP.Enabled = value
+            -- Master switch: all ESP settings are active only while Player ESP is ON.
+            CHVisuals.ESP.Box = value
+            CHVisuals.ESP.Names = value
+            CHVisuals.ESP.Health = value
+            CHVisuals.ESP.DistanceText = value
+            CHVisuals.ESP.Highlight = value
             if not value then
                 removeAllPlayerESP()
             end
@@ -4293,6 +4303,7 @@ do
 
     --// Extra player visuals ---------------------------------------
     local ExtraESP = {
+        MasterEnabled = false,
         MaterialEnabled = false,
         Material = 'Neon',
         MaterialColor = Color3.fromRGB(255, 255, 255),
@@ -4337,6 +4348,9 @@ do
     end
 
     local function updateExtraESP()
+        if not ExtraESP.MasterEnabled then
+            return
+        end
         for _, player in ipairs(VisualsPlayers:GetPlayers()) do
             if player ~= VisualsLocalPlayer then
                 local character = player.Character
@@ -4380,6 +4394,28 @@ do
     })
 
     VisualsTab:Toggle({
+        Title = 'Extra Player Visuals',
+        Default = false,
+        Callback = function(value)
+            ExtraESP.MasterEnabled = value
+            ExtraESP.MaterialEnabled = value
+            ExtraESP.HighlightEnabled = value
+            if not value then
+                for character in pairs(extraESPOriginals) do
+                    restoreExtraESPCharacter(character)
+                end
+                for _, player in ipairs(VisualsPlayers:GetPlayers()) do
+                    local character = player.Character
+                    local highlight = character and character:FindFirstChild('CrystalHub_ExtraHighlight')
+                    if highlight then
+                        highlight:Destroy()
+                    end
+                end
+            end
+        end,
+    })
+
+    VisualsTab:Toggle({
         Title = 'Player Material',
         Default = false,
         Callback = function(value)
@@ -4413,7 +4449,7 @@ do
         Title = 'Player Highlight',
         Default = false,
         Callback = function(value)
-            ExtraESP.HighlightEnabled = value
+            ExtraESP.HighlightEnabled = ExtraESP.MasterEnabled and value
         end,
     })
 
@@ -4488,6 +4524,9 @@ do
         Default = false,
         Callback = function(value)
             WalkSteps.Enabled = value
+            if not value then
+                lastWalkStep = 0
+            end
         end,
     })
 
@@ -4651,13 +4690,35 @@ do
         Content = 'Character and tool appearance. Changes are restored when disabled or after respawn.',
     })
 
+    local SelfVisualMaster = false
+
+    VisualsTab:Toggle({
+        Title = 'Self Visuals',
+        Default = false,
+        Callback = function(value)
+            SelfVisualMaster = value
+            CHVisuals.Self.CharacterChams = value
+            CHVisuals.Self.ToolMaterial = value
+            CHVisuals.Self.Aura = value
+            if value then
+                applyCharacterChams()
+                updateToolMaterial()
+                updateAura()
+            else
+                restoreCharacterAppearance()
+                restoreToolAppearance()
+                removeAura()
+            end
+        end,
+    })
+
     VisualsTab:Toggle({
         Title = 'Character Chams',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.CharacterChams = value
+            CHVisuals.Self.CharacterChams = SelfVisualMaster and value
 
-            if value then
+            if CHVisuals.Self.CharacterChams then
                 applyCharacterChams()
             else
                 restoreCharacterAppearance()
@@ -4680,8 +4741,8 @@ do
         Title = 'Tool Material',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.ToolMaterial = value
-            if not value then
+            CHVisuals.Self.ToolMaterial = SelfVisualMaster and value
+            if not CHVisuals.Self.ToolMaterial then
                 restoreToolAppearance()
             end
         end,
@@ -4699,7 +4760,7 @@ do
         Title = 'Aura',
         Default = false,
         Callback = function(value)
-            CHVisuals.Self.Aura = value
+            CHVisuals.Self.Aura = SelfVisualMaster and value
             updateAura()
         end,
     })
@@ -4722,11 +4783,11 @@ do
 
         task.wait(0.35)
 
-        if CHVisuals.Self.CharacterChams then
+        if SelfVisualMaster and CHVisuals.Self.CharacterChams then
             applyCharacterChams()
         end
 
-        if CHVisuals.Self.Aura then
+        if SelfVisualMaster and CHVisuals.Self.Aura then
             updateAura()
         end
     end)
@@ -5520,11 +5581,11 @@ VisualsTab:Button(t34)
             VisualsLighting.ExposureCompensation = CHVisuals.World.Exposure
         end
 
-        if CHVisuals.Self.CharacterChams then
+        if SelfVisualMaster and CHVisuals.Self.CharacterChams then
             applyCharacterChams()
         end
 
-        if CHVisuals.Self.ToolMaterial then
+        if SelfVisualMaster and CHVisuals.Self.ToolMaterial then
             updateToolMaterial()
         end
 
