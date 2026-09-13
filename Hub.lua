@@ -34,7 +34,7 @@ do
                     u15 = false
                     u16 = false
                     u17 = true
-                    v18 = loadstring(game:HttpGet('sercontent.com/Footagesus/WindUI/refs/heads/main/dist/main.lua'))()
+                    v18 = loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/WindUI/refs/heads/main/dist/main.lua'))()
 
                     v18:SetTheme('Crimson')
 
@@ -5484,7 +5484,7 @@ local u326 = v18
 
 function t35.Callback()
     local ok, result = pcall(function()
-        loadstring(game:HttpGet('sercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua'))()
     end)
     local v814 = ok and 'Emotes GUI loaded!' or 'Error: ' .. tostring(result)
 
@@ -5506,7 +5506,7 @@ local u328 = v18
 
 function t36.Callback()
     local ok, result = pcall(function()
-        loadstring(game:HttpGet('sercontent.com/EdgeIY/infiniteyield/master/source'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
     end)
     local v817 = ok and 'Infinite Yield loaded!' or 'Error: ' .. tostring(result)
 
