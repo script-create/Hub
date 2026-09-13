@@ -2965,7 +2965,7 @@ do
     })
 
     v303 = v300:Tab({
-        Title = 'Fling',
+        Title = 'Fling/Teleport',
         Icon = 'target',
     })
 
@@ -2983,6 +2983,8 @@ do
             TweenSpeed = 25,
             AutoReset = true,
             AvoidMurder = true,
+            AntiAfkEnabled = true,
+            AntiAfkInterval = 120,
             UndergroundOffset = 4,
             MaxDistance = 600,
             CoinLimit = 40,
@@ -2994,7 +2996,42 @@ do
             currentTargetCoin = nil,
             ignoredCoins = {},
             currentTween = nil,
+            antiAfkRunning = false,
         }
+
+        -- Anti-AFK: keeps the player from being kicked for idling.
+        local AFVirtualUser = game:GetService("VirtualUser")
+
+        AFLocalPlayer.Idled:Connect(function()
+            if not AFSettings.AntiAfkEnabled then return end
+            pcall(function()
+                AFVirtualUser:CaptureController()
+                AFVirtualUser:ClickButton2(Vector2.new())
+            end)
+        end)
+
+        local function afStartAntiAfk()
+            if AFState.antiAfkRunning then return end
+            AFState.antiAfkRunning = true
+
+            task.spawn(function()
+                while AFSettings.AntiAfkEnabled do
+                    local waitTime = AFSettings.AntiAfkInterval + math.random(0, 30)
+                    task.wait(waitTime)
+                    if not AFSettings.AntiAfkEnabled then break end
+
+                    local character = AFLocalPlayer.Character
+                    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        pcall(function()
+                            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                        end)
+                    end
+                end
+
+                AFState.antiAfkRunning = false
+            end)
+        end
 
         local function afGetTorso(char)
             if not char then return nil end
@@ -3431,6 +3468,17 @@ do
         })
 
         AutoFarmTab:Toggle({
+            Title = "Anti AFK",
+            Default = AFSettings.AntiAfkEnabled,
+            Callback = function(value)
+                AFSettings.AntiAfkEnabled = value
+                if value then
+                    afStartAntiAfk()
+                end
+            end,
+        })
+
+        AutoFarmTab:Toggle({
             Title = "Auto Farm",
             Default = AFSettings.AutoFarmEnabled,
             Callback = function(value)
@@ -3515,9 +3563,102 @@ do
                 end
             end,
         })
+
+        if AFSettings.AntiAfkEnabled then
+            afStartAntiAfk()
+        end
     end
 
 
+
+    v303:Paragraph({
+        Title = 'Teleport Players',
+        Content = 'Select a player and teleport to them.',
+    })
+
+    do
+        local teleportNames = {}
+        local teleportSelected = nil
+
+        local function rebuildTeleportNames()
+            teleportNames = {}
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    table.insert(teleportNames, player.Name)
+                end
+            end
+            table.sort(teleportNames)
+            if teleportSelected and not table.find(teleportNames, teleportSelected) then
+                teleportSelected = nil
+            end
+        end
+
+        rebuildTeleportNames()
+
+        v303:Dropdown({
+            Title = 'Select Player',
+            Values = teleportNames,
+            Value = teleportSelected,
+            Callback = function(value)
+                teleportSelected = value
+            end,
+        })
+
+        v303:Button({
+            Title = 'Teleport to Player',
+            Description = 'Teleport to the selected player',
+            Callback = function()
+                if not teleportSelected then
+                    v18:Notify({
+                        Title = 'CrystalHub',
+                        Content = 'Select a player first!',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                    return
+                end
+
+                local target = Players:FindFirstChild(teleportSelected)
+                local character = LocalPlayer.Character
+                local targetCharacter = target and target.Character
+                local hrp = character and character:FindFirstChild('HumanoidRootPart')
+                local targetHRP = targetCharacter and targetCharacter:FindFirstChild('HumanoidRootPart')
+
+                if not (hrp and targetHRP) then
+                    v18:Notify({
+                        Title = 'CrystalHub',
+                        Content = 'Player or character not found!',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                    return
+                end
+
+                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
+                v18:Notify({
+                    Title = 'CrystalHub',
+                    Content = tostring('Teleported to: ' .. target.Name),
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end,
+        })
+
+        v303:Button({
+            Title = 'Refresh Teleport List',
+            Description = 'Update the player list',
+            Callback = function()
+                rebuildTeleportNames()
+            end,
+        })
+
+        Players.PlayerAdded:Connect(function()
+            task.delay(0.3, rebuildTeleportNames)
+        end)
+        Players.PlayerRemoving:Connect(function()
+            task.delay(0.3, rebuildTeleportNames)
+        end)
+    end
 
     v303:Paragraph({
         Title = 'Fling Players',
