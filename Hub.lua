@@ -2968,17 +2968,7 @@ do
         Title = 'Fling/Teleport',
         Icon = 'target',
     })
-    v304 = v300:Tab({
-        Title = 'Visuals',
-        Icon = 'eye',
-    })
 
-
-    -- Visuals tab: functions can be added here later.
-    v304:Paragraph({
-        Title = 'CrystalHub Visuals',
-        Content = 'Visual functions will be added here.',
-    })
 
     -- CrystalHub AutoFarm
     do
@@ -3672,14 +3662,14 @@ do
 
     v303:Paragraph({
         Title = 'Fling Players',
-        Content = 'Select a player and fling them. Use Refresh to update the list.',
+        Content = 'Select a player from the list and press Fling.',
     })
 
     do
         local flingNames = {}
         local flingSelected = nil
 
-        local function rebuildFlingNames()
+        local function rebuildFlingList()
             flingNames = {}
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer then
@@ -3687,12 +3677,13 @@ do
                 end
             end
             table.sort(flingNames)
+
             if flingSelected and not table.find(flingNames, flingSelected) then
                 flingSelected = nil
             end
         end
 
-        rebuildFlingNames()
+        rebuildFlingList()
 
         v303:Dropdown({
             Title = 'Select Player',
@@ -3704,7 +3695,7 @@ do
         })
 
         v303:Button({
-            Title = 'Fling Player',
+            Title = 'Fling Selected Player',
             Description = 'Fling the selected player',
             Callback = function()
                 if not flingSelected then
@@ -3720,7 +3711,7 @@ do
                 if u157 then
                     v18:Notify({
                         Title = 'CrystalHub',
-                        Content = 'Fling in progress...',
+                        Content = 'Fling is already in progress!',
                         Duration = 3,
                         Icon = 'bell',
                     })
@@ -3728,6 +3719,7 @@ do
                 end
 
                 local target = Players:FindFirstChild(flingSelected)
+
                 if target and target.Character then
                     v18:Notify({
                         Title = 'CrystalHub',
@@ -3750,18 +3742,28 @@ do
         v303:Button({
             Title = 'Refresh Fling List',
             Description = 'Update the player list',
-            Callback = function()
-                rebuildFlingNames()
-            end,
+            Callback = rebuildFlingList,
         })
 
         Players.PlayerAdded:Connect(function()
-            task.delay(0.3, rebuildFlingNames)
+            task.delay(0.3, rebuildFlingList)
         end)
+
         Players.PlayerRemoving:Connect(function()
-            task.delay(0.3, rebuildFlingNames)
+            task.delay(0.3, rebuildFlingList)
         end)
     end
+
+    -- Visuals tab: ready for the user's Visuals code.
+    local VisualsTab = v300:Tab({
+        Title = 'Visuals',
+        Icon = 'eye',
+    })
+
+    VisualsTab:Paragraph({
+        Title = 'CrystalHub Visuals',
+        Content = 'Visual functions will be added here.',
+    })
 
     v301:Paragraph({
         Title = 'Auto-Loaded Buttons',
