@@ -2964,116 +2964,21 @@ do
         Icon = 'eye',
     })
 
-    -- Visuals tab
-    local VisualsTab = v300:Tab({
-        Title = 'Visuals',
-        Icon = 'palette',
-    })
-
-    do
-        local Lighting = game:GetService('Lighting')
-        local visualsState = {
-            Fullbright = false,
-            NoFog = false,
-            FOV = 70,
-        }
-
-        local savedLighting = {
-            Brightness = Lighting.Brightness,
-            ClockTime = Lighting.ClockTime,
-            FogStart = Lighting.FogStart,
-            FogEnd = Lighting.FogEnd,
-            GlobalShadows = Lighting.GlobalShadows,
-        }
-
-        VisualsTab:Paragraph({
-            Title = 'Visual Settings',
-            Content = 'Настройки изображения клиента.',
-        })
-
-        VisualsTab:Toggle({
-            Title = 'Fullbright',
-            Default = false,
-            Callback = function(value)
-                visualsState.Fullbright = value
-                if value then
-                    Lighting.Brightness = 2
-                    Lighting.ClockTime = 14
-                    Lighting.GlobalShadows = false
-                else
-                    Lighting.Brightness = savedLighting.Brightness
-                    Lighting.ClockTime = savedLighting.ClockTime
-                    Lighting.GlobalShadows = savedLighting.GlobalShadows
-                end
-            end,
-        })
-
-        VisualsTab:Toggle({
-            Title = 'No Fog',
-            Default = false,
-            Callback = function(value)
-                visualsState.NoFog = value
-                if value then
-                    Lighting.FogStart = 100000
-                    Lighting.FogEnd = 100000
-                else
-                    Lighting.FogStart = savedLighting.FogStart
-                    Lighting.FogEnd = savedLighting.FogEnd
-                end
-            end,
-        })
-
-        VisualsTab:Slider({
-            Title = 'FOV',
-            Step = 1,
-            IsTooltip = true,
-            IsTextbox = true,
-            Value = {
-                Min = 50,
-                Max = 120,
-                Default = visualsState.FOV,
-            },
-            Callback = function(value)
-                local fov = tonumber(value)
-                local camera = workspace.CurrentCamera
-                if fov and camera then
-                    visualsState.FOV = math.clamp(math.floor(fov), 50, 120)
-                    camera.FieldOfView = visualsState.FOV
-                end
-            end,
-        })
-
-        VisualsTab:Button({
-            Title = 'Reset Visuals',
-            Callback = function()
-                visualsState.Fullbright = false
-                visualsState.NoFog = false
-                Lighting.Brightness = savedLighting.Brightness
-                Lighting.ClockTime = savedLighting.ClockTime
-                Lighting.FogStart = savedLighting.FogStart
-                Lighting.FogEnd = savedLighting.FogEnd
-                Lighting.GlobalShadows = savedLighting.GlobalShadows
-
-                local camera = workspace.CurrentCamera
-                if camera then
-                    camera.FieldOfView = 70
-                end
-
-                v18:Notify({
-                    Title = 'CrystalHub',
-                    Content = 'Visuals сброшены',
-                    Duration = 2,
-                    Icon = 'check',
-                })
-            end,
-        })
-    end
-
     v303 = v300:Tab({
         Title = 'Fling/Teleport',
         Icon = 'target',
     })
+    v304 = v300:Tab({
+        Title = 'Visuals',
+        Icon = 'eye',
+    })
 
+
+    -- Visuals tab: functions can be added here later.
+    v304:Paragraph({
+        Title = 'CrystalHub Visuals',
+        Content = 'Visual functions will be added here.',
+    })
 
     -- CrystalHub AutoFarm
     do
@@ -3677,50 +3582,135 @@ do
 
 
     v303:Paragraph({
-        Title = 'Fling Players',
-        Content = 'Выбери игрока из списка и нажми Fling. Refresh обновляет список.',
+        Title = 'Teleport Players',
+        Content = 'Select a player and teleport to them.',
     })
 
     do
-        local selectedFlingPlayer = nil
+        local teleportNames = {}
+        local teleportSelected = nil
 
-        local function getFlingPlayerNames()
-            local names = {}
+        local function rebuildTeleportNames()
+            teleportNames = {}
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer then
-                    table.insert(names, player.Name)
+                    table.insert(teleportNames, player.Name)
                 end
             end
-            table.sort(names)
-            return names
+            table.sort(teleportNames)
+            if teleportSelected and not table.find(teleportNames, teleportSelected) then
+                teleportSelected = nil
+            end
         end
 
-        local flingDropdown = v303:Dropdown({
-            Title = 'Выбор игрока',
-            Values = getFlingPlayerNames(),
-            Value = nil,
+        rebuildTeleportNames()
+
+        v303:Dropdown({
+            Title = 'Select Player',
+            Values = teleportNames,
+            Value = teleportSelected,
             Callback = function(value)
-                selectedFlingPlayer = value
+                teleportSelected = value
             end,
         })
 
-        local function refreshFlingDropdown()
-            local values = getFlingPlayerNames()
-            selectedFlingPlayer = nil
-
-            pcall(function()
-                flingDropdown:Refresh(values)
-            end)
-        end
-
         v303:Button({
-            Title = 'Fling выбранного игрока',
-            Description = 'Запустить Fling на выбранном игроке',
+            Title = 'Teleport to Player',
+            Description = 'Teleport to the selected player',
             Callback = function()
-                if not selectedFlingPlayer or selectedFlingPlayer == '' then
+                if not teleportSelected then
                     v18:Notify({
                         Title = 'CrystalHub',
-                        Content = 'Сначала выбери игрока!',
+                        Content = 'Select a player first!',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                    return
+                end
+
+                local target = Players:FindFirstChild(teleportSelected)
+                local character = LocalPlayer.Character
+                local targetCharacter = target and target.Character
+                local hrp = character and character:FindFirstChild('HumanoidRootPart')
+                local targetHRP = targetCharacter and targetCharacter:FindFirstChild('HumanoidRootPart')
+
+                if not (hrp and targetHRP) then
+                    v18:Notify({
+                        Title = 'CrystalHub',
+                        Content = 'Player or character not found!',
+                        Duration = 3,
+                        Icon = 'bell',
+                    })
+                    return
+                end
+
+                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
+                v18:Notify({
+                    Title = 'CrystalHub',
+                    Content = tostring('Teleported to: ' .. target.Name),
+                    Duration = 3,
+                    Icon = 'bell',
+                })
+            end,
+        })
+
+        v303:Button({
+            Title = 'Refresh Teleport List',
+            Description = 'Update the player list',
+            Callback = function()
+                rebuildTeleportNames()
+            end,
+        })
+
+        Players.PlayerAdded:Connect(function()
+            task.delay(0.3, rebuildTeleportNames)
+        end)
+        Players.PlayerRemoving:Connect(function()
+            task.delay(0.3, rebuildTeleportNames)
+        end)
+    end
+
+    v303:Paragraph({
+        Title = 'Fling Players',
+        Content = 'Select a player and fling them. Use Refresh to update the list.',
+    })
+
+    do
+        local flingNames = {}
+        local flingSelected = nil
+
+        local function rebuildFlingNames()
+            flingNames = {}
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    table.insert(flingNames, player.Name)
+                end
+            end
+            table.sort(flingNames)
+            if flingSelected and not table.find(flingNames, flingSelected) then
+                flingSelected = nil
+            end
+        end
+
+        rebuildFlingNames()
+
+        v303:Dropdown({
+            Title = 'Select Player',
+            Values = flingNames,
+            Value = flingSelected,
+            Callback = function(value)
+                flingSelected = value
+            end,
+        })
+
+        v303:Button({
+            Title = 'Fling Player',
+            Description = 'Fling the selected player',
+            Callback = function()
+                if not flingSelected then
+                    v18:Notify({
+                        Title = 'CrystalHub',
+                        Content = 'Select a player first!',
                         Duration = 3,
                         Icon = 'bell',
                     })
@@ -3730,18 +3720,18 @@ do
                 if u157 then
                     v18:Notify({
                         Title = 'CrystalHub',
-                        Content = 'Fling уже выполняется!',
+                        Content = 'Fling in progress...',
                         Duration = 3,
                         Icon = 'bell',
                     })
                     return
                 end
 
-                local target = Players:FindFirstChild(selectedFlingPlayer)
+                local target = Players:FindFirstChild(flingSelected)
                 if target and target.Character then
                     v18:Notify({
                         Title = 'CrystalHub',
-                        Content = 'Flinging: ' .. target.Name,
+                        Content = tostring('Flinging: ' .. target.Name),
                         Duration = 3,
                         Icon = 'bell',
                     })
@@ -3749,26 +3739,27 @@ do
                 else
                     v18:Notify({
                         Title = 'CrystalHub',
-                        Content = 'Игрок вышел или у него нет персонажа!',
+                        Content = 'Player left or has no character!',
                         Duration = 3,
                         Icon = 'bell',
                     })
-                    refreshFlingDropdown()
                 end
             end,
         })
 
         v303:Button({
-            Title = 'Refresh List',
-            Description = 'Обновить список игроков',
-            Callback = refreshFlingDropdown,
+            Title = 'Refresh Fling List',
+            Description = 'Update the player list',
+            Callback = function()
+                rebuildFlingNames()
+            end,
         })
 
         Players.PlayerAdded:Connect(function()
-            task.delay(0.3, refreshFlingDropdown)
+            task.delay(0.3, rebuildFlingNames)
         end)
         Players.PlayerRemoving:Connect(function()
-            task.delay(0.3, refreshFlingDropdown)
+            task.delay(0.3, rebuildFlingNames)
         end)
     end
 
