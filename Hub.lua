@@ -3580,6 +3580,7 @@ do
         local teleportNames = {}
         local teleportSelected = nil
 
+        local teleportDropdown
         local function rebuildTeleportNames()
             teleportNames = {}
             for _, player in ipairs(Players:GetPlayers()) do
@@ -3591,11 +3592,17 @@ do
             if teleportSelected and not table.find(teleportNames, teleportSelected) then
                 teleportSelected = nil
             end
+            if teleportDropdown then
+                teleportDropdown:Refresh(teleportNames)
+                if teleportSelected then
+                    teleportDropdown:Select(teleportSelected)
+                end
+            end
         end
 
         rebuildTeleportNames()
 
-        v303:Dropdown({
+        teleportDropdown = v303:Dropdown({
             Title = 'Select Player',
             Values = teleportNames,
             Value = teleportSelected,
@@ -3669,6 +3676,7 @@ do
         local flingNames = {}
         local flingSelected = nil
 
+        local flingDropdown
         local function rebuildFlingList()
             flingNames = {}
             for _, player in ipairs(Players:GetPlayers()) do
@@ -3681,11 +3689,17 @@ do
             if flingSelected and not table.find(flingNames, flingSelected) then
                 flingSelected = nil
             end
+            if flingDropdown then
+                flingDropdown:Refresh(flingNames)
+                if flingSelected then
+                    flingDropdown:Select(flingSelected)
+                end
+            end
         end
 
         rebuildFlingList()
 
-        v303:Dropdown({
+        flingDropdown = v303:Dropdown({
             Title = 'Select Player',
             Values = flingNames,
             Value = flingSelected,
