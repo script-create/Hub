@@ -3809,24 +3809,24 @@ do
             OutdoorAmbient = VisualLighting.OutdoorAmbient,
         }
 
-        local function visualCharacter(player)
+        local function u400(player)
             return player and player.Character
         end
 
-        local function visualRoot(player)
-            local character = visualCharacter(player)
+        local function u401(player)
+            local character = u400(player)
             if not character then return nil end
             return character:FindFirstChild('HumanoidRootPart')
                 or character:FindFirstChild('UpperTorso')
                 or character:FindFirstChild('Torso')
         end
 
-        local function visualHumanoid(player)
-            local character = visualCharacter(player)
+        local function u402(player)
+            local character = u400(player)
             return character and character:FindFirstChildOfClass('Humanoid')
         end
 
-        local function removeVisualLabel(player)
+        local function u403(player)
             local gui = VisualLabels[player]
             if gui then
                 gui:Destroy()
@@ -3834,7 +3834,7 @@ do
             end
         end
 
-        local function removeVisualHighlight(player)
+        local function u404(player)
             local h = VisualHighlights[player]
             if h then
                 h:Destroy()
@@ -3842,7 +3842,7 @@ do
             end
         end
 
-        local function removeVisualTracer(player)
+        local function u405(player)
             local tracer = VisualTracers[player]
             if tracer then
                 if tracer.line then pcall(function() tracer.line:Remove() end) end
@@ -3851,20 +3851,20 @@ do
             end
         end
 
-        local function clearVisualESP()
-            for player in pairs(VisualHighlights) do removeVisualHighlight(player) end
-            for player in pairs(VisualLabels) do removeVisualLabel(player) end
-            for player in pairs(VisualTracers) do removeVisualTracer(player) end
+        local function u406()
+            for player in pairs(VisualHighlights) do u404(player) end
+            for player in pairs(VisualLabels) do u403(player) end
+            for player in pairs(VisualTracers) do u405(player) end
         end
 
-        local function addVisualHighlight(player)
+        local function u407(player)
             if player == VisualLocalPlayer then return end
-            local character = visualCharacter(player)
+            local character = u400(player)
             if not character then return end
 
             local old = VisualHighlights[player]
             if old and old.Parent == character then return end
-            removeVisualHighlight(player)
+            u404(player)
 
             local highlight = Instance.new('Highlight')
             highlight.Name = 'CrystalHubVisualESP'
@@ -3876,13 +3876,13 @@ do
             VisualHighlights[player] = highlight
         end
 
-        local function addVisualLabel(player)
+        local function u408(player)
             if player == VisualLocalPlayer then return end
-            local character = visualCharacter(player)
-            local root = visualRoot(player)
+            local character = u400(player)
+            local root = u401(player)
             if not character or not root then return end
 
-            removeVisualLabel(player)
+            u403(player)
             local billboard = Instance.new('BillboardGui')
             billboard.Name = 'CrystalHubVisualInfo'
             billboard.Adornee = root
@@ -3902,14 +3902,14 @@ do
             VisualLabels[player] = billboard
         end
 
-        local function updateVisualLabels()
+        local function u409()
             for player, billboard in pairs(VisualLabels) do
-                local character = visualCharacter(player)
-                local root = visualRoot(player)
-                local humanoid = visualHumanoid(player)
+                local character = u400(player)
+                local root = u401(player)
+                local humanoid = u402(player)
                 local label = billboard and billboard:FindFirstChildOfClass('TextLabel')
                 if not character or not root or not billboard or not billboard.Parent or not label then
-                    removeVisualLabel(player)
+                    u403(player)
                 else
                     local distance = math.floor((VisualCamera.CFrame.Position - root.Position).Magnitude)
                     local health = humanoid and math.max(0, math.floor(humanoid.Health)) or 0
@@ -3918,7 +3918,7 @@ do
             end
         end
 
-        local function createDrawingTracer(player)
+        local function u410(player)
             if not Drawing then return end
             if player == VisualLocalPlayer then return end
             if VisualTracers[player] then return end
@@ -3929,12 +3929,12 @@ do
             VisualTracers[player] = { line = line }
         end
 
-        local function updateDrawingTracers()
+        local function u411()
             if not Drawing then return end
             local viewport = VisualCamera.ViewportSize
             local origin = Vector2.new(viewport.X / 2, viewport.Y - 8)
             for player, data in pairs(VisualTracers) do
-                local root = visualRoot(player)
+                local root = u401(player)
                 local line = data.line
                 if root and line then
                     local point, visible = VisualCamera:WorldToViewportPoint(root.Position)
@@ -3947,45 +3947,45 @@ do
             end
         end
 
-        local function refreshVisualESP()
+        local function u412()
             for _, player in ipairs(VisualPlayers:GetPlayers()) do
                 if player ~= VisualLocalPlayer then
-                    addVisualHighlight(player)
-                    addVisualLabel(player)
-                    createDrawingTracer(player)
+                    u407(player)
+                    u408(player)
+                    u410(player)
                 end
             end
         end
 
-        local function removeAllVisualConnections()
+        local function u413()
             for _, connection in ipairs(VisualConnections) do
                 pcall(function() connection:Disconnect() end)
             end
             table.clear(VisualConnections)
         end
 
-        local function setVisualESP(enabled)
-            removeAllVisualConnections()
-            clearVisualESP()
+        local function u414(enabled)
+            u413()
+            u406()
             if not enabled then return end
 
-            refreshVisualESP()
+            u412()
             table.insert(VisualConnections, VisualPlayers.PlayerAdded:Connect(function(player)
                 player.CharacterAdded:Connect(function()
                     task.wait(0.5)
-                    addVisualHighlight(player)
-                    addVisualLabel(player)
-                    createDrawingTracer(player)
+                    u407(player)
+                    u408(player)
+                    u410(player)
                 end)
             end))
             table.insert(VisualConnections, VisualPlayers.PlayerRemoving:Connect(function(player)
-                removeVisualHighlight(player)
-                removeVisualLabel(player)
-                removeVisualTracer(player)
+                u404(player)
+                u403(player)
+                u405(player)
             end))
         end
 
-        local function setSelfChams(enabled)
+        local function u415(enabled)
             VisualSelfChams = enabled
             local character = VisualLocalPlayer.Character
             if not character then return end
@@ -4004,7 +4004,7 @@ do
             highlight.Parent = character
         end
 
-        local function setFullbright(enabled)
+        local function u416(enabled)
             VisualFullbright = enabled
             if enabled then
                 VisualLighting.Brightness = 2
@@ -4019,7 +4019,7 @@ do
             end
         end
 
-        local function setNoFog(enabled)
+        local function u417(enabled)
             VisualNoFog = enabled
             if enabled then
                 VisualLighting.FogStart = 100000
@@ -4030,7 +4030,7 @@ do
             end
         end
 
-        local function destroyFov()
+        local function u418()
             if VisualFovConnection then
                 VisualFovConnection:Disconnect()
                 VisualFovConnection = nil
@@ -4041,9 +4041,9 @@ do
             end
         end
 
-        local function setFovCircle(enabled)
+        local function u419(enabled)
             VisualFovEnabled = enabled
-            destroyFov()
+            u418()
             if not enabled or not Drawing then return end
             VisualFovObject = Drawing.new('Circle')
             VisualFovObject.Filled = false
@@ -4060,7 +4060,7 @@ do
             end)
         end
 
-        local function setThirdPerson(enabled)
+        local function u420(enabled)
             VisualThirdPerson = enabled
             if enabled then
                 VisualLocalPlayer.CameraMode = Enum.CameraMode.Classic
@@ -4074,14 +4074,14 @@ do
         end
 
         table.insert(VisualConnections, VisualRunService.RenderStepped:Connect(function()
-            if next(VisualLabels) then updateVisualLabels() end
-            if next(VisualTracers) then updateDrawingTracers() end
+            if next(VisualLabels) then u409() end
+            if next(VisualTracers) then u411() end
         end))
 
         VisualPlayers.PlayerAdded:Connect(function(player)
             player.CharacterAdded:Connect(function()
                 task.wait(0.5)
-                if VisualSelfChams and player == VisualLocalPlayer then setSelfChams(true) end
+                if VisualSelfChams and player == VisualLocalPlayer then u415(true) end
             end)
         end)
 
@@ -4094,7 +4094,7 @@ do
             Title = 'Player Highlight ESP',
             Default = false,
             Callback = function(value)
-                setVisualESP(value)
+                u414(value)
             end,
         })
         VisualsTab:Toggle({
@@ -4102,9 +4102,9 @@ do
             Default = false,
             Callback = function(value)
                 if not value then
-                    for player in pairs(VisualTracers) do removeVisualTracer(player) end
+                    for player in pairs(VisualTracers) do u405(player) end
                 else
-                    refreshVisualESP()
+                    u412()
                 end
             end,
         })
@@ -4113,9 +4113,9 @@ do
             Default = false,
             Callback = function(value)
                 if not value then
-                    for player in pairs(VisualLabels) do removeVisualLabel(player) end
+                    for player in pairs(VisualLabels) do u403(player) end
                 else
-                    refreshVisualESP()
+                    u412()
                 end
             end,
         })
@@ -4123,7 +4123,7 @@ do
             Title = 'Self Chams',
             Default = false,
             Callback = function(value)
-                setSelfChams(value)
+                u415(value)
             end,
         })
 
@@ -4136,7 +4136,7 @@ do
             Title = 'Show FOV Circle',
             Default = false,
             Callback = function(value)
-                setFovCircle(value)
+                u419(value)
             end,
         })
         VisualsTab:Slider({
@@ -4158,7 +4158,7 @@ do
             Title = 'Third Person',
             Default = false,
             Callback = function(value)
-                setThirdPerson(value)
+                u420(value)
             end,
         })
 
@@ -4171,22 +4171,22 @@ do
             Title = 'Fullbright',
             Default = false,
             Callback = function(value)
-                setFullbright(value)
+                u416(value)
             end,
         })
         VisualsTab:Toggle({
             Title = 'Remove Fog',
             Default = false,
             Callback = function(value)
-                setNoFog(value)
+                u417(value)
             end,
         })
         VisualsTab:Button({
             Title = 'Restore World Lighting',
             Description = 'Restore brightness, ambient light and fog values.',
             Callback = function()
-                setFullbright(false)
-                setNoFog(false)
+                u416(false)
+                u417(false)
             end,
         })
     -- Moved from Main: Skybox, Crosshair, Graphics and FOV controls.
