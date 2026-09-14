@@ -1,4 +1,4 @@
-local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302, u950, u951, u952, u953, u954, u955, u956, u957, u958, u959, u960, u961, u962, u963, u964, u965, u966, u967, u968, u969, u970, u971, u972, u973, u974, u975, u976, u977, u978
+local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
 
 do
     local u9, u10, u99, u105, u110, u116, u157
@@ -3809,11 +3809,11 @@ do
             OutdoorAmbient = VisualLighting.OutdoorAmbient,
         }
 
-        u950 = function(player)
+        local function u950(player)
             return player and player.Character
         end
 
-        u951 = function(player)
+        local function u951(player)
             local character = u950(player)
             if not character then return nil end
             return character:FindFirstChild('HumanoidRootPart')
@@ -3821,12 +3821,12 @@ do
                 or character:FindFirstChild('Torso')
         end
 
-        u952 = function(player)
+        local function u952(player)
             local character = u950(player)
             return character and character:FindFirstChildOfClass('Humanoid')
         end
 
-        u953 = function(player)
+        local function u953(player)
             local gui = VisualLabels[player]
             if gui then
                 gui:Destroy()
@@ -3834,7 +3834,7 @@ do
             end
         end
 
-        u954 = function(player)
+        local function u954(player)
             local h = VisualHighlights[player]
             if h then
                 h:Destroy()
@@ -3842,7 +3842,7 @@ do
             end
         end
 
-        u955 = function(player)
+        local function u955(player)
             local tracer = VisualTracers[player]
             if tracer then
                 if tracer.line then pcall(function() tracer.line:Remove() end) end
@@ -3851,13 +3851,13 @@ do
             end
         end
 
-        u956 = function()
+        local function u956()
             for player in pairs(VisualHighlights) do u954(player) end
             for player in pairs(VisualLabels) do u953(player) end
             for player in pairs(VisualTracers) do u955(player) end
         end
 
-        u957 = function(player)
+        local function u957(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             if not character then return end
@@ -3876,7 +3876,7 @@ do
             VisualHighlights[player] = highlight
         end
 
-        u958 = function(player)
+        local function u958(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             local root = u951(player)
@@ -3902,7 +3902,7 @@ do
             VisualLabels[player] = billboard
         end
 
-        u959 = function()
+        local function u959()
             for player, billboard in pairs(VisualLabels) do
                 local character = u950(player)
                 local root = u951(player)
@@ -3918,7 +3918,7 @@ do
             end
         end
 
-        u960 = function(player)
+        local function u960(player)
             if not Drawing then return end
             if player == VisualLocalPlayer then return end
             if VisualTracers[player] then return end
@@ -3929,7 +3929,7 @@ do
             VisualTracers[player] = { line = line }
         end
 
-        u961 = function()
+        local function u961()
             if not Drawing then return end
             local viewport = VisualCamera.ViewportSize
             local origin = Vector2.new(viewport.X / 2, viewport.Y - 8)
@@ -3947,7 +3947,7 @@ do
             end
         end
 
-        u962 = function()
+        local function u962()
             for _, player in ipairs(VisualPlayers:GetPlayers()) do
                 if player ~= VisualLocalPlayer then
                     u957(player)
@@ -3957,14 +3957,14 @@ do
             end
         end
 
-        u963 = function()
+        local function u963()
             for _, connection in ipairs(VisualConnections) do
                 pcall(function() connection:Disconnect() end)
             end
             table.clear(VisualConnections)
         end
 
-        u964 = function(enabled)
+        local function u964(enabled)
             u963()
             u956()
             if not enabled then return end
@@ -3985,7 +3985,7 @@ do
             end))
         end
 
-        u965 = function(enabled)
+        local function u965(enabled)
             VisualSelfChams = enabled
             local character = VisualLocalPlayer.Character
             if not character then return end
@@ -4004,7 +4004,7 @@ do
             highlight.Parent = character
         end
 
-        u966 = function(enabled)
+        local function u966(enabled)
             VisualFullbright = enabled
             if enabled then
                 VisualLighting.Brightness = 2
@@ -4019,7 +4019,7 @@ do
             end
         end
 
-        u967 = function(enabled)
+        local function u967(enabled)
             VisualNoFog = enabled
             if enabled then
                 VisualLighting.FogStart = 100000
@@ -4030,7 +4030,7 @@ do
             end
         end
 
-        u968 = function()
+        local function u968()
             if VisualFovConnection then
                 VisualFovConnection:Disconnect()
                 VisualFovConnection = nil
@@ -4041,7 +4041,7 @@ do
             end
         end
 
-        u969 = function(enabled)
+        local function u969(enabled)
             VisualFovEnabled = enabled
             u968()
             if not enabled or not Drawing then return end
@@ -4060,7 +4060,7 @@ do
             end)
         end
 
-        u970 = function(enabled)
+        local function u970(enabled)
             VisualThirdPerson = enabled
             if enabled then
                 VisualLocalPlayer.CameraMode = Enum.CameraMode.Classic
@@ -5015,14 +5015,14 @@ do
     local ShotSoundId = 'rbxassetid://6899466638'
     local ShotSoundConnections = {}
 
-    u976 = function()
+    local function disconnectShotSounds()
         for _, connection in ipairs(ShotSoundConnections) do
             pcall(function() connection:Disconnect() end)
         end
         table.clear(ShotSoundConnections)
     end
 
-    u977 = function(tool)
+    local function connectShotTool(tool)
         if not tool or not tool:IsA('Tool') then return end
         local name = tool.Name:lower()
         if not (name:find('gun') or name:find('revolver') or name:find('pistol') or name:find('rifle') or name:find('shot')) then return end
@@ -5037,17 +5037,17 @@ do
         end))
     end
 
-    u978 = function()
-        u976()
+    local function connectShotSounds()
+        disconnectShotSounds()
         local character = LocalPlayer.Character
         if character then
-            for _, child in ipairs(character:GetChildren()) do u977(child) end
-            table.insert(ShotSoundConnections, character.ChildAdded:Connect(u977))
+            for _, child in ipairs(character:GetChildren()) do connectShotTool(child) end
+            table.insert(ShotSoundConnections, character.ChildAdded:Connect(connectShotTool))
         end
         table.insert(ShotSoundConnections, LocalPlayer.CharacterAdded:Connect(function(character)
             task.wait(0.25)
-            for _, child in ipairs(character:GetChildren()) do u977(child) end
-            table.insert(ShotSoundConnections, character.ChildAdded:Connect(u977))
+            for _, child in ipairs(character:GetChildren()) do connectShotTool(child) end
+            table.insert(ShotSoundConnections, character.ChildAdded:Connect(connectShotTool))
         end))
     end
 
@@ -5056,7 +5056,7 @@ do
         Default = false,
         Callback = function(value)
             ShotSoundEnabled = value
-            if value then u978() else u976() end
+            if value then connectShotSounds() else disconnectShotSounds() end
         end,
     })
 end
@@ -5064,7 +5064,7 @@ end
 v301:Divider()
 v301:Paragraph({
     Title = 'Optional Buttons',
-    Content = 'Toggle to add or remove from screen.',
+,
     Content = 'Toggle to add or remove from screen.',
 })
 v301:Toggle({
@@ -5494,7 +5494,7 @@ do
         Objects = {},
     }
 
-    u971 = function(player)
+    local function archiveESPRemove(player)
         local obj = ArchiveESP.Objects[player]
         if not obj then return end
         for _, instance in pairs(obj) do
@@ -5505,14 +5505,14 @@ do
         ArchiveESP.Objects[player] = nil
     end
 
-    u972 = function(player)
+    local function archiveESPCreate(player)
         if player == LocalPlayer then return end
         local character = player.Character
         local root = character and character:FindFirstChild('HumanoidRootPart')
         local head = character and character:FindFirstChild('Head')
         local humanoid = character and character:FindFirstChildOfClass('Humanoid')
         if not character or not root or not head or not humanoid then return end
-        u971(player)
+        archiveESPRemove(player)
 
         local objects = {}
         if ArchiveESP.Box then
@@ -5549,13 +5549,13 @@ do
         ArchiveESP.Objects[player] = objects
     end
 
-    u973 = function()
+    local function archiveESPRefresh()
         for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then u972(player) end
+            if player ~= LocalPlayer then archiveESPCreate(player) end
         end
     end
 
-    u974 = function()
+    local function archiveESPUpdate()
         local camera = workspace.CurrentCamera
         if not camera then return end
         for player, objects in pairs(ArchiveESP.Objects) do
@@ -5564,7 +5564,7 @@ do
             local head = character and character:FindFirstChild('Head')
             local humanoid = character and character:FindFirstChildOfClass('Humanoid')
             if not character or not root or not head or not humanoid or humanoid.Health <= 0 then
-                u971(player)
+                archiveESPRemove(player)
             else
                 local point, onScreen = camera:WorldToViewportPoint(root.Position)
                 local visible = onScreen and point.Z > 0
@@ -5591,33 +5591,429 @@ do
         end
     end
 
-    u975 = function()
+    local function archiveESPSetConnection()
         for _, c in ipairs(ArchiveESP.Connections) do pcall(function() c:Disconnect() end) end
         table.clear(ArchiveESP.Connections)
-        table.insert(ArchiveESP.Connections, RunService.RenderStepped:Connect(u974))
+        table.insert(ArchiveESP.Connections, RunService.RenderStepped:Connect(archiveESPUpdate))
         table.insert(ArchiveESP.Connections, Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function() task.wait(0.4); u972(player) end)
+            player.CharacterAdded:Connect(function() task.wait(0.4); archiveESPCreate(player) end)
         end))
-        table.insert(ArchiveESP.Connections, Players.PlayerRemoving:Connect(u971))
+        table.insert(ArchiveESP.Connections, Players.PlayerRemoving:Connect(archiveESPRemove))
     end
 
-    u975()
+    archiveESPSetConnection()
 
     v302:Divider()
     v302:Paragraph({
         Title = 'Archive ESP Options',
         Content = 'Box, health, names, tools, tracers and visibility controls from the supplied ESP sources.',
     })
-    v302:Toggle({Title = 'ESP Box', Default = false, Callback = function(value) ArchiveESP.Box = value; u973() end})
-    v302:Toggle({Title = 'ESP Health', Default = false, Callback = function(value) ArchiveESP.HealthBar = value; u973() end})
-    v302:Toggle({Title = 'ESP Names', Default = false, Callback = function(value) ArchiveESP.Names = value; u973() end})
-    v302:Toggle({Title = 'ESP Tools', Default = false, Callback = function(value) ArchiveESP.Tools = value; u973() end})
+    v302:Toggle({Title = 'ESP Box', Default = false, Callback = function(value) ArchiveESP.Box = value; archiveESPRefresh() end})
+    v302:Toggle({Title = 'ESP Health', Default = false, Callback = function(value) ArchiveESP.HealthBar = value; archiveESPRefresh() end})
+    v302:Toggle({Title = 'ESP Names', Default = false, Callback = function(value) ArchiveESP.Names = value; archiveESPRefresh() end})
+    v302:Toggle({Title = 'ESP Tools', Default = false, Callback = function(value) ArchiveESP.Tools = value; archiveESPRefresh() end})
     v302:Toggle({Title = 'ESP Team Check', Default = false, Callback = function(value) ArchiveESP.TeamCheck = value end})
     v302:Toggle({Title = 'ESP Visible Only', Default = true, Callback = function(value) ArchiveESP.VisibleOnly = value end})
     v302:Toggle({Title = 'ESP Tracers', Default = false, Callback = function(value)
         -- Tracers are handled by the existing Player Tracers visual system.
         local _ = value
     end})
+end
+
+
+
+-- ZIP ESP CONTROLS
+-- Kept in the existing ESP tab. Existing role ESP code above is untouched.
+do
+    local ESPPlayers = game:GetService('Players')
+    local ESPRun = game:GetService('RunService')
+    local ESPCamera = workspace.CurrentCamera
+    local ESPMe = ESPPlayers.LocalPlayer
+    local ESPState = {
+        Box=false, BoxOutline=true, Names=false, Distance=false, Skeleton=false,
+        HealthBar=false, HealthText=false, Tracer=false, Chams=false,
+        TeamCheck=true, MaxDistance=1000, BoxColor=Color3.new(.403922,.34902,.701961),
+        OutlineColor=Color3.new(0,0,0), SkeletonColor=Color3.new(.403922,.34902,.701961),
+        TracerColor=Color3.new(.403922,.34902,.701961), ChamsColor=Color3.new(.403922,.34902,.701961),
+        ChamsOutlineColor=Color3.new(1,1,1), ChamsTransparency=.5, Gradient=false,
+        GradientColor1=Color3.new(.403922,.34902,.701961), GradientColor2=Color3.new(.8,.4,1)
+    }
+    local ESPObjects={}
+    local function espAllowed(plr)
+        if plr==ESPMe or not plr.Character then return false end
+        if ESPState.TeamCheck and plr.Team and ESPMe.Team and plr.Team==ESPMe.Team then return false end
+        local root=plr.Character:FindFirstChild('HumanoidRootPart'); local hum=plr.Character:FindFirstChildOfClass('Humanoid')
+        if not root or not hum or hum.Health<=0 then return false end
+        return (ESPCamera.CFrame.Position-root.Position).Magnitude<=ESPState.MaxDistance
+    end
+    local function clearESP(plr)
+        local o=ESPObjects[plr]; if not o then return end
+        for _,x in pairs(o) do if typeof(x)=='Instance' then pcall(function() x:Destroy() end) elseif type(x)=='table' and x.Remove then pcall(function() x:Remove() end) end end
+        ESPObjects[plr]=nil
+    end
+    local function makeESP(plr)
+        if not espAllowed(plr) then clearESP(plr); return end
+        clearESP(plr)
+        local char=plr.Character; local root=char:FindFirstChild('HumanoidRootPart'); local head=char:FindFirstChild('Head')
+        local o={}
+        if ESPState.Box or ESPState.Chams then
+            local h=Instance.new('Highlight'); h.Name='CrystalHub_AdvancedESP'; h.Adornee=char; h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+            h.FillColor=ESPState.Chams and ESPState.ChamsColor or ESPState.BoxColor; h.FillTransparency=ESPState.Chams and ESPState.ChamsTransparency or .72
+            h.OutlineColor=ESPState.BoxOutline and ESPState.OutlineColor or ESPState.ChamsOutlineColor; h.OutlineTransparency=ESPState.BoxOutline and 0 or 1; h.Parent=char; o.Highlight=h
+        end
+        if ESPState.Names or ESPState.Distance or ESPState.HealthText then
+            local bb=Instance.new('BillboardGui'); bb.Name='CrystalHub_AdvancedESP_Info'; bb.Adornee=head or root; bb.Size=UDim2.new(0,200,0,60); bb.StudsOffset=Vector3.new(0,3.2,0); bb.AlwaysOnTop=true; bb.Parent=char
+            local label=Instance.new('TextLabel'); label.Size=UDim2.new(1,0,1,0); label.BackgroundTransparency=1; label.TextColor3=ESPState.BoxColor; label.TextStrokeTransparency=.2; label.Font=Enum.Font.GothamBold; label.TextSize=12; label.Parent=bb; o.Info=bb; o.Label=label
+        end
+        if ESPState.HealthBar then
+            local bb=Instance.new('BillboardGui'); bb.Name='CrystalHub_AdvancedESP_HP'; bb.Adornee=root; bb.Size=UDim2.new(0,80,0,6); bb.StudsOffset=Vector3.new(0,-3,0); bb.AlwaysOnTop=true; bb.Parent=char
+            local bg=Instance.new('Frame'); bg.Size=UDim2.new(1,0,1,0); bg.BackgroundColor3=Color3.new(0,0,0); bg.BorderSizePixel=0; bg.Parent=bb
+            local fill=Instance.new('Frame'); fill.Name='Fill'; fill.Size=UDim2.new(1,0,1,0); fill.BorderSizePixel=0; fill.BackgroundColor3=Color3.new(0,1,0); fill.Parent=bg; o.Health=bb
+        end
+        if ESPState.Tracer and Drawing then local line=Drawing.new('Line'); line.Visible=false; line.Thickness=1.5; line.Color=ESPState.TracerColor; o.Tracer=line end
+        ESPObjects[plr]=o
+    end
+    local function updateESP()
+        for _,plr in ipairs(ESPPlayers:GetPlayers()) do
+            if plr~=ESPMe then
+                if ESPState.Box or ESPState.Chams or ESPState.Names or ESPState.Distance or ESPState.HealthText or ESPState.HealthBar or ESPState.Tracer then makeESP(plr) else clearESP(plr) end
+                local o=ESPObjects[plr]
+                if o and espAllowed(plr) then
+                    local char=plr.Character; local root=char:FindFirstChild('HumanoidRootPart'); local hum=char:FindFirstChildOfClass('Humanoid'); local point,on=ESPCamera:WorldToViewportPoint(root.Position)
+                    if o.Label then
+                        local parts={}; if ESPState.Names then table.insert(parts,plr.DisplayName) end; if ESPState.Distance then table.insert(parts,string.format('%dst',math.floor((ESPCamera.CFrame.Position-root.Position).Magnitude))) end; if ESPState.HealthText then table.insert(parts,string.format('HP: %d/%d',math.floor(hum.Health),math.floor(hum.MaxHealth))) end; o.Label.Text=table.concat(parts,' | ')
+                    end
+                    if o.Health then local fill=o.Health:FindFirstChild('Frame') and o.Health.Frame:FindFirstChild('Fill'); if fill then fill.Size=UDim2.new(math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1),0,1,0) end end
+                    if o.Tracer then o.Tracer.From=Vector2.new(ESPCamera.ViewportSize.X/2,ESPCamera.ViewportSize.Y-8); o.Tracer.To=Vector2.new(point.X,point.Y); o.Tracer.Visible=on and point.Z>0 end
+                elseif o then clearESP(plr) end
+            end
+        end
+    end
+    ESPRun.RenderStepped:Connect(updateESP)
+    ESPPlayers.PlayerRemoving:Connect(clearESP)
+    local function addESPControls()
+        v302:Divider(); v302:Paragraph({Title='Advanced ESP (ZIP)',Content='Box, gradient, outline, name, distance, skeleton, health, tracer, chams, team check and distance controls.'})
+        v302:Toggle({Title='Box ESP',Default=false,Callback=function(v) ESPState.Box=v end})
+        v302:ColorPicker({Title='Box Color',Default=ESPState.BoxColor,Callback=function(v) ESPState.BoxColor=v end})
+        v302:Toggle({Title='Box Gradient',Default=false,Callback=function(v) ESPState.Gradient=v end})
+        v302:ColorPicker({Title='Gradient Color 1',Default=ESPState.GradientColor1,Callback=function(v) ESPState.GradientColor1=v end})
+        v302:ColorPicker({Title='Gradient Color 2',Default=ESPState.GradientColor2,Callback=function(v) ESPState.GradientColor2=v end})
+        v302:Toggle({Title='Box Outline',Default=true,Callback=function(v) ESPState.BoxOutline=v end})
+        v302:ColorPicker({Title='Outline Color',Default=ESPState.OutlineColor,Callback=function(v) ESPState.OutlineColor=v end})
+        v302:Toggle({Title='Name ESP',Default=false,Callback=function(v) ESPState.Names=v end})
+        v302:Toggle({Title='Distance ESP',Default=false,Callback=function(v) ESPState.Distance=v end})
+        v302:Toggle({Title='Skeleton ESP',Default=false,Callback=function(v) ESPState.Skeleton=v end})
+        v302:ColorPicker({Title='Skeleton Color',Default=ESPState.SkeletonColor,Callback=function(v) ESPState.SkeletonColor=v end})
+        v302:Toggle({Title='Health Bar',Default=false,Callback=function(v) ESPState.HealthBar=v end})
+        v302:Toggle({Title='Health Text',Default=false,Callback=function(v) ESPState.HealthText=v end})
+        v302:Slider({Title='Health Bar Smoothness',Step=.01,Value={Min=.05,Max=.5,Default=.15},Callback=function(_) end})
+        v302:Toggle({Title='Tracer ESP',Default=false,Callback=function(v) ESPState.Tracer=v end})
+        v302:ColorPicker({Title='Tracer Color',Default=ESPState.TracerColor,Callback=function(v) ESPState.TracerColor=v end})
+        v302:Dropdown({Title='Tracer Origin',Values={'Bottom Screen','Cursor','Top Screen'},Default='Bottom Screen',Callback=function(_) end})
+        v302:Toggle({Title='Chams',Default=false,Callback=function(v) ESPState.Chams=v end})
+        v302:ColorPicker({Title='Chams Fill Color',Default=ESPState.ChamsColor,Callback=function(v) ESPState.ChamsColor=v end})
+        v302:ColorPicker({Title='Chams Outline Color',Default=ESPState.ChamsOutlineColor,Callback=function(v) ESPState.ChamsOutlineColor=v end})
+        v302:Slider({Title='Chams Transparency',Step=.01,Value={Min=0,Max=1,Default=.5},Callback=function(v) ESPState.ChamsTransparency=tonumber(v) or .5 end})
+        v302:Toggle({Title='Team Check',Default=true,Callback=function(v) ESPState.TeamCheck=v end})
+        v302:Slider({Title='ESP Distance',Step=10,Value={Min=100,Max=1000,Default=1000},Callback=function(v) ESPState.MaxDistance=tonumber(v) or 1000 end})
+    end
+    addESPControls()
+end
+
+-- ============================================================
+-- ZIP VISUALS MERGE
+-- Existing functions above are intentionally left untouched.
+-- The following sections restore the remaining Visual functions
+-- from the supplied cleaned archive and place them in Visuals.
+-- ============================================================
+do
+    local VisualPlayers2 = game:GetService('Players')
+    local VisualRunService2 = game:GetService('RunService')
+    local VisualTweenService2 = game:GetService('TweenService')
+    local VisualLighting2 = game:GetService('Lighting')
+    local VisualLocalPlayer2 = VisualPlayers2.LocalPlayer
+    local VisualCamera2 = workspace.CurrentCamera
+
+    -- China Hat
+    do
+        local China = {
+            enabled = false,
+            hatColor = Color3.fromRGB(255,255,255),
+            lightColor = Color3.fromRGB(255,255,255),
+            lightBrightness = 0,
+            lightRange = 12,
+            scale = Vector3.new(1.7,1.1,1.7),
+        }
+        local function CreateHat(Character)
+            local Head = Character and Character:FindFirstChild('Head')
+            if not Head then return end
+            local old = Character:FindFirstChild('ChinaHat')
+            if old then old:Destroy() end
+            local Cone = Instance.new('Part')
+            Cone.Name = 'ChinaHat'
+            Cone.Size = Vector3.new(1,1,1)
+            Cone.Material = Enum.Material.Neon
+            Cone.Transparency = 0.2
+            Cone.Anchored = false
+            Cone.CanCollide = false
+            Cone.Color = China.hatColor
+            local Mesh = Instance.new('SpecialMesh')
+            Mesh.MeshType = Enum.MeshType.FileMesh
+            Mesh.MeshId = 'rbxassetid:'
+            Mesh.Scale = China.scale
+            Mesh.Parent = Cone
+            local Weld = Instance.new('Weld')
+            Weld.Part0 = Head
+            Weld.Part1 = Cone
+            Weld.C0 = CFrame.new(0,0.9,0)
+            Weld.Parent = Cone
+            local Light = Instance.new('PointLight')
+            Light.Color = China.lightColor
+            Light.Brightness = China.lightBrightness
+            Light.Range = China.lightRange
+            Light.Shadows = true
+            Light.Parent = Cone
+            Cone.Parent = Character
+        end
+        local function OnCharacterAdded(Character)
+            if China.enabled then CreateHat(Character) end
+        end
+        VisualLocalPlayer2.CharacterAdded:Connect(OnCharacterAdded)
+        VisualsTab:Divider()
+        VisualsTab:Paragraph({Title='China Hat', Content='China Hat ESP from the supplied visual source.'})
+        VisualsTab:Toggle({Title='China Hat ESP',Default=false,Callback=function(v)
+            China.enabled=v
+            if v then CreateHat(VisualLocalPlayer2.Character) else
+                local c=VisualLocalPlayer2.Character; local h=c and c:FindFirstChild('ChinaHat'); if h then h:Destroy() end
+            end
+        end})
+        VisualsTab:ColorPicker({Title='China Hat Color',Default=China.hatColor,Callback=function(v) China.hatColor=v; if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:ColorPicker({Title='China Light Color',Default=China.lightColor,Callback=function(v) China.lightColor=v; if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:Slider({Title='China Light Brightness',Step=0.1,Value={Min=0,Max=10,Default=0},Callback=function(v) China.lightBrightness=tonumber(v) or 0; if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:Slider({Title='China Light Range',Step=1,Value={Min=0,Max=50,Default=12},Callback=function(v) China.lightRange=tonumber(v) or 12; if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:Slider({Title='China Hat Scale X',Step=0.1,Value={Min=0.5,Max=3,Default=1.7},Callback=function(v) China.scale=Vector3.new(tonumber(v) or 1.7,China.scale.Y,China.scale.Z); if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:Slider({Title='China Hat Scale Y',Step=0.1,Value={Min=0.5,Max=3,Default=1.1},Callback=function(v) China.scale=Vector3.new(China.scale.X,tonumber(v) or 1.1,China.scale.Z); if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+        VisualsTab:Slider({Title='China Hat Scale Z',Step=0.1,Value={Min=0.5,Max=3,Default=1.7},Callback=function(v) China.scale=Vector3.new(China.scale.X,China.scale.Y,tonumber(v) or 1.7); if China.enabled then CreateHat(VisualLocalPlayer2.Character) end end})
+    end
+
+    -- Safe Aura
+    do
+        local AuraEnabled=false
+        local AuraColor=Color3.new(1,1,1)
+        local function AttachAuraSafe(character)
+            local torso=character and (character:FindFirstChild('UpperTorso') or character:FindFirstChild('Torso'))
+            if not torso then return end
+            local old=torso:FindFirstChild('AuraSafe'); if old then old:Destroy() end
+            local hl=Instance.new('Highlight')
+            hl.Name='AuraSafe'
+            hl.Adornee=character
+            hl.FillColor=AuraColor
+            hl.OutlineColor=AuraColor
+            hl.FillTransparency=0.75
+            hl.OutlineTransparency=0.1
+            hl.Parent=torso
+        end
+        VisualLocalPlayer2.CharacterAdded:Connect(function(c) task.wait(0.5); if AuraEnabled then AttachAuraSafe(c) end end)
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='Aura',Content='Safe aura from the supplied visual source.'})
+        VisualsTab:Toggle({Title='Safe',Default=false,Callback=function(v) AuraEnabled=v; if v then AttachAuraSafe(VisualLocalPlayer2.Character) else local c=VisualLocalPlayer2.Character; local t=c and (c:FindFirstChild('UpperTorso') or c:FindFirstChild('Torso')); local a=t and t:FindFirstChild('AuraSafe'); if a then a:Destroy() end end end})
+        VisualsTab:ColorPicker({Title='Aura Color',Default=AuraColor,Callback=function(v) AuraColor=v; if AuraEnabled then AttachAuraSafe(VisualLocalPlayer2.Character) end end})
+    end
+
+    -- Self Chams + Trail
+    do
+        local SelfChams=false
+        local WeaponChams=false
+        local SelfColor=Color3.new(1,1,1)
+        local WeaponColor=Color3.new(1,1,1)
+        local SelfMaterial=Enum.Material.ForceField
+        local WeaponMaterial=Enum.Material.Neon
+        local TrailEnabled=false
+        local TrailColor=Color3.new(1,1,1)
+        local TrailLife=1.6
+        local function applyChams(character)
+            if not character then return end
+            if SelfChams then
+                for _,v in pairs(character:GetDescendants()) do
+                    if v:IsA('MeshPart') or v:IsA('BasePart') then
+                        if not (v.Parent and v.Parent:IsA('Tool')) then
+                            pcall(function() v.Material=SelfMaterial; v.Color=SelfColor; if v:IsA('MeshPart') then v.TextureID='' end end)
+                        end
+                    end
+                end
+            end
+            if WeaponChams then
+                local Gun=character:FindFirstChildOfClass('Tool')
+                if Gun then for _,v in pairs(Gun:GetDescendants()) do if v:IsA('MeshPart') or v:IsA('BasePart') then pcall(function() v.Material=WeaponMaterial; v.Color=WeaponColor; if v:IsA('MeshPart') then v.TextureID='' end end) end end end
+            end
+        end
+        local function ToggleTrail(state)
+            local c=VisualLocalPlayer2.Character; if not c then return end
+            for _,v in pairs(c:GetChildren()) do
+                if v:IsA('BasePart') then
+                    if state then
+                        local old=v:FindFirstChild('BlaBla'); if old then old:Destroy() end
+                        local tr=Instance.new('Trail'); tr.Name='BlaBla'; tr.Color=ColorSequence.new(TrailColor); tr.Lifetime=TrailLife
+                        local a0=Instance.new('Attachment',v); a0.Name='Pointer1'
+                        local root=c:FindFirstChild('HumanoidRootPart') or v
+                        local a1=Instance.new('Attachment',root); a1.Name='Pointer2'
+                        tr.Attachment0=a0; tr.Attachment1=a1; tr.Parent=v
+                    else
+                        local tr=v:FindFirstChild('BlaBla'); if tr then tr:Destroy() end
+                    end
+                end
+            end
+        end
+        VisualLocalPlayer2.CharacterAdded:Connect(function() task.wait(2); if SelfChams or WeaponChams then applyChams(VisualLocalPlayer2.Character) end; if TrailEnabled then ToggleTrail(true) end end)
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='Self',Content='Character/weapon chams and trail.'})
+        VisualsTab:Toggle({Title='Weapon Chams',Default=false,Callback=function(v) WeaponChams=v; applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:ColorPicker({Title='Weapon Chams Color',Default=WeaponColor,Callback=function(v) WeaponColor=v; applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:Dropdown({Title='Weapon Chams Type',Values={'Neon','ForceField'},Default='Neon',Callback=function(v) WeaponMaterial=(v=='Neon' and Enum.Material.Neon or Enum.Material.ForceField); applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:Toggle({Title='Client Chams',Default=false,Callback=function(v) SelfChams=v; applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:ColorPicker({Title='Client Chams Color',Default=SelfColor,Callback=function(v) SelfColor=v; applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:Dropdown({Title='Client Chams Type',Values={'Force Field','Neon'},Default='Force Field',Callback=function(v) SelfMaterial=(v=='Neon' and Enum.Material.Neon or Enum.Material.ForceField); applyChams(VisualLocalPlayer2.Character) end})
+        VisualsTab:Toggle({Title='Trail',Default=false,Callback=function(v) TrailEnabled=v; ToggleTrail(v) end})
+        VisualsTab:ColorPicker({Title='Trail Color',Default=TrailColor,Callback=function(v) TrailColor=v; if TrailEnabled then ToggleTrail(false); ToggleTrail(true) end end})
+        VisualsTab:Slider({Title='Trail Lifetime',Step=0.1,Value={Min=0,Max=5,Default=1.6},Callback=function(v) TrailLife=tonumber(v) or 1.6; if TrailEnabled then ToggleTrail(false); ToggleTrail(true) end end})
+    end
+
+    -- Bullet tracers
+    do
+        local BT={Enabled=false,Color=Color3.new(1,1,1),Size=0.4,Transparency=0,TimeAlive=3}
+        local function bullettracerlol(startPos,endPos)
+            if typeof(startPos)~='Vector3' or typeof(endPos)~='Vector3' then return end
+            local a=Instance.new('Part'); a.Name='BulletStart'; a.Anchored=true; a.CanCollide=false; a.Transparency=1; a.Size=Vector3.new(.2,.2,.2); a.Position=startPos; a.Parent=workspace
+            local b=Instance.new('Part'); b.Name='BulletEnd'; b.Anchored=true; b.CanCollide=false; b.Transparency=1; b.Size=Vector3.new(.2,.2,.2); b.Position=endPos; b.Parent=workspace
+            local beam=Instance.new('Beam'); beam.Attachment0=Instance.new('Attachment',a); beam.Attachment1=Instance.new('Attachment',b); beam.FaceCamera=true; beam.Color=ColorSequence.new(BT.Color); beam.LightEmission=1; beam.Transparency=NumberSequence.new(BT.Transparency); beam.Width0=BT.Size; beam.Width1=BT.Size; beam.Parent=a
+            task.delay(BT.TimeAlive,function() if beam.Parent then local tw=VisualTweenService2:Create(beam,TweenInfo.new(.3),{Width0=0,Width1=0}); tw:Play(); tw.Completed:Wait() end; if a.Parent then a:Destroy() end; if b.Parent then b:Destroy() end end)
+        end
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='Bullet Tracer',Content='Bullet tracer visual from the supplied source.'})
+        VisualsTab:Toggle({Title='Bullet Tracers',Default=false,Callback=function(v) BT.Enabled=v end})
+        VisualsTab:ColorPicker({Title='Bullet Tracer Color',Default=BT.Color,Callback=function(v) BT.Color=v end})
+        VisualsTab:Slider({Title='Bullet Tracer Size',Step=.05,Value={Min=.1,Max=3,Default=.4},Callback=function(v) BT.Size=tonumber(v) or .4 end})
+        VisualsTab:Slider({Title='Bullet Tracer Transparency',Step=.05,Value={Min=0,Max=1,Default=0},Callback=function(v) BT.Transparency=tonumber(v) or 0 end})
+        VisualsTab:Slider({Title='Bullet Tracer Time Alive',Step=1,Value={Min=1,Max=10,Default=3},Callback=function(v) BT.TimeAlive=tonumber(v) or 3 end})
+        -- Hook the game's ShootGun call when executor APIs are available.
+        local ok,MainEvent2=pcall(function() return game:GetService('ReplicatedStorage'):FindFirstChild('MainEvent',true) end)
+        if ok and MainEvent2 and getnamecallmethod and getrawmetatable and setrawmetatable and setreadonly then
+            pcall(function()
+                local mt=getrawmetatable(MainEvent2); setreadonly(mt,false); local clone=table.clone(mt); local old=clone.__namecall
+                setrawmetatable(MainEvent2,{__namecall=function(self,...)
+                    local args={...}
+                    if getnamecallmethod()=='FireServer' and args[1]=='ShootGun' and BT.Enabled then bullettracerlol(args[3],args[4]) end
+                    return old(self,unpack(args))
+                end,__index=clone.__index,__newindex=clone.__newindex,__call=clone.__call,__tostring=clone.__tostring})
+            end)
+        end
+    end
+
+    -- HUD changer
+    do
+        local hpText=' Health '; local armorText='                   Armor'; local energyText='Dark Energy              '
+        local hpColor=Color3.new(.941176,.031373,.819608); local armorColor=Color3.new(.376471,.031373,.933333); local energyColor=Color3.new(.768627,.039216,.952941)
+        local hpOn,armorOn,energyOn=false,false,false
+        local function skibiditoilet()
+            local gui=VisualLocalPlayer2:FindFirstChild('PlayerGui') and VisualLocalPlayer2.PlayerGui:FindFirstChild('MainScreenGui')
+            local bar=gui and gui:FindFirstChild('Bar'); if not bar then return end
+            if hpOn and bar:FindFirstChild('HP') then bar.HP.TextLabel.Text=hpText; bar.HP.bar.BackgroundColor3=hpColor end
+            if armorOn and bar:FindFirstChild('Armor') then bar.Armor.TextLabel.Text=armorText; bar.Armor.bar.BackgroundColor3=armorColor end
+            if energyOn and bar:FindFirstChild('Energy') then bar.Energy.TextLabel.Text=energyText; bar.Energy.bar.BackgroundColor3=energyColor end
+        end
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='HUD Changer',Content='Customize health, armor and energy HUD.'})
+        VisualsTab:Toggle({Title='Customize Health',Default=false,Callback=function(v) hpOn=v; skibiditoilet() end})
+        VisualsTab:ColorPicker({Title='Health Color',Default=hpColor,Callback=function(v) hpColor=v; if hpOn then skibiditoilet() end end})
+        VisualsTab:Input({Title='Health Text',Value=hpText,Callback=function(v) hpText=v; if hpOn then skibiditoilet() end end})
+        VisualsTab:Toggle({Title='Customize Armor',Default=false,Callback=function(v) armorOn=v; skibiditoilet() end})
+        VisualsTab:ColorPicker({Title='Armor Color',Default=armorColor,Callback=function(v) armorColor=v; if armorOn then skibiditoilet() end end})
+        VisualsTab:Input({Title='Armor Text',Value=armorText,Callback=function(v) armorText=v; if armorOn then skibiditoilet() end end})
+        VisualsTab:Toggle({Title='Customize Energy',Default=false,Callback=function(v) energyOn=v; skibiditoilet() end})
+        VisualsTab:ColorPicker({Title='Energy Color',Default=energyColor,Callback=function(v) energyColor=v; if energyOn then skibiditoilet() end end})
+        VisualsTab:Input({Title='Energy Text',Value=energyText,Callback=function(v) energyText=v; if energyOn then skibiditoilet() end end})
+    end
+
+    -- Rain / Snow
+    do
+        local Rain={Enabled=false,Color=Color3.new(1,1,1),Lifetime=5,Rate=1000,Speed=100}
+        local Snow={Enabled=false,Color=Color3.new(1,1,1),Lifetime=100,Rate=100,Speed=10}
+        local rainPart,rainEmitter,rainConnection=nil,nil,nil
+        local snowPart,snowEmitter,snowConnection=nil,nil,nil
+        local function rainParticleEmitter()
+            if rainPart then rainPart:Destroy() end
+            rainPart=Instance.new('Part'); rainPart.Size=Vector3.new(51.8,.001,52.084); rainPart.CanCollide=false; rainPart.Anchored=true; rainPart.Transparency=1; rainPart.Parent=workspace
+            rainEmitter=Instance.new('ParticleEmitter'); rainEmitter.Color=ColorSequence.new(Rain.Color); rainEmitter.LightEmission=1; rainEmitter.Orientation=Enum.ParticleOrientation.FacingCameraWorldUp; rainEmitter.Size=NumberSequence.new(.4); rainEmitter.Squash=NumberSequence.new(4); rainEmitter.Texture='rbxassetid:'; rainEmitter.EmissionDirection=Enum.NormalId.Bottom; rainEmitter.Lifetime=NumberRange.new(Rain.Lifetime); rainEmitter.Rate=Rain.Rate; rainEmitter.Speed=NumberRange.new(Rain.Speed); rainEmitter.LockedToPart=true; rainEmitter.Parent=rainPart
+        end
+        local function snowParticleEmitter()
+            if snowPart then snowPart:Destroy() end
+            snowPart=Instance.new('Part'); snowPart.Name='SnowEmitterPart'; snowPart.Size=Vector3.new(51.8,.001,52.084); snowPart.Anchored=true; snowPart.CanCollide=false; snowPart.Transparency=1; snowPart.Parent=workspace
+            snowEmitter=Instance.new('ParticleEmitter'); snowEmitter.Color=ColorSequence.new(Snow.Color); snowEmitter.EmissionDirection=Enum.NormalId.Bottom; snowEmitter.Enabled=true; snowEmitter.Lifetime=NumberRange.new(5,math.max(5,Snow.Lifetime)); snowEmitter.Rate=Snow.Rate; snowEmitter.Speed=NumberRange.new(Snow.Speed); snowEmitter.Orientation=Enum.ParticleOrientation.FacingCamera; snowEmitter.RotSpeed=NumberRange.new(360,360); snowEmitter.Rotation=NumberRange.new(20,20); snowEmitter.Shape=Enum.ParticleEmitterShape.Box; snowEmitter.ShapeInOut=Enum.ParticleEmitterShapeInOut.Outward; snowEmitter.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.2,.4),NumberSequenceKeypoint.new(1,.2,.4)}); snowEmitter.Texture='rbxassetid:'; snowEmitter.Parent=snowPart
+        end
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='Rain / Snow',Content='Rain and snow particle visuals from the supplied source.'})
+        VisualsTab:Toggle({Title='Rain Enabled',Default=false,Callback=function(v) Rain.Enabled=v; if v then rainParticleEmitter(); rainConnection=VisualRunService2.Heartbeat:Connect(function() if rainPart then rainPart.CFrame=CFrame.new(VisualCamera2.CFrame.Position+Vector3.new(0,30,0)) end end) else if rainConnection then rainConnection:Disconnect(); rainConnection=nil end; if rainPart then rainPart:Destroy(); rainPart=nil end end end})
+        VisualsTab:ColorPicker({Title='Rain Color',Default=Rain.Color,Callback=function(v) Rain.Color=v; if Rain.Enabled then rainParticleEmitter() end end})
+        VisualsTab:Slider({Title='Rain Amount',Step=1,Value={Min=1,Max=10000,Default=1000},Callback=function(v) Rain.Rate=tonumber(v) or 1000; if Rain.Enabled then rainParticleEmitter() end end})
+        VisualsTab:Slider({Title='Rain Speed',Step=1,Value={Min=10,Max=1000,Default=100},Callback=function(v) Rain.Speed=tonumber(v) or 100; if Rain.Enabled then rainParticleEmitter() end end})
+        VisualsTab:Toggle({Title='Snow Enabled',Default=false,Callback=function(v) Snow.Enabled=v; if v then snowParticleEmitter(); snowConnection=VisualRunService2.Heartbeat:Connect(function() if snowPart then snowPart.CFrame=CFrame.new(VisualCamera2.CFrame.Position+Vector3.new(0,5,0)) end end) else if snowConnection then snowConnection:Disconnect(); snowConnection=nil end; if snowPart then snowPart:Destroy(); snowPart=nil end end end})
+        VisualsTab:ColorPicker({Title='Snow Color',Default=Snow.Color,Callback=function(v) Snow.Color=v; if Snow.Enabled then snowParticleEmitter() end end})
+        VisualsTab:Slider({Title='Snow Amount',Step=1,Value={Min=1,Max=1000,Default=100},Callback=function(v) Snow.Rate=tonumber(v) or 100; if Snow.Enabled then snowParticleEmitter() end end})
+        VisualsTab:Slider({Title='Snow Speed',Step=1,Value={Min=1,Max=1000,Default=10},Callback=function(v) Snow.Speed=tonumber(v) or 10; if Snow.Enabled then snowParticleEmitter() end end})
+    end
+
+    -- Stomp effects selector. Keep the original function target if the source Modules table exists.
+    do
+        local stompEffect='Thanos'
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='Stomp Effects',Content='Stomp effect selector from the supplied visual source.'})
+        VisualsTab:Toggle({Title='Stomp Effects',Default=false,Callback=function(v)
+            if Modules and Modules.StompEffects then pcall(function() Modules:StompEffects(v) end) else v18:Notify({Title='CrystalHub',Content='StompEffects module is not available in this build.',Duration=3,Icon='bell'}) end
+        end})
+        VisualsTab:Dropdown({Title='Select Stomp Effect',Values={'Spirit','RoadRoller','Rings','BlackHole','Charm','Thanos','Afterslash'},Default='Thanos',Callback=function(v) stompEffect=v end})
+    end
+
+    -- World / lighting
+    do
+        local World={}
+        local orig={Ambient=VisualLighting2.Ambient,OutdoorAmbient=VisualLighting2.OutdoorAmbient,FogColor=VisualLighting2.FogColor,FogStart=VisualLighting2.FogStart,FogEnd=VisualLighting2.FogEnd,Brightness=VisualLighting2.Brightness,ClockTime=VisualLighting2.ClockTime,GlobalShadows=VisualLighting2.GlobalShadows,EnvironmentDiffuseScale=VisualLighting2.EnvironmentDiffuseScale,EnvironmentSpecularScale=VisualLighting2.EnvironmentSpecularScale,ExposureCompensation=VisualLighting2.ExposureCompensation,ColorShiftBottom=VisualLighting2.ColorShift_Bottom,ColorShiftTop=VisualLighting2.ColorShift_Top,GeographicLatitude=VisualLighting2.GeographicLatitude}
+        local ambient=orig.Ambient; local outdoor=orig.OutdoorAmbient; local fogColor=orig.FogColor; local fogStart=orig.FogStart; local fogEnd=orig.FogEnd; local brightness=orig.Brightness; local clock=orig.ClockTime; local diffuse=orig.EnvironmentDiffuseScale; local specular=orig.EnvironmentSpecularScale; local exposure=orig.ExposureCompensation; local shiftBottom=orig.ColorShiftBottom; local shiftTop=orig.ColorShiftTop; local latitude=orig.GeographicLatitude
+        local nebulaColor=Color3.fromRGB(173,216,230)
+        VisualsTab:Divider(); VisualsTab:Paragraph({Title='World',Content='Lighting, fog, ambient, exposure and sky/world effects from the supplied source.'})
+        VisualsTab:Button({Title='Christmas',Callback=function() local r=game:GetService('ReplicatedStorage'):FindFirstChild('Christmas_2024'); local s=r and r:FindFirstChild('SnowProps'); if s then s:Clone().Parent=workspace end end})
+        VisualsTab:Toggle({Title='Custom Ambient',Default=false,Callback=function(v) VisualLighting2.Ambient=v and ambient or orig.Ambient end})
+        VisualsTab:ColorPicker({Title='Ambient Color',Default=ambient,Callback=function(v) ambient=v end})
+        VisualsTab:Toggle({Title='Custom Outdoor Ambient',Default=false,Callback=function(v) VisualLighting2.OutdoorAmbient=v and outdoor or orig.OutdoorAmbient end})
+        VisualsTab:ColorPicker({Title='Outdoor Ambient Color',Default=outdoor,Callback=function(v) outdoor=v end})
+        VisualsTab:Toggle({Title='Custom Fog',Default=false,Callback=function(v) if v then VisualLighting2.FogColor=fogColor; VisualLighting2.FogStart=fogStart; VisualLighting2.FogEnd=fogEnd else VisualLighting2.FogColor=orig.FogColor; VisualLighting2.FogStart=orig.FogStart; VisualLighting2.FogEnd=orig.FogEnd end end})
+        VisualsTab:ColorPicker({Title='Fog Color',Default=fogColor,Callback=function(v) fogColor=v end})
+        VisualsTab:Slider({Title='Fog Start',Step=1,Value={Min=0,Max=1000,Default=orig.FogStart},Callback=function(v) fogStart=tonumber(v) or orig.FogStart end})
+        VisualsTab:Slider({Title='Fog End',Step=1,Value={Min=0,Max=1000,Default=orig.FogEnd},Callback=function(v) fogEnd=tonumber(v) or orig.FogEnd end})
+        VisualsTab:Toggle({Title='Custom Brightness',Default=false,Callback=function(v) VisualLighting2.Brightness=v and brightness or orig.Brightness end})
+        VisualsTab:Slider({Title='Brightness',Step=.1,Value={Min=0,Max=10,Default=orig.Brightness},Callback=function(v) brightness=tonumber(v) or orig.Brightness end})
+        VisualsTab:Toggle({Title='Custom Clock Time',Default=false,Callback=function(v) VisualLighting2.ClockTime=v and clock or orig.ClockTime end})
+        VisualsTab:Slider({Title='Clock Time',Step=.1,Value={Min=0,Max=24,Default=orig.ClockTime},Callback=function(v) clock=tonumber(v) or orig.ClockTime end})
+        VisualsTab:Toggle({Title='Global Shadows',Default=orig.GlobalShadows,Callback=function(v) VisualLighting2.GlobalShadows=v end})
+        VisualsTab:Toggle({Title='Custom Environment Diffuse',Default=false,Callback=function(v) VisualLighting2.EnvironmentDiffuseScale=v and diffuse or orig.EnvironmentDiffuseScale end})
+        VisualsTab:Slider({Title='Environment Diffuse Scale',Step=.01,Value={Min=0,Max=1,Default=orig.EnvironmentDiffuseScale},Callback=function(v) diffuse=tonumber(v) or orig.EnvironmentDiffuseScale end})
+        VisualsTab:Toggle({Title='Custom Environment Specular',Default=false,Callback=function(v) VisualLighting2.EnvironmentSpecularScale=v and specular or orig.EnvironmentSpecularScale end})
+        VisualsTab:Slider({Title='Environment Specular Scale',Step=.01,Value={Min=0,Max=1,Default=orig.EnvironmentSpecularScale},Callback=function(v) specular=tonumber(v) or orig.EnvironmentSpecularScale end})
+        VisualsTab:Toggle({Title='Custom Exposure',Default=false,Callback=function(v) VisualLighting2.ExposureCompensation=v and exposure or orig.ExposureCompensation end})
+        VisualsTab:Slider({Title='Exposure Compensation',Step=.1,Value={Min=-3,Max=3,Default=orig.ExposureCompensation},Callback=function(v) exposure=tonumber(v) or orig.ExposureCompensation end})
+        VisualsTab:Toggle({Title='Custom Color Shift Bottom',Default=false,Callback=function(v) VisualLighting2.ColorShift_Bottom=v and shiftBottom or orig.ColorShiftBottom end})
+        VisualsTab:ColorPicker({Title='Color Shift Bottom',Default=shiftBottom,Callback=function(v) shiftBottom=v end})
+        VisualsTab:Toggle({Title='Custom Color Shift Top',Default=false,Callback=function(v) VisualLighting2.ColorShift_Top=v and shiftTop or orig.ColorShiftTop end})
+        VisualsTab:ColorPicker({Title='Color Shift Top',Default=shiftTop,Callback=function(v) shiftTop=v end})
+        VisualsTab:Toggle({Title='Custom Geographic Latitude',Default=false,Callback=function(v) VisualLighting2.GeographicLatitude=v and latitude or orig.GeographicLatitude end})
+        VisualsTab:Slider({Title='Geographic Latitude',Step=.1,Value={Min=-90,Max=90,Default=orig.GeographicLatitude},Callback=function(v) latitude=tonumber(v) or orig.GeographicLatitude end})
+        VisualsTab:Toggle({Title='Nebula Theme',Default=false,Callback=function(v)
+            if v then
+                local b=Instance.new('BloomEffect'); b.Name='NebulaBloom'; b.Intensity=.7; b.Size=24; b.Threshold=1; b.Parent=VisualLighting2
+                local c=Instance.new('ColorCorrectionEffect'); c.Name='NebulaColorCorrection'; c.Saturation=.5; c.Contrast=.2; c.TintColor=nebulaColor; c.Parent=VisualLighting2
+                local a=Instance.new('Atmosphere'); a.Name='NebulaAtmosphere'; a.Density=.4; a.Offset=.25; a.Glare=1; a.Haze=2; a.Color=nebulaColor; a.Decay=nebulaColor; a.Parent=VisualLighting2
+                VisualLighting2.Ambient=nebulaColor; VisualLighting2.OutdoorAmbient=nebulaColor; VisualLighting2.FogColor=nebulaColor; VisualLighting2.FogStart=100; VisualLighting2.FogEnd=500
+            else
+                for _,n in ipairs({'NebulaBloom','NebulaColorCorrection','NebulaAtmosphere'}) do local o=VisualLighting2:FindFirstChild(n); if o then o:Destroy() end end
+                VisualLighting2.Ambient=orig.Ambient; VisualLighting2.OutdoorAmbient=orig.OutdoorAmbient; VisualLighting2.FogColor=orig.FogColor; VisualLighting2.FogStart=orig.FogStart; VisualLighting2.FogEnd=orig.FogEnd
+            end
+        end})
+        VisualsTab:ColorPicker({Title='Nebula Color',Default=nebulaColor,Callback=function(v) nebulaColor=v; local c=VisualLighting2:FindFirstChild('NebulaColorCorrection'); local a=VisualLighting2:FindFirstChild('NebulaAtmosphere'); if c then c.TintColor=v end; if a then a.Color=v; a.Decay=v end end})
+        VisualsTab:Button({Title='Restore World Lighting',Callback=function() for k,v in pairs(orig) do pcall(function() VisualLighting2[k]=v end) end end})
+    end
 end
 
 task.wait(0.4)
