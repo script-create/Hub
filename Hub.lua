@@ -5064,7 +5064,6 @@ end
 v301:Divider()
 v301:Paragraph({
     Title = 'Optional Buttons',
-,
     Content = 'Toggle to add or remove from screen.',
 })
 v301:Toggle({
