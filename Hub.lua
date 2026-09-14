@@ -1,4 +1,4 @@
-local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302
+local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302, u950, u951, u952, u953, u954, u955, u956, u957, u958, u959, u960, u961, u962, u963, u964, u965, u966, u967, u968, u969, u970, u971, u972, u973, u974, u975, u976, u977, u978
 
 do
     local u9, u10, u99, u105, u110, u116, u157
@@ -3809,11 +3809,11 @@ do
             OutdoorAmbient = VisualLighting.OutdoorAmbient,
         }
 
-        local function u950(player)
+        u950 = function(player)
             return player and player.Character
         end
 
-        local function u951(player)
+        u951 = function(player)
             local character = u950(player)
             if not character then return nil end
             return character:FindFirstChild('HumanoidRootPart')
@@ -3821,12 +3821,12 @@ do
                 or character:FindFirstChild('Torso')
         end
 
-        local function u952(player)
+        u952 = function(player)
             local character = u950(player)
             return character and character:FindFirstChildOfClass('Humanoid')
         end
 
-        local function u953(player)
+        u953 = function(player)
             local gui = VisualLabels[player]
             if gui then
                 gui:Destroy()
@@ -3834,7 +3834,7 @@ do
             end
         end
 
-        local function u954(player)
+        u954 = function(player)
             local h = VisualHighlights[player]
             if h then
                 h:Destroy()
@@ -3842,7 +3842,7 @@ do
             end
         end
 
-        local function u955(player)
+        u955 = function(player)
             local tracer = VisualTracers[player]
             if tracer then
                 if tracer.line then pcall(function() tracer.line:Remove() end) end
@@ -3851,13 +3851,13 @@ do
             end
         end
 
-        local function u956()
+        u956 = function()
             for player in pairs(VisualHighlights) do u954(player) end
             for player in pairs(VisualLabels) do u953(player) end
             for player in pairs(VisualTracers) do u955(player) end
         end
 
-        local function u957(player)
+        u957 = function(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             if not character then return end
@@ -3876,7 +3876,7 @@ do
             VisualHighlights[player] = highlight
         end
 
-        local function u958(player)
+        u958 = function(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             local root = u951(player)
@@ -3902,7 +3902,7 @@ do
             VisualLabels[player] = billboard
         end
 
-        local function u959()
+        u959 = function()
             for player, billboard in pairs(VisualLabels) do
                 local character = u950(player)
                 local root = u951(player)
@@ -3918,7 +3918,7 @@ do
             end
         end
 
-        local function u960(player)
+        u960 = function(player)
             if not Drawing then return end
             if player == VisualLocalPlayer then return end
             if VisualTracers[player] then return end
@@ -3929,7 +3929,7 @@ do
             VisualTracers[player] = { line = line }
         end
 
-        local function u961()
+        u961 = function()
             if not Drawing then return end
             local viewport = VisualCamera.ViewportSize
             local origin = Vector2.new(viewport.X / 2, viewport.Y - 8)
@@ -3947,7 +3947,7 @@ do
             end
         end
 
-        local function u962()
+        u962 = function()
             for _, player in ipairs(VisualPlayers:GetPlayers()) do
                 if player ~= VisualLocalPlayer then
                     u957(player)
@@ -3957,14 +3957,14 @@ do
             end
         end
 
-        local function u963()
+        u963 = function()
             for _, connection in ipairs(VisualConnections) do
                 pcall(function() connection:Disconnect() end)
             end
             table.clear(VisualConnections)
         end
 
-        local function u964(enabled)
+        u964 = function(enabled)
             u963()
             u956()
             if not enabled then return end
@@ -3985,7 +3985,7 @@ do
             end))
         end
 
-        local function u965(enabled)
+        u965 = function(enabled)
             VisualSelfChams = enabled
             local character = VisualLocalPlayer.Character
             if not character then return end
@@ -4004,7 +4004,7 @@ do
             highlight.Parent = character
         end
 
-        local function u966(enabled)
+        u966 = function(enabled)
             VisualFullbright = enabled
             if enabled then
                 VisualLighting.Brightness = 2
@@ -4019,7 +4019,7 @@ do
             end
         end
 
-        local function u967(enabled)
+        u967 = function(enabled)
             VisualNoFog = enabled
             if enabled then
                 VisualLighting.FogStart = 100000
@@ -4030,7 +4030,7 @@ do
             end
         end
 
-        local function u968()
+        u968 = function()
             if VisualFovConnection then
                 VisualFovConnection:Disconnect()
                 VisualFovConnection = nil
@@ -4041,7 +4041,7 @@ do
             end
         end
 
-        local function u969(enabled)
+        u969 = function(enabled)
             VisualFovEnabled = enabled
             u968()
             if not enabled or not Drawing then return end
@@ -4060,7 +4060,7 @@ do
             end)
         end
 
-        local function u970(enabled)
+        u970 = function(enabled)
             VisualThirdPerson = enabled
             if enabled then
                 VisualLocalPlayer.CameraMode = Enum.CameraMode.Classic
@@ -5015,14 +5015,14 @@ do
     local ShotSoundId = 'rbxassetid://6899466638'
     local ShotSoundConnections = {}
 
-    local function disconnectShotSounds()
+    u976 = function()
         for _, connection in ipairs(ShotSoundConnections) do
             pcall(function() connection:Disconnect() end)
         end
         table.clear(ShotSoundConnections)
     end
 
-    local function connectShotTool(tool)
+    u977 = function(tool)
         if not tool or not tool:IsA('Tool') then return end
         local name = tool.Name:lower()
         if not (name:find('gun') or name:find('revolver') or name:find('pistol') or name:find('rifle') or name:find('shot')) then return end
@@ -5037,17 +5037,17 @@ do
         end))
     end
 
-    local function connectShotSounds()
-        disconnectShotSounds()
+    u978 = function()
+        u976()
         local character = LocalPlayer.Character
         if character then
-            for _, child in ipairs(character:GetChildren()) do connectShotTool(child) end
-            table.insert(ShotSoundConnections, character.ChildAdded:Connect(connectShotTool))
+            for _, child in ipairs(character:GetChildren()) do u977(child) end
+            table.insert(ShotSoundConnections, character.ChildAdded:Connect(u977))
         end
         table.insert(ShotSoundConnections, LocalPlayer.CharacterAdded:Connect(function(character)
             task.wait(0.25)
-            for _, child in ipairs(character:GetChildren()) do connectShotTool(child) end
-            table.insert(ShotSoundConnections, character.ChildAdded:Connect(connectShotTool))
+            for _, child in ipairs(character:GetChildren()) do u977(child) end
+            table.insert(ShotSoundConnections, character.ChildAdded:Connect(u977))
         end))
     end
 
@@ -5056,15 +5056,15 @@ do
         Default = false,
         Callback = function(value)
             ShotSoundEnabled = value
-            if value then connectShotSounds() else disconnectShotSounds() end
+            if value then u978() else u976() end
         end,
     })
 end
 
 v301:Divider()
 v301:Paragraph({
-    Title = 'Optional Buttons' '' '
-,
+    Title = 'Optional Buttons',
+    Content = 'Toggle to add or remove from screen.',
     Content = 'Toggle to add or remove from screen.',
 })
 v301:Toggle({
@@ -5494,7 +5494,7 @@ do
         Objects = {},
     }
 
-    local function archiveESPRemove(player)
+    u971 = function(player)
         local obj = ArchiveESP.Objects[player]
         if not obj then return end
         for _, instance in pairs(obj) do
@@ -5505,14 +5505,14 @@ do
         ArchiveESP.Objects[player] = nil
     end
 
-    local function archiveESPCreate(player)
+    u972 = function(player)
         if player == LocalPlayer then return end
         local character = player.Character
         local root = character and character:FindFirstChild('HumanoidRootPart')
         local head = character and character:FindFirstChild('Head')
         local humanoid = character and character:FindFirstChildOfClass('Humanoid')
         if not character or not root or not head or not humanoid then return end
-        archiveESPRemove(player)
+        u971(player)
 
         local objects = {}
         if ArchiveESP.Box then
@@ -5549,13 +5549,13 @@ do
         ArchiveESP.Objects[player] = objects
     end
 
-    local function archiveESPRefresh()
+    u973 = function()
         for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then archiveESPCreate(player) end
+            if player ~= LocalPlayer then u972(player) end
         end
     end
 
-    local function archiveESPUpdate()
+    u974 = function()
         local camera = workspace.CurrentCamera
         if not camera then return end
         for player, objects in pairs(ArchiveESP.Objects) do
@@ -5564,7 +5564,7 @@ do
             local head = character and character:FindFirstChild('Head')
             local humanoid = character and character:FindFirstChildOfClass('Humanoid')
             if not character or not root or not head or not humanoid or humanoid.Health <= 0 then
-                archiveESPRemove(player)
+                u971(player)
             else
                 local point, onScreen = camera:WorldToViewportPoint(root.Position)
                 local visible = onScreen and point.Z > 0
@@ -5591,27 +5591,27 @@ do
         end
     end
 
-    local function archiveESPSetConnection()
+    u975 = function()
         for _, c in ipairs(ArchiveESP.Connections) do pcall(function() c:Disconnect() end) end
         table.clear(ArchiveESP.Connections)
-        table.insert(ArchiveESP.Connections, RunService.RenderStepped:Connect(archiveESPUpdate))
+        table.insert(ArchiveESP.Connections, RunService.RenderStepped:Connect(u974))
         table.insert(ArchiveESP.Connections, Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function() task.wait(0.4); archiveESPCreate(player) end)
+            player.CharacterAdded:Connect(function() task.wait(0.4); u972(player) end)
         end))
-        table.insert(ArchiveESP.Connections, Players.PlayerRemoving:Connect(archiveESPRemove))
+        table.insert(ArchiveESP.Connections, Players.PlayerRemoving:Connect(u971))
     end
 
-    archiveESPSetConnection()
+    u975()
 
     v302:Divider()
     v302:Paragraph({
         Title = 'Archive ESP Options',
         Content = 'Box, health, names, tools, tracers and visibility controls from the supplied ESP sources.',
     })
-    v302:Toggle({Title = 'ESP Box', Default = false, Callback = function(value) ArchiveESP.Box = value; archiveESPRefresh() end})
-    v302:Toggle({Title = 'ESP Health', Default = false, Callback = function(value) ArchiveESP.HealthBar = value; archiveESPRefresh() end})
-    v302:Toggle({Title = 'ESP Names', Default = false, Callback = function(value) ArchiveESP.Names = value; archiveESPRefresh() end})
-    v302:Toggle({Title = 'ESP Tools', Default = false, Callback = function(value) ArchiveESP.Tools = value; archiveESPRefresh() end})
+    v302:Toggle({Title = 'ESP Box', Default = false, Callback = function(value) ArchiveESP.Box = value; u973() end})
+    v302:Toggle({Title = 'ESP Health', Default = false, Callback = function(value) ArchiveESP.HealthBar = value; u973() end})
+    v302:Toggle({Title = 'ESP Names', Default = false, Callback = function(value) ArchiveESP.Names = value; u973() end})
+    v302:Toggle({Title = 'ESP Tools', Default = false, Callback = function(value) ArchiveESP.Tools = value; u973() end})
     v302:Toggle({Title = 'ESP Team Check', Default = false, Callback = function(value) ArchiveESP.TeamCheck = value end})
     v302:Toggle({Title = 'ESP Visible Only', Default = true, Callback = function(value) ArchiveESP.VisibleOnly = value end})
     v302:Toggle({Title = 'ESP Tracers', Default = false, Callback = function(value)
