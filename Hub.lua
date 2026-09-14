@@ -1,4 +1,4 @@
-local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302, u971, u972, u973, u974, u975, u976, u977, u978, u979, u980, u981, u982, u983, u984, u985, u986, u987, u988, u989, u990, u991, u992
+local UserInputService, CurrentCamera, n1, n2, u13, n3, u15, u16, u17, v18, v25, u29, u31, u32, u61, u62, t3, t4, v68, v78, u120, n17, u126, u127, u128, v145, u147, u148, u149, u150, u151, u156, u172, u173, u174, u175, u176, u177, u178, v183, u184, u185, u186, u187, u188, u189, u198, u199, id, u201, u202, u205, u206, u207, u208, u209, u210, u211, u212, v232, v239, v244, u252, u257, u263, u270, u276, u281, u287, u293, v301, v302, u971, u972, u973, u974, u975, u976, u977, u978, u979, u980, u981, u982, u983, u984, u985, u986, u987, u988, u989, u990, u991, u992, u993, u994
 
 do
     local u9, u10, u99, u105, u110, u116, u157
@@ -5631,7 +5631,7 @@ do
     local ESPState = {
         Box=false, BoxOutline=true, Names=false, Distance=false, Skeleton=false,
         HealthBar=false, HealthText=false, Tracer=false, Chams=false,
-        TeamCheck=true, MaxDistance=1000, BoxColor=Color3.new(.403922,.34902,.701961),
+        TeamCheck=true, MaxDistance=1000, TracerOrigin='Bottom Screen', HealthSmoothness=0.15, BoxColor=Color3.new(.403922,.34902,.701961),
         OutlineColor=Color3.new(0,0,0), SkeletonColor=Color3.new(.403922,.34902,.701961),
         TracerColor=Color3.new(.403922,.34902,.701961), ChamsColor=Color3.new(.403922,.34902,.701961),
         ChamsOutlineColor=Color3.new(1,1,1), ChamsTransparency=.5, Gradient=false,
@@ -5661,13 +5661,28 @@ do
             h.OutlineColor=ESPState.BoxOutline and ESPState.OutlineColor or ESPState.ChamsOutlineColor; h.OutlineTransparency=ESPState.BoxOutline and 0 or 1; h.Parent=char; o.Highlight=h
         end
         if ESPState.Names or ESPState.Distance or ESPState.HealthText then
-            local bb=Instance.new('BillboardGui'); bb.Name='CrystalHub_AdvancedESP_Info'; bb.Adornee=head or root; bb.Size=UDim2.new(0,200,0,60); bb.StudsOffset=Vector3.new(0,3.2,0); bb.AlwaysOnTop=true; bb.Parent=char
+            local bb=Instance.new('BillboardGui'); bb.Name='CrystalHub_AdvancedESP_Info'; bb.Adornee=head or root; bb.Size=UDim2.new(0,220,0,60); bb.StudsOffset=Vector3.new(0,3.2,0); bb.AlwaysOnTop=true; bb.Parent=char
             local label=Instance.new('TextLabel'); label.Size=UDim2.new(1,0,1,0); label.BackgroundTransparency=1; label.TextColor3=ESPState.BoxColor; label.TextStrokeTransparency=.2; label.Font=Enum.Font.GothamBold; label.TextSize=12; label.Parent=bb; o.Info=bb; o.Label=label
         end
         if ESPState.HealthBar then
             local bb=Instance.new('BillboardGui'); bb.Name='CrystalHub_AdvancedESP_HP'; bb.Adornee=root; bb.Size=UDim2.new(0,80,0,6); bb.StudsOffset=Vector3.new(0,-3,0); bb.AlwaysOnTop=true; bb.Parent=char
             local bg=Instance.new('Frame'); bg.Size=UDim2.new(1,0,1,0); bg.BackgroundColor3=Color3.new(0,0,0); bg.BorderSizePixel=0; bg.Parent=bb
-            local fill=Instance.new('Frame'); fill.Name='Fill'; fill.Size=UDim2.new(1,0,1,0); fill.BorderSizePixel=0; fill.BackgroundColor3=Color3.new(0,1,0); fill.Parent=bg; o.Health=bb
+            local fill=Instance.new('Frame'); fill.Name='Fill'; fill.Size=UDim2.new(1,0,1,0); fill.BorderSizePixel=0; fill.BackgroundColor3=Color3.new(0,1,0); fill.Parent=bg; o.Health=bb; o.HealthFill=fill
+        end
+        if ESPState.Skeleton then
+            local folder=Instance.new('Folder'); folder.Name='CrystalHub_AdvancedESP_Skeleton'; folder.Parent=char; o.SkeletonFolder=folder
+            local links={{'Head','UpperTorso'},{'UpperTorso','LowerTorso'},{'UpperTorso','LeftUpperArm'},{'LeftUpperArm','LeftLowerArm'},{'LeftLowerArm','LeftHand'},{'UpperTorso','RightUpperArm'},{'RightUpperArm','RightLowerArm'},{'RightLowerArm','RightHand'},{'LowerTorso','LeftUpperLeg'},{'LeftUpperLeg','LeftLowerLeg'},{'LeftLowerLeg','LeftFoot'},{'LowerTorso','RightUpperLeg'},{'RightUpperLeg','RightLowerLeg'},{'RightLowerLeg','RightFoot'}}
+            local made={}
+            for _,pair in ipairs(links) do
+                local a=char:FindFirstChild(pair[1]); local b=char:FindFirstChild(pair[2])
+                if a and b and a:IsA('BasePart') and b:IsA('BasePart') then
+                    local aa=Instance.new('Attachment'); aa.Parent=a
+                    local ab=Instance.new('Attachment'); ab.Parent=b
+                    local beam=Instance.new('Beam'); beam.Attachment0=aa; beam.Attachment1=ab; beam.FaceCamera=true; beam.Width0=.035; beam.Width1=.035; beam.Color=ColorSequence.new(ESPState.SkeletonColor); beam.Parent=folder
+                    table.insert(made,aa); table.insert(made,ab); table.insert(made,beam)
+                end
+            end
+            o.SkeletonObjects=made
         end
         if ESPState.Tracer and Drawing then local line=Drawing.new('Line'); line.Visible=false; line.Thickness=1.5; line.Color=ESPState.TracerColor; o.Tracer=line end
         ESPObjects[plr]=o
@@ -5675,15 +5690,36 @@ do
     u982 = function()
         for _,plr in ipairs(ESPPlayers:GetPlayers()) do
             if plr~=ESPMe then
-                if ESPState.Box or ESPState.Chams or ESPState.Names or ESPState.Distance or ESPState.HealthText or ESPState.HealthBar or ESPState.Tracer then u981(plr) else u980(plr) end
+                if ESPState.Box or ESPState.Chams or ESPState.Names or ESPState.Distance or ESPState.HealthText or ESPState.HealthBar or ESPState.Tracer or ESPState.Skeleton then u981(plr) else u980(plr) end
                 local o=ESPObjects[plr]
                 if o and u979(plr) then
                     local char=plr.Character; local root=char:FindFirstChild('HumanoidRootPart'); local hum=char:FindFirstChildOfClass('Humanoid'); local point,on=ESPCamera:WorldToViewportPoint(root.Position)
+                    if o.Highlight then
+                        o.Highlight.FillColor=ESPState.Chams and ESPState.ChamsColor or ESPState.BoxColor
+                        o.Highlight.FillTransparency=ESPState.Chams and ESPState.ChamsTransparency or .72
+                        o.Highlight.OutlineColor=ESPState.BoxOutline and ESPState.OutlineColor or ESPState.ChamsOutlineColor
+                        o.Highlight.OutlineTransparency=ESPState.BoxOutline and 0 or 1
+                    end
                     if o.Label then
+                        o.Label.TextColor3=ESPState.BoxColor
                         local parts={}; if ESPState.Names then table.insert(parts,plr.DisplayName) end; if ESPState.Distance then table.insert(parts,string.format('%dst',math.floor((ESPCamera.CFrame.Position-root.Position).Magnitude))) end; if ESPState.HealthText then table.insert(parts,string.format('HP: %d/%d',math.floor(hum.Health),math.floor(hum.MaxHealth))) end; o.Label.Text=table.concat(parts,' | ')
                     end
-                    if o.Health then local fill=o.Health:FindFirstChild('Frame') and o.Health.Frame:FindFirstChild('Fill'); if fill then fill.Size=UDim2.new(math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1),0,1,0) end end
-                    if o.Tracer then o.Tracer.From=Vector2.new(ESPCamera.ViewportSize.X/2,ESPCamera.ViewportSize.Y-8); o.Tracer.To=Vector2.new(point.X,point.Y); o.Tracer.Visible=on and point.Z>0 end
+                    if o.HealthFill then
+                        local target=math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1)
+                        local current=o.HealthFill.Size.X.Scale
+                        local smooth=math.clamp(ESPState.HealthSmoothness,0.01,1)
+                        o.HealthFill.Size=UDim2.new(current+(target-current)*smooth,0,1,0)
+                    end
+                    if o.SkeletonObjects then
+                        for _,obj in ipairs(o.SkeletonObjects) do if obj:IsA('Beam') then obj.Color=ColorSequence.new(ESPState.SkeletonColor) end end
+                    end
+                    if o.Tracer then
+                        local from
+                        if ESPState.TracerOrigin=='Top Screen' then from=Vector2.new(ESPCamera.ViewportSize.X/2,8)
+                        elseif ESPState.TracerOrigin=='Cursor' then local m=ESPMe:GetMouse(); from=Vector2.new(m.X,m.Y)
+                        else from=Vector2.new(ESPCamera.ViewportSize.X/2,ESPCamera.ViewportSize.Y-8) end
+                        o.Tracer.From=from; o.Tracer.To=Vector2.new(point.X,point.Y); o.Tracer.Color=ESPState.TracerColor; o.Tracer.Visible=on and point.Z>0
+                    end
                 elseif o then u980(plr) end
             end
         end
@@ -5705,10 +5741,10 @@ do
         v302:ColorPicker({Title='Skeleton Color',Default=ESPState.SkeletonColor,Callback=function(v) ESPState.SkeletonColor=v end})
         v302:Toggle({Title='Health Bar',Default=false,Callback=function(v) ESPState.HealthBar=v end})
         v302:Toggle({Title='Health Text',Default=false,Callback=function(v) ESPState.HealthText=v end})
-        v302:Slider({Title='Health Bar Smoothness',Step=.01,Value={Min=.05,Max=.5,Default=.15},Callback=function(_) end})
+        v302:Slider({Title='Health Bar Smoothness',Step=.01,Value={Min=.01,Max=1,Default=.15},Callback=function(v) ESPState.HealthSmoothness=tonumber(v) or .15 end})
         v302:Toggle({Title='Tracer ESP',Default=false,Callback=function(v) ESPState.Tracer=v end})
         v302:ColorPicker({Title='Tracer Color',Default=ESPState.TracerColor,Callback=function(v) ESPState.TracerColor=v end})
-        v302:Dropdown({Title='Tracer Origin',Values={'Bottom Screen','Cursor','Top Screen'},Default='Bottom Screen',Callback=function(_) end})
+        v302:Dropdown({Title='Tracer Origin',Values={'Bottom Screen','Cursor','Top Screen'},Default='Bottom Screen',Callback=function(v) ESPState.TracerOrigin=v end})
         v302:Toggle({Title='Chams',Default=false,Callback=function(v) ESPState.Chams=v end})
         v302:ColorPicker({Title='Chams Fill Color',Default=ESPState.ChamsColor,Callback=function(v) ESPState.ChamsColor=v end})
         v302:ColorPicker({Title='Chams Outline Color',Default=ESPState.ChamsOutlineColor,Callback=function(v) ESPState.ChamsOutlineColor=v end})
@@ -5877,7 +5913,7 @@ do
 
     -- Bullet tracers
     do
-        local BT={Enabled=false,Color=Color3.new(1,1,1),Size=0.4,Transparency=0,TimeAlive=3}
+        local BT={Enabled=false,Color=Color3.new(1,1,1),Texture='Beam',Size=0.4,Transparency=0,TimeAlive=3}
         u989 = function(startPos,endPos)
             if typeof(startPos)~='Vector3' or typeof(endPos)~='Vector3' then return end
             local a=Instance.new('Part'); a.Name='BulletStart'; a.Anchored=true; a.CanCollide=false; a.Transparency=1; a.Size=Vector3.new(.2,.2,.2); a.Position=startPos; a.Parent=workspace
@@ -5888,6 +5924,7 @@ do
         VisualsTab:Divider(); VisualsTab:Paragraph({Title='Bullet Tracer',Content='Bullet tracer visual from the supplied source.'})
         VisualsTab:Toggle({Title='Bullet Tracers',Default=false,Callback=function(v) BT.Enabled=v end})
         VisualsTab:ColorPicker({Title='Bullet Tracer Color',Default=BT.Color,Callback=function(v) BT.Color=v end})
+        VisualsTab:Dropdown({Title='Bullet Tracer Texture',Values={'Beam','Lightning','Heartrate','Chain','Glitch','Swirl'},Default='Beam',Callback=function(v) BT.Texture=v end})
         VisualsTab:Slider({Title='Bullet Tracer Size',Step=.05,Value={Min=.1,Max=3,Default=.4},Callback=function(v) BT.Size=tonumber(v) or .4 end})
         VisualsTab:Slider({Title='Bullet Tracer Transparency',Step=.05,Value={Min=0,Max=1,Default=0},Callback=function(v) BT.Transparency=tonumber(v) or 0 end})
         VisualsTab:Slider({Title='Bullet Tracer Time Alive',Step=1,Value={Min=1,Max=10,Default=3},Callback=function(v) BT.TimeAlive=tonumber(v) or 3 end})
@@ -5948,6 +5985,7 @@ do
         VisualsTab:Divider(); VisualsTab:Paragraph({Title='Rain / Snow',Content='Rain and snow particle visuals from the supplied source.'})
         VisualsTab:Toggle({Title='Rain Enabled',Default=false,Callback=function(v) Rain.Enabled=v; if v then u991(); rainConnection=VisualRunService2.Heartbeat:Connect(function() if rainPart then rainPart.CFrame=CFrame.new(VisualCamera2.CFrame.Position+Vector3.new(0,30,0)) end end) else if rainConnection then rainConnection:Disconnect(); rainConnection=nil end; if rainPart then rainPart:Destroy(); rainPart=nil end end end})
         VisualsTab:ColorPicker({Title='Rain Color',Default=Rain.Color,Callback=function(v) Rain.Color=v; if Rain.Enabled then u991() end end})
+        VisualsTab:Input({Title='Rain Lifetime',Value=tostring(Rain.Lifetime),Callback=function(v) Rain.Lifetime=math.max(0.1,tonumber(v) or 5); if Rain.Enabled then u991() end end})
         VisualsTab:Slider({Title='Rain Amount',Step=1,Value={Min=1,Max=10000,Default=1000},Callback=function(v) Rain.Rate=tonumber(v) or 1000; if Rain.Enabled then u991() end end})
         VisualsTab:Slider({Title='Rain Speed',Step=1,Value={Min=10,Max=1000,Default=100},Callback=function(v) Rain.Speed=tonumber(v) or 100; if Rain.Enabled then u991() end end})
         VisualsTab:Toggle({Title='Snow Enabled',Default=false,Callback=function(v) Snow.Enabled=v; if v then u992(); snowConnection=VisualRunService2.Heartbeat:Connect(function() if snowPart then snowPart.CFrame=CFrame.new(VisualCamera2.CFrame.Position+Vector3.new(0,5,0)) end end) else if snowConnection then snowConnection:Disconnect(); snowConnection=nil end; if snowPart then snowPart:Destroy(); snowPart=nil end end end})
@@ -6011,7 +6049,22 @@ do
             end
         end})
         VisualsTab:ColorPicker({Title='Nebula Color',Default=nebulaColor,Callback=function(v) nebulaColor=v; local c=VisualLighting2:FindFirstChild('NebulaColorCorrection'); local a=VisualLighting2:FindFirstChild('NebulaAtmosphere'); if c then c.TintColor=v end; if a then a.Color=v; a.Decay=v end end})
-        VisualsTab:Button({Title='Restore World Lighting',Callback=function() for k,v in pairs(orig) do pcall(function() VisualLighting2[k]=v end) end end})
+        local SkyboxNames={'Black Storm','Snow','Blue Space','Realistic','Stormy','Pink','Sunset','Arctic','Space','Roblox Default','Red Night','Deep Space 1','Pink Skies','Purple Sunset','Blue Night','Blossom Daylight','Blue Nebula','Blue Planet','Deep Space 2','Summer','Galaxy','Stylized','Minecraft','Sunset 2','Cloudy Rain','Black Cloudy Rain'}
+        local SelectedSkybox='Snow'
+        local CustomSkybox=false
+        local customSkyInstance=nil
+        u993 = function(name)
+            if customSkyInstance then customSkyInstance:Destroy(); customSkyInstance=nil end
+            if name=='Roblox Default' then return end
+            -- The supplied archive had its skybox asset URLs stripped, so preserve the selector without restoring external links.
+            local sky=Instance.new('Sky'); sky.Name='CrystalHubCustomSky'; sky.Parent=VisualLighting2; customSkyInstance=sky
+        end
+        u994 = function()
+            if customSkyInstance then customSkyInstance:Destroy(); customSkyInstance=nil end
+        end
+        VisualsTab:Toggle({Title='Custom Skybox',Default=false,Callback=function(v) CustomSkybox=v; if v then u993(SelectedSkybox) else u994() end end})
+        VisualsTab:Dropdown({Title='Skybox',Values=SkyboxNames,Default='Snow',Callback=function(v) SelectedSkybox=v; if CustomSkybox then u993(v) end end})
+        VisualsTab:Button({Title='Restore World Lighting',Callback=function() for k,v in pairs(orig) do pcall(function() VisualLighting2[k]=v end) end; u994() end})
     end
 end
 
