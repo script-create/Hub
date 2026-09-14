@@ -3809,11 +3809,11 @@ do
             OutdoorAmbient = VisualLighting.OutdoorAmbient,
         }
 
-        local function u950(player)
+        u950 = function(player)
             return player and player.Character
         end
 
-        local function u951(player)
+        u951 = function(player)
             local character = u950(player)
             if not character then return nil end
             return character:FindFirstChild('HumanoidRootPart')
@@ -3821,12 +3821,12 @@ do
                 or character:FindFirstChild('Torso')
         end
 
-        local function u952(player)
+        u952 = function(player)
             local character = u950(player)
             return character and character:FindFirstChildOfClass('Humanoid')
         end
 
-        local function u953(player)
+        u953 = function(player)
             local gui = VisualLabels[player]
             if gui then
                 gui:Destroy()
@@ -3834,7 +3834,7 @@ do
             end
         end
 
-        local function u954(player)
+        u954 = function(player)
             local h = VisualHighlights[player]
             if h then
                 h:Destroy()
@@ -3842,7 +3842,7 @@ do
             end
         end
 
-        local function u955(player)
+        u955 = function(player)
             local tracer = VisualTracers[player]
             if tracer then
                 if tracer.line then pcall(function() tracer.line:Remove() end) end
@@ -3851,13 +3851,13 @@ do
             end
         end
 
-        local function u956()
+        u956 = function()
             for player in pairs(VisualHighlights) do u954(player) end
             for player in pairs(VisualLabels) do u953(player) end
             for player in pairs(VisualTracers) do u955(player) end
         end
 
-        local function u957(player)
+        u957 = function(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             if not character then return end
@@ -3876,7 +3876,7 @@ do
             VisualHighlights[player] = highlight
         end
 
-        local function u958(player)
+        u958 = function(player)
             if player == VisualLocalPlayer then return end
             local character = u950(player)
             local root = u951(player)
@@ -3902,7 +3902,7 @@ do
             VisualLabels[player] = billboard
         end
 
-        local function u959()
+        u959 = function()
             for player, billboard in pairs(VisualLabels) do
                 local character = u950(player)
                 local root = u951(player)
@@ -3918,7 +3918,7 @@ do
             end
         end
 
-        local function u960(player)
+        u960 = function(player)
             if not Drawing then return end
             if player == VisualLocalPlayer then return end
             if VisualTracers[player] then return end
@@ -3929,7 +3929,7 @@ do
             VisualTracers[player] = { line = line }
         end
 
-        local function u961()
+        u961 = function()
             if not Drawing then return end
             local viewport = VisualCamera.ViewportSize
             local origin = Vector2.new(viewport.X / 2, viewport.Y - 8)
@@ -3947,7 +3947,7 @@ do
             end
         end
 
-        local function u962()
+        u962 = function()
             for _, player in ipairs(VisualPlayers:GetPlayers()) do
                 if player ~= VisualLocalPlayer then
                     u957(player)
@@ -3957,14 +3957,14 @@ do
             end
         end
 
-        local function u963()
+        u963 = function()
             for _, connection in ipairs(VisualConnections) do
                 pcall(function() connection:Disconnect() end)
             end
             table.clear(VisualConnections)
         end
 
-        local function u964(enabled)
+        u964 = function(enabled)
             u963()
             u956()
             if not enabled then return end
@@ -3985,7 +3985,7 @@ do
             end))
         end
 
-        local function u965(enabled)
+        u965 = function(enabled)
             VisualSelfChams = enabled
             local character = VisualLocalPlayer.Character
             if not character then return end
@@ -4004,7 +4004,7 @@ do
             highlight.Parent = character
         end
 
-        local function u966(enabled)
+        u966 = function(enabled)
             VisualFullbright = enabled
             if enabled then
                 VisualLighting.Brightness = 2
@@ -4019,7 +4019,7 @@ do
             end
         end
 
-        local function u967(enabled)
+        u967 = function(enabled)
             VisualNoFog = enabled
             if enabled then
                 VisualLighting.FogStart = 100000
@@ -4030,7 +4030,7 @@ do
             end
         end
 
-        local function u968()
+        u968 = function()
             if VisualFovConnection then
                 VisualFovConnection:Disconnect()
                 VisualFovConnection = nil
@@ -4041,7 +4041,7 @@ do
             end
         end
 
-        local function u969(enabled)
+        u969 = function(enabled)
             VisualFovEnabled = enabled
             u968()
             if not enabled or not Drawing then return end
@@ -4060,7 +4060,7 @@ do
             end)
         end
 
-        local function u970(enabled)
+        u970 = function(enabled)
             VisualThirdPerson = enabled
             if enabled then
                 VisualLocalPlayer.CameraMode = Enum.CameraMode.Classic
@@ -5015,14 +5015,14 @@ do
     local ShotSoundId = 'rbxassetid://6899466638'
     local ShotSoundConnections = {}
 
-    local function disconnectShotSounds()
+    disconnectShotSounds = function()
         for _, connection in ipairs(ShotSoundConnections) do
             pcall(function() connection:Disconnect() end)
         end
         table.clear(ShotSoundConnections)
     end
 
-    local function connectShotTool(tool)
+    connectShotTool = function(tool)
         if not tool or not tool:IsA('Tool') then return end
         local name = tool.Name:lower()
         if not (name:find('gun') or name:find('revolver') or name:find('pistol') or name:find('rifle') or name:find('shot')) then return end
@@ -5037,7 +5037,7 @@ do
         end))
     end
 
-    local function connectShotSounds()
+    connectShotSounds = function()
         disconnectShotSounds()
         local character = LocalPlayer.Character
         if character then
@@ -5494,7 +5494,7 @@ do
         Objects = {},
     }
 
-    local function archiveESPRemove(player)
+    archiveESPRemove = function(player)
         local obj = ArchiveESP.Objects[player]
         if not obj then return end
         for _, instance in pairs(obj) do
@@ -5505,7 +5505,7 @@ do
         ArchiveESP.Objects[player] = nil
     end
 
-    local function archiveESPCreate(player)
+    archiveESPCreate = function(player)
         if player == LocalPlayer then return end
         local character = player.Character
         local root = character and character:FindFirstChild('HumanoidRootPart')
@@ -5549,13 +5549,13 @@ do
         ArchiveESP.Objects[player] = objects
     end
 
-    local function archiveESPRefresh()
+    archiveESPRefresh = function()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then archiveESPCreate(player) end
         end
     end
 
-    local function archiveESPUpdate()
+    archiveESPUpdate = function()
         local camera = workspace.CurrentCamera
         if not camera then return end
         for player, objects in pairs(ArchiveESP.Objects) do
@@ -5591,7 +5591,7 @@ do
         end
     end
 
-    local function archiveESPSetConnection()
+    archiveESPSetConnection = function()
         for _, c in ipairs(ArchiveESP.Connections) do pcall(function() c:Disconnect() end) end
         table.clear(ArchiveESP.Connections)
         table.insert(ArchiveESP.Connections, RunService.RenderStepped:Connect(archiveESPUpdate))
@@ -5639,19 +5639,19 @@ do
         GradientColor1=Color3.new(.403922,.34902,.701961), GradientColor2=Color3.new(.8,.4,1)
     }
     local ESPObjects={}
-    local function espAllowed(plr)
+    espAllowed = function(plr)
         if plr==ESPMe or not plr.Character then return false end
         if ESPState.TeamCheck and plr.Team and ESPMe.Team and plr.Team==ESPMe.Team then return false end
         local root=plr.Character:FindFirstChild('HumanoidRootPart'); local hum=plr.Character:FindFirstChildOfClass('Humanoid')
         if not root or not hum or hum.Health<=0 then return false end
         return (ESPCamera.CFrame.Position-root.Position).Magnitude<=ESPState.MaxDistance
     end
-    local function clearESP(plr)
+    clearESP = function(plr)
         local o=ESPObjects[plr]; if not o then return end
         for _,x in pairs(o) do if typeof(x)=='Instance' then pcall(function() x:Destroy() end) elseif type(x)=='table' and x.Remove then pcall(function() x:Remove() end) end end
         ESPObjects[plr]=nil
     end
-    local function makeESP(plr)
+    makeESP = function(plr)
         if not espAllowed(plr) then clearESP(plr); return end
         clearESP(plr)
         local char=plr.Character; local root=char:FindFirstChild('HumanoidRootPart'); local head=char:FindFirstChild('Head')
@@ -5673,7 +5673,7 @@ do
         if ESPState.Tracer and Drawing then local line=Drawing.new('Line'); line.Visible=false; line.Thickness=1.5; line.Color=ESPState.TracerColor; o.Tracer=line end
         ESPObjects[plr]=o
     end
-    local function updateESP()
+    updateESP = function()
         for _,plr in ipairs(ESPPlayers:GetPlayers()) do
             if plr~=ESPMe then
                 if ESPState.Box or ESPState.Chams or ESPState.Names or ESPState.Distance or ESPState.HealthText or ESPState.HealthBar or ESPState.Tracer then makeESP(plr) else clearESP(plr) end
@@ -5691,7 +5691,7 @@ do
     end
     ESPRun.RenderStepped:Connect(updateESP)
     ESPPlayers.PlayerRemoving:Connect(clearESP)
-    local function addESPControls()
+    addESPControls = function()
         v302:Divider(); v302:Paragraph({Title='Advanced ESP (ZIP)',Content='Box, gradient, outline, name, distance, skeleton, health, tracer, chams, team check and distance controls.'})
         v302:Toggle({Title='Box ESP',Default=false,Callback=function(v) ESPState.Box=v end})
         v302:ColorPicker({Title='Box Color',Default=ESPState.BoxColor,Callback=function(v) ESPState.BoxColor=v end})
@@ -5744,7 +5744,7 @@ do
             lightRange = 12,
             scale = Vector3.new(1.7,1.1,1.7),
         }
-        local function CreateHat(Character)
+        CreateHat = function(Character)
             local Head = Character and Character:FindFirstChild('Head')
             if not Head then return end
             local old = Character:FindFirstChild('ChinaHat')
@@ -5775,7 +5775,7 @@ do
             Light.Parent = Cone
             Cone.Parent = Character
         end
-        local function OnCharacterAdded(Character)
+        OnCharacterAdded = function(Character)
             if China.enabled then CreateHat(Character) end
         end
         VisualLocalPlayer2.CharacterAdded:Connect(OnCharacterAdded)
@@ -5800,7 +5800,7 @@ do
     do
         local AuraEnabled=false
         local AuraColor=Color3.new(1,1,1)
-        local function AttachAuraSafe(character)
+        AttachAuraSafe = function(character)
             local torso=character and (character:FindFirstChild('UpperTorso') or character:FindFirstChild('Torso'))
             if not torso then return end
             local old=torso:FindFirstChild('AuraSafe'); if old then old:Destroy() end
@@ -5830,7 +5830,7 @@ do
         local TrailEnabled=false
         local TrailColor=Color3.new(1,1,1)
         local TrailLife=1.6
-        local function applyChams(character)
+        applyChams = function(character)
             if not character then return end
             if SelfChams then
                 for _,v in pairs(character:GetDescendants()) do
@@ -5846,7 +5846,7 @@ do
                 if Gun then for _,v in pairs(Gun:GetDescendants()) do if v:IsA('MeshPart') or v:IsA('BasePart') then pcall(function() v.Material=WeaponMaterial; v.Color=WeaponColor; if v:IsA('MeshPart') then v.TextureID='' end end) end end end
             end
         end
-        local function ToggleTrail(state)
+        ToggleTrail = function(state)
             local c=VisualLocalPlayer2.Character; if not c then return end
             for _,v in pairs(c:GetChildren()) do
                 if v:IsA('BasePart') then
@@ -5879,7 +5879,7 @@ do
     -- Bullet tracers
     do
         local BT={Enabled=false,Color=Color3.new(1,1,1),Size=0.4,Transparency=0,TimeAlive=3}
-        local function bullettracerlol(startPos,endPos)
+        bullettracerlol = function(startPos,endPos)
             if typeof(startPos)~='Vector3' or typeof(endPos)~='Vector3' then return end
             local a=Instance.new('Part'); a.Name='BulletStart'; a.Anchored=true; a.CanCollide=false; a.Transparency=1; a.Size=Vector3.new(.2,.2,.2); a.Position=startPos; a.Parent=workspace
             local b=Instance.new('Part'); b.Name='BulletEnd'; b.Anchored=true; b.CanCollide=false; b.Transparency=1; b.Size=Vector3.new(.2,.2,.2); b.Position=endPos; b.Parent=workspace
@@ -5911,7 +5911,7 @@ do
         local hpText=' Health '; local armorText='                   Armor'; local energyText='Dark Energy              '
         local hpColor=Color3.new(.941176,.031373,.819608); local armorColor=Color3.new(.376471,.031373,.933333); local energyColor=Color3.new(.768627,.039216,.952941)
         local hpOn,armorOn,energyOn=false,false,false
-        local function skibiditoilet()
+        skibiditoilet = function()
             local gui=VisualLocalPlayer2:FindFirstChild('PlayerGui') and VisualLocalPlayer2.PlayerGui:FindFirstChild('MainScreenGui')
             local bar=gui and gui:FindFirstChild('Bar'); if not bar then return end
             if hpOn and bar:FindFirstChild('HP') then bar.HP.TextLabel.Text=hpText; bar.HP.bar.BackgroundColor3=hpColor end
@@ -5936,12 +5936,12 @@ do
         local Snow={Enabled=false,Color=Color3.new(1,1,1),Lifetime=100,Rate=100,Speed=10}
         local rainPart,rainEmitter,rainConnection=nil,nil,nil
         local snowPart,snowEmitter,snowConnection=nil,nil,nil
-        local function rainParticleEmitter()
+        rainParticleEmitter = function()
             if rainPart then rainPart:Destroy() end
             rainPart=Instance.new('Part'); rainPart.Size=Vector3.new(51.8,.001,52.084); rainPart.CanCollide=false; rainPart.Anchored=true; rainPart.Transparency=1; rainPart.Parent=workspace
             rainEmitter=Instance.new('ParticleEmitter'); rainEmitter.Color=ColorSequence.new(Rain.Color); rainEmitter.LightEmission=1; rainEmitter.Orientation=Enum.ParticleOrientation.FacingCameraWorldUp; rainEmitter.Size=NumberSequence.new(.4); rainEmitter.Squash=NumberSequence.new(4); rainEmitter.Texture='rbxassetid:'; rainEmitter.EmissionDirection=Enum.NormalId.Bottom; rainEmitter.Lifetime=NumberRange.new(Rain.Lifetime); rainEmitter.Rate=Rain.Rate; rainEmitter.Speed=NumberRange.new(Rain.Speed); rainEmitter.LockedToPart=true; rainEmitter.Parent=rainPart
         end
-        local function snowParticleEmitter()
+        snowParticleEmitter = function()
             if snowPart then snowPart:Destroy() end
             snowPart=Instance.new('Part'); snowPart.Name='SnowEmitterPart'; snowPart.Size=Vector3.new(51.8,.001,52.084); snowPart.Anchored=true; snowPart.CanCollide=false; snowPart.Transparency=1; snowPart.Parent=workspace
             snowEmitter=Instance.new('ParticleEmitter'); snowEmitter.Color=ColorSequence.new(Snow.Color); snowEmitter.EmissionDirection=Enum.NormalId.Bottom; snowEmitter.Enabled=true; snowEmitter.Lifetime=NumberRange.new(5,math.max(5,Snow.Lifetime)); snowEmitter.Rate=Snow.Rate; snowEmitter.Speed=NumberRange.new(Snow.Speed); snowEmitter.Orientation=Enum.ParticleOrientation.FacingCamera; snowEmitter.RotSpeed=NumberRange.new(360,360); snowEmitter.Rotation=NumberRange.new(20,20); snowEmitter.Shape=Enum.ParticleEmitterShape.Box; snowEmitter.ShapeInOut=Enum.ParticleEmitterShapeInOut.Outward; snowEmitter.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,.2,.4),NumberSequenceKeypoint.new(1,.2,.4)}); snowEmitter.Texture='rbxassetid:'; snowEmitter.Parent=snowPart
